@@ -1,0 +1,2072 @@
+[
+ {
+  "query": "Reply with only: ok",
+  "project": "od-conn-test-56XHDQ",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "запусти проект пж",
+  "project": "my-sass-suites",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "запусти а то что то забыл как запустить",
+  "project": "Portfolio",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "все останови",
+  "project": "Portfolio",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "привет на вот тебе github https://github.com/theDesConnet/AnixartJS тут лежит библиотека для работы с api anixart и вот исходники самой anixart '/Users/daniil/Downloads/anixart_src' изучи api как работает и надо разработать в этой папке '/Users/daniil/Desktop/Project/anixart-sdk' rust библиотеку автономную которая будет работать без танцев с бубном вроде ручного получения токена и обновления, выходной api должен быть удобный",
+  "project": "anixart-sdk",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "выходит библиотека готова к работе да?",
+  "project": "anixart-sdk",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "собери неболшой tui я проверю логин со своего личного аккаунта",
+  "project": "anixart-sdk",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "79;25M64;79;25M64;79;25M64;79;25M64;79;25M64;79;25M64;79;25M64;79;25M64;79;25M64;79;25M64;79;25M64;79;25M64;79;25M64;79;25M64;79;25M64;79;25M64;79;25M64;79;25M64;79;25M64;79;25M64;79;25M64;79;25M64;79;25M64;79;25M64;79;25M64;79;25M64;79;25M64;79;25M64;79;25M64;79;25M64;79;25M64;79;25M64;79;25M64;79;25M64;79;25M64;79;25M64;79;25M64;79;25M64;79;25M64;79;25M64;79;25M64;79;25M64;79;25M64;79;25M64;79;25M64;79;25M64;79;25M64;79;25M64;79;25M64;79;25M64;79;25M64;79;25M64;79;25M64;79;25M64;79;25M64;79;25M64;79;25M64;79;25M64;79;25M64;79;25M64;79;25M64;79;25M64;79;25M64;79;25M64;79;25M64;79; безконечный лаг кокойто я поймал на анонимном запуске",
+  "project": "anixart-sdk",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "'/Users/daniil/Desktop/Снимок экрана — 2026-09-01 в 05.14.41.png' вот посмотри ошибка опять",
+  "project": "anixart-sdk",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "а как им пользоваться команды если не работают ❯ cargo run --example tui Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.38s Running `target/debug/examples/tui` Анонимный клиент (без сессии) ~/Desktop/Project/anixart-sdk 1m 31s 05:28:42 ❯",
+  "project": "anixart-sdk",
+  "expected_skill": "rust-engineer",
+  "marker": "cargo"
+ },
+ {
+  "query": "┌Статус───────────────────────────────────────────────────────────────────────────────────────────────────────┐ │(аноним) │ └─────────────────────────────────────────────────────────────────────────────────────────────────────────────┘ ┌Лог──────────────────────────────────────────────────────────────────────────────────────────────────────────┐ │[ INFO] anixart-sdk TUI запущен. User-Agent: AnixartApp/9.0 BETA 22-26081202 (Android 9; SDK 28; x86_64; ROG │ │[ INFO] введите /help — список команд │ │[ CMD ] help │ │[ ERR ] неизвестно: help. /help │ │ │ │ │ │ │ │ │ │ │ │ │ │ │ │ │ │ │ │ │ │ │ │ │ │ │ │ │ │ │ │ │ │ │ │ │ │ │ │ │ │ │ │ │ │ │ │ │ │ │ │ │ │ │ │ │ │ │ │ │ │ │ │ │ │ │ └─────────────────────────────────────────────────────────────────────────────────────────────────────────────┘ ┌Ввод (Enter — выполнить, Esc/Ctrl+C — выйти)─────────────────────────────────────────────────────────────────┐ │/ │ └─────────────────────────────────────────────────────────────────────────────────────────────────────────────┘ /help — справка по командам help не работает и остальные команды тоже",
+  "project": "anixart-sdk",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "а озвучки, серии, коменты, связаные релизы, рейтинг, обзор, профиль. все данные какие есть на страницах надо сделать чтобы библиотека работала с ними прекрасно",
+  "project": "anixart-sdk",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "там два типа видео один в детали аниме и второй уже сам эпизод и мне нужно оба и скрины, в конце собери readme с слепком всех страниц приложения с всеми ввидами запросов данных и слепок библиотеки она должна иметь все функции и они все должны работать так что проверяй как следует",
+  "project": "anixart-sdk",
+  "expected_skill": "code-documenter",
+  "marker": "readme"
+ },
+ {
+  "query": "слушай я тут давно уже хочу добавить одну функцию. как думаешь сможем ли мы добавить еще одно деление в аниме , сейчас озвучка --> серия а я хочу добавить еще пару библиотек на разные сайты чтобы были разные источники, вот как я хочу озвучка --> серия --> источник anixart animedia vk-video rutube. anixart на всю программу а остальные плагины чисто на серии и озвучки, работать вот как должно выбрал аниме зашел выбрал озвучку серию в аникзарт библиотеки и сразу появляется окно с выбором откуда смотреть серию. сможем сделать? и как лучше будет это сделать чтобы в будущем было удобно добавлять новые библиотеки",
+  "project": "anixart-sdk",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "да давай или просто в github по копайся там он есть но возможно они старые по этому надо смотреть внимательно",
+  "project": "anixart-sdk",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "'/Users/daniil/Desktop/Project/anixart-sdk/Firefox 2026-09-01 17.03 profile.json' вот можешь читать это amd.online",
+  "project": "anixart-sdk",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "'/Users/daniil/Desktop/Project/anixart-sdk/Firefox 2026-09-01 17.03 profile.json' вот читай",
+  "project": "anixart-sdk",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "сделай чтобы можно было выбрать озвучку в cli и tui, исправь argo cli Compiling anixart-sdk v0.1.0 (/Users/daniil/Desktop/Project/anixart-sdk) warning: field `0` is never read --> src/player/kodik.rs:76:9 | 76 | Str(String), | --- ^^^^^^ | | | field in this variant | = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default help: consider changing the field to be of unit type to suppress this warning while preserving the field numbering, or remove the field | 76 - Str(String), 76 + Str(()), | warning: `anixart-sdk` (lib) generated 1 warning Finished `dev` profile [unoptimized + debuginfo] target(s) in 7.89s Running `target/debug/examples/cli` ~/Desktop/Project/anixart-sdk 24m 19s 03:08:39 ❯ и посмотри можноли добавить плеер в cli",
+  "project": "anixart-sdk",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "Continue opencode -s ses_fa71771a4ffe3GANMpahD2E2or",
+  "project": "anixart-sdk",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "❯ после выбора озвучки выбор серии и дальше уже выбор источника и поиск по источникам на производить через разные русские названия у anixart это называется альтернативные названия",
+  "project": "anixart-sdk",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "источник нельзя выбрать вопервых а во вторых animedia надо на ее плеер а не на kodik вот нужный '/Users/daniil/Desktop/Project/anixart-sdk/Firefox 2026-09-02 19.25 profile.json'",
+  "project": "anixart-sdk",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "и на вк видео не ищет и постоянно глюки с панелью навигации",
+  "project": "anixart-sdk",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "вот так работает вк видео '/Users/daniil/Desktop/Project/anixart-sdk/Firefox 2026-09-02 20.20 profile.json'",
+  "project": "anixart-sdk",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "рассекая небосвод на вк видео поищи",
+  "project": "anixart-sdk",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "просто у меня не работает в cli поиск по вквидео",
+  "project": "anixart-sdk",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "там надо выбрать платформу web андроид или ios",
+  "project": "anixart-sdk",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "базовый домен и url просит обязательно",
+  "project": "anixart-sdk",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "Способы быстрого входа в web-приложении Кнопка One Tap Авторизация в одно касание Шторка авторизации Авторизация через всплывающее окно при входе на сервис Виджет 3 в 1 Сразу три способа авторизации: через аккаунт ВКонтакте, Одноклассники и Mail",
+  "project": "anixart-sdk",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "давай сделаем парсер без официального api vk напрямую через это 52649896:get_anonym_token:login:auth {\"access_token\":\"anonym.eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhbm9ueW1faWQiOjE0ODk4MjcwOTgsImFwcF9pZCI6NTI2NDk4OTYsImlhdCI6MTc4ODM0ODYzMywiaXNfdmVyaWZpZWQiOmZhbHNlLCJleHAiOjE3ODg0MzUwMzMsInNpZ25lZF90aW1lIjpudWxsLCJhbm9ueW1faWRfbG9uZyI6OTEwMjg2NDkwNTk2NTE5NTkxOSwic2NvcGUiOjc4ODEyOTkzNDc4OTgzNjh9.lg-6L_Ka-l-_Vfi25RcUgJ6X8vXMCHKtfKHwkvq4Rhk\",\"expired_at\":1788435033,\"expires\":1788435033}",
+  "project": "anixart-sdk",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "а через js имитацию браузера",
+  "project": "anixart-sdk",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "через kate mobile можно сделать",
+  "project": "anixart-sdk",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "короче делаем playwright с парсингом публичных данных с конкретных каналов https://m.vk.ru/donghuaworld?offset=30&own=1 https://m.vk.ru/ruchime",
+  "project": "anixart-sdk",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "Continue if you have next steps, or stop and ask for clarification if you are unsure how to proceed.",
+  "project": "anixart-sdk",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "сделай список каналов вк с аниме озвучками и сделай чтобы работал поиск смотреть из cli",
+  "project": "anixart-sdk",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "слушай вк видеоо с ее поиском не получится через playwright сделать",
+  "project": "anixart-sdk",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "https://m.vkvideo.ru/?q=%D0%BD%D0%B5%D0%BA%D1%80%D0%BE%D0%BC%D0%B0%D0%BD%D1%82%3A%20%D1%8F%20%D0%BA%D0%B0%D1%82%D0%B0%D1%81%D1%82%D1%80%D0%BE%D1%84%D0%B0%20mda&action=search вот так работает парсинг",
+  "project": "anixart-sdk",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "определи размер библиотеки этой",
+  "project": "anixart-sdk",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "собери cli в полноценое микро приложение отдельно от библиотеки",
+  "project": "anixart-sdk",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "у нас проблема мл видео не работает у нас",
+  "project": "anixart-sdk",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "Search the codebase at /Users/daniil/Desktop/Project/anixart-sdk for all video-related code — player providers, video playback, streaming, episode URLs, etc. I need to understand: 1. How video sources are resolved (look in src/player/, src/endpoints/release.rs, src/models/) 2. Are there any TODO/FIXME/HACK comments related to video? 3. What providers exist and which might be broken? 4. How does the episode URL / video URL resolution work? 5. Check the player demo example (examples/player_demo.rs) Return a comprehensive summary of the video pipeline and any obvious issues you find.",
+  "project": "anixart-sdk",
+  "expected_skill": "api-designer",
+  "marker": "endpoints"
+ },
+ {
+  "query": "у нас проблема вк видео не работает у нас",
+  "project": "anixart-sdk",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "Search the codebase at /Users/daniil/Desktop/Project/anixart-sdk for all VK Video related code. Look for: 1. VkVideo provider in src/player/ 2. Any VK-related URLs, API calls, scraping 3. The VkVideoSearchProvider in examples/common.rs 4. Any error handling or fallback logic for VK Return the full content of all relevant files/sections with file paths and line numbers.",
+  "project": "anixart-sdk",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "Search past session observations and lessons for relevant context. Wrap the `memory_smart_search` and `memory_lesson_recall` MCP tools. ## Usage ``` /recall [query] ``` ## Instructions 1. Call `memory_smart_search` with the query and `limit: 10`. 2. If available, call `memory_lesson_recall` with the same query and `limit: 5`. 3. Combine results and present only what the tools returned. 4. If no results, suggest 2-3 alternative search terms.",
+  "project": "my-manager",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "Switch to ponytail mode. If no level specified, use full. Lazy senior dev mode, before any code: does it need to exist at all (YAGNI)? Does the standard library do it? A native platform feature? Can it be one line? Build the minimum that works. No unrequested abstractions, no avoidable dependencies, no boilerplate. Mark deliberate simplifications that cut a real corner with a known ceiling using a ponytail: comment that names the ceiling and upgrade path.",
+  "project": "my-manager",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "все добавил токен бота и id канала",
+  "project": "my-manager",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "Switch to ponytail проверка и само обучение сейчас в общем все для работы с текстами делаем mode. If no level specified, use full. Lazy senior dev mode, before any code: does it need to exist at all (YAGNI)? Does the standard library do it? A native platform feature? Can it be one line? Build the minimum that works. No unrequested abstractions, no avoidable dependencies, no boilerplate. Mark deliberate simplifications that cut a real corner with a known ceiling using a ponytail: comment that names the ceiling and upgrade path.",
+  "project": "my-manager",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "все добавил ключь тестируй",
+  "project": "my-manager",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "теперь пробуй bigpickle",
+  "project": "my-manager",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "переходим на operouter бесплатную модель выбери",
+  "project": "my-manager",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "заменил ключ, несмотри его проверяй запуск",
+  "project": "my-manager",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "Switch to ponytail точечный парсинг tg каналов сделай и само обучение как писать посты -1002826030018 вот к примеру канал какойто девушки техспеца так нужно искать https://t.me/YuliaAndBot вот ссылка, а вот мой канал лажа полная. mode. If no level specified, use full. Lazy senior dev mode, before any code: does it need to exist at all (YAGNI)? Does the standard library do it? A native platform feature? Can it be one line? Build the minimum that works. No unrequested abstractions, no avoidable dependencies, no boilerplate. Mark deliberate simplifications that cut a real corner with a known ceiling using a ponytail: comment that names the ceiling and upgrade path.",
+  "project": "my-manager",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "The following tool was executed by the user",
+  "project": "my-manager",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "Switch to ponytail спланируй ферму агентов которые сами будут работать и найди им в интернете skills и нужно добаить телеграм user bot интеграцию mode. If no level specified, use full. Lazy senior dev mode, before any code: does it need to exist at all (YAGNI)? Does the standard library do it? A native platform feature? Can it be one line? Build the minimum that works. No unrequested abstractions, no avoidable dependencies, no boilerplate. Mark deliberate simplifications that cut a real corner with a known ceiling using a ponytail: comment that names the ceiling and upgrade path.",
+  "project": "my-manager",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "Install this Agent Skill for me. Skill page: https://skillsmp.com/creators/alekseiul/sprut-agent-kit/skills-copywriter-agent Source URL: https://github.com/AlekseiUL/sprut-agent-kit/tree/main/skills/copywriter-agent Skill name: copywriter-agent Creator: AlekseiUL Preferred install command: npx skills add https://github.com/AlekseiUL/sprut-agent-kit --skill copywriter-agent Please open the skill page and source, review SKILL.md plus any companion files, and explain anything risky before installing. If shell commands are available, prefer the install command above. If you install manually, copy the complete skill directory that contains SKILL.md, including scripts, references, assets, agents, and any other files shown on the skill page. Preserve the relative folder structure. Do not install SKILL.md alone. After installing, verify the target skills folder contains SKILL.md and all companion files needed by this skill.",
+  "project": "my-manager",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "https://github.com/sarrafgsarraf/humanize-text-pro.git https://raw.githubusercontent.com/NeverSight/skills_feed/refs/heads/main/data/skills-md/ntaksh42/agents/ai-content-quality-checker/SKILL.md#1 тот установи и эти навыки в агентную ферму",
+  "project": "my-manager",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "давай теперь доделывать по плану агентов",
+  "project": "my-manager",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "я не понимаю на англ",
+  "project": "my-manager",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "пост видел норм далее делаем tg",
+  "project": "my-manager",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "Switch to ponytail давай mode. If no level specified, use full. Lazy senior dev mode, before any code: does it need to exist at all (YAGNI)? Does the standard library do it? A native platform feature? Can it be one line? Build the minimum that works. No unrequested abstractions, no avoidable dependencies, no boilerplate. Mark deliberate simplifications that cut a real corner with a known ceiling using a ponytail: comment that names the ceiling and upgrade path.",
+  "project": "my-manager",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "все вписал теперь надо подключить в tg авторизацию с паролем а то так не войдем",
+  "project": "my-manager",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "как запустить",
+  "project": "my-manager",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "❯ cd /Users/daniil/Desktop/Project/my-manageruserbot/.venv/bin/python userbot/fetch_history.py YuliaAndBot 50 Please enter your phone (or bot token): Please enter your phone (or bot token): код не приходит и чтоза YuliaAndBot 50",
+  "project": "my-manager",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "❯ cd /Users/daniil/Desktop/Project/my-manager && userbot/.venv/bin/python userbot/fetch_history.py YuliaAndBot 50Код из Telegram: 68910 ERROR входа (2FA или неверный код): Two-steps verification is enabled and a password is required (caused by SignInRequest) ~/Desktop/Project/my-manager 19s 23:50:59 ❯",
+  "project": "my-manager",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "YuliaAndBot 50 чтоза что это я не юля нахуй ты ее добавил",
+  "project": "my-manager",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "забудь конфиг api телеграм менять теперь сука",
+  "project": "my-manager",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "не смей удалять я просто говорю что ты слил мой id и hash",
+  "project": "my-manager",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "нахуй удалил верни",
+  "project": "my-manager",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "давай возвращай",
+  "project": "my-manager",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "как сбросить tg api_hash",
+  "project": "my-manager",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "нет тамм revoke там вообще нет ничего",
+  "project": "my-manager",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "никогда не лезь в config так напиши в правилах у себя",
+  "project": "my-manager",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "❯ cd /Users/daniil/Desktop/Project/my-manager && userbot/.venv/bin/python userbot/fetch_history.py YuliaAndBot 50Код из Telegram: 28264 ERROR входа (2FA или неверный код): Two-steps verification is enabled and a password is required (caused by SignInRequest) ❯ cd /Users/daniil/Desktop/Project/my-manager && userbot/.venv/bin/python userbot/fetch_history.py YuliaAndBot 50 Telegram is having internal issues AuthRestartError: Restart the authorization process (caused by SendCodeRequest) Код из Telegram: 60437 ERROR входа (2FA или неверный код): Two-steps verification is enabled and a password is required (caused by SignInRequest) ~/Desktop/Project/my-manager 14s 00:15:30 ❯ не работает пароль пусть просит в в терминале",
+  "project": "my-manager",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "cd /Users/daniil/Desktop/Project/my-manager && userbot/.venv/bin/python userbot/fetch_history.py YuliaAndBot 50Код из Telegram: 85746 2FA пароль (Enter если нет): введен ERROR входа (2FA или неверный код): Two-steps verification is enabled and a password is required (caused by SignInRequest) ~/Desktop/Project/my-manager 45s 00:22:25 ❯ в tg пишет пароль не введен",
+  "project": "my-manager",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "собирай базу данных вернее запусти агента для этой задачи пусть сам под твоим руководством",
+  "project": "my-manager",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "а вообще добавь mcp к менеджеру чтобы opencode подключить и ты использовал его на прямую",
+  "project": "my-manager",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "доработай удобну реализацию внутри .opencode проекта добавь там плагин и скил для контроля качества чтобы нормально упаковать ферму для работы прямиком из opencode и добавь единую память которая будет писаться независимо от сесий и чтобы opencode мог читать ее чтобы не обьяснять суть каждый раз снача спланируй все и то как лучше это собрать и упаковать чтобы потом не ломать голову как было с tg в rust с поломкой библиотеки и чтобы не переделывать и не делать костыли и велосипед",
+  "project": "my-manager",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "слушай а получится ли сделать специально доработать плагин чтобы он работал по принципу claude ultracode так выйдет в миллиард раз лучше и удобнее но думаю сейчас стоит разделить архитектуру вот как проект разработки уже собратый будет отдельно со своей структурой папок. дальше идея реализации такова что будет 3 уровня вход tg на питон оставляем, 1 плагин чтото вроде ultracode, 2 плагин ферма и котроль над mcp для работы с tg",
+  "project": "my-manager",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "а плагины для opencode разрабатывают разве не через rust библиотеку их?",
+  "project": "my-manager",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "ты агента добавил? и все ли готово к упоковке этого всего в один пакет чтобы установить а не держать в dev проекте до первого обновления чтобы не сломать и хорошо бы сжать обьем памяти",
+  "project": "my-manager",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "плагин ultracode должен уметь работать со всей начинкой opencode, ponytail, автосжатие контекста должен уметь делать в чате opencode, свой контекст как git репо но локально, и должен сжимать этот контекст до главного, и самое главное работа с другими плагинами скилами и любыми mcp и добавь быструю команду запустить ферму чтобы подключиться к ферме и ее контексту",
+  "project": "my-manager",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "удобное обновление добавь и посмотри cli tui и все подобное не попадает ли в plugin mcp или skills",
+  "project": "my-manager",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "ultracode надо к plan и build добавить чтобы в меню отображало по умолчанию а не выбирать как суб агента",
+  "project": "my-manager",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "продолжай и изучи еще как работает ultracode в claude, хотелось бы сделать так чтобы все работало максимально качественно и стабильно, мне нужна иновация, а не костыль похожий на claude ultracode, изучаем claudecode ultracode и похожие плагины для opencode и улучшаем нашь плагин и с фермой также ищем референсы и дорабатываем",
+  "project": "my-manager",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "а про экономию токенов мы не забыли?",
+  "project": "my-manager",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "установи себе в песочницу и проведи тесты через opencode tui на разработке html игры крестики нолики обычный промт простой создай игру крестики нолик на html все остальное он сам пусть делает такой тест нужен",
+  "project": "my-manager",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "\"create a tic-tac-toe game in a single html file\"",
+  "project": "work2",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "теперь надо протестировать на разработке чего-то приемлемого какого yb,elmdt, приложения среднего уровня и вот скилы 1. Установи opencode-skills (React, TS, Next.js)git clone https://github.com/farmage/opencode-skills.git cd opencode-skills cp -r ./skills/* ~/.config/opencode/skills/ и вот Please help me install this Skill: Name: opencode-ai-design-skill Download link: https://github.com/Hey-Viswa/-claude-design-system-skills/archive/main.zip#opencode-ai-design-skill Please download this .zip file, extract it, and install it in the .claude/skills/ directory.",
+  "project": "my-manager",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "дорабатывай что там надо и goal надо в любом случае задавать нам, давай придумаем какую задачу дадим ему, главные параметры: сложная чтобы были пройдены все этапы разработки, неоднозначная чтобы он думал и планировал и искал лучший путь, и надо сделать на будущее отдельный раздел памяти где будут охраняться ошибки агента и успехи и чтобы он саморазвивался самообучался после того как выделит необходимые для себя знания, и самое главное вы ии когда пишете проекты вы не проверяете ошибки в библиотеках вы сразу пишите и потом мы жалем и переделываем это надо исправить",
+  "project": "my-manager",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "раскажи и покажи чтоза фигню он сделал",
+  "project": "my-manager",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "а че он писал то, чеза проект был",
+  "project": "my-manager",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "скилы он использовал? и могу ли я потыкать этот проект",
+  "project": "my-manager",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "запусти я потыкаю",
+  "project": "my-manager",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "неплохо но надо подключить к ultracode open design mcp { \"mcpServers\": { \"open-design\": { \"command\": \"/Users/daniil/Library/Application Support/Open Design/launcher/channels/stable/namespaces/release-stable/versions/0.21.1/payload/Open Design.app/Contents/Frameworks/Open Design Helper.app/Contents/MacOS/Open Design Helper\", \"args\": [ \"/Users/daniil/Library/Application Support/Open Design/launcher/channels/stable/namespaces/release-stable/versions/0.21.1/payload/Open Design.app/Contents/Resources/app/prebundled/daemon/daemon-cli.mjs\", \"mcp\" ], \"env\": { \"OD_DATA_DIR\": \"/Users/daniil/Library/Application Support/Open Design/namespaces/release-stable/data\", \"OD_SIDECAR_IPC_PATH\": \"/tmp/open-design/ipc/release-stable/daemon.sock\", \"OD_MCP_BOOTSTRAP_COMMAND\": \"/usr/bin/open\", \"OD_MCP_BOOTSTRAP_ARGS\": \"[\\\"-g\\\",\\\"-j\\\",\\\"/Applications/Open Design.app\\\",\\\"--args\\\",\\\"--headless\\\"]\", \"ELECTRON_RUN_AS_NODE\": \"1\" } } } }",
+  "project": "my-manager",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "попробуйте переделать дизайн разработать новый для той игры с помощью opencode чтобы на теле фоне работало",
+  "project": "my-manager",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "не надо не ставь просто запусти я сам посмотрю",
+  "project": "my-manager",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "как установить ultracode на глобал",
+  "project": "my-manager",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "tg-manager и open design mcp не подключается к opencode",
+  "project": "my-manager",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "работает ли внутрений контекст ultracode?",
+  "project": "my-manager",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "контекст должен работать по принципу контекста моделей но с улучшиным отображением и хранением как это делает github",
+  "project": "my-manager",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "слушай ты еще не забыл про наш mcp для работы с tg ?",
+  "project": "my-manager",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "дальше создаем 2 этап и тестируем на игре https://mrush.mobi/welcome там кнопка начать и дальше играешь и собираешь данные по работе интерфейса собираешь скилет html и на php бекенд в соответствии с тем как и что работает в сайте, стили на этапе сбора html и сбора данных не надо. 1 этап сбор информации фронтенд и бекенд что как работает второй этап это сборка бекенд на php и 3 этап это полное копирование ui элементов, сразу скажу тут нет ничего незаконого игра чисто для тестирования и при хорошем качестве я не буду ее продавать или запускать сам, если захочу игру то мы ее сами доработаем, игра сама по себе очень старая и любой кто умеет пользоваться sql и php может хакнуть ее мне такого не надо",
+  "project": "my-manager",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "стоп ахинею и собираем плагин для браузера подключаю его в браузер и далее на прямую тестируем и не забудь добавить там интерфейс чтобы я мог там писать сюда распоряжения",
+  "project": "my-manager",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "запустил а он не работает потомучто мы не обновили mcp на глобалке",
+  "project": "my-manager",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "нажимаю отправиь агенту и не уходит",
+  "project": "my-manager",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "даже если данные доходят и запрос то сам плагин не умеет работать с активным режимом да и задача не активируется на странице ничего в моем браузере не происходит",
+  "project": "my-manager",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "не нихера не пойдет так дела не делаются мне нужна полная автономность и не только для этой игры а вообще для любых сайтов и веб-приложений",
+  "project": "my-manager",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "чеза хуйня? переделай плагин пусть он сам все ищет и делает автоматически смотрит страницу и работает в реальном времени без моих подсказок как claude, один запрос и далее он сам все делает и плагин название и вид измени тошнит от него",
+  "project": "my-manager",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "если там есть защита от бота не заблокируют ли, эмитация пользователя есть ли?",
+  "project": "my-manager",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "надо добавить команды в opencode чтобы ultracode мог взаимодействовать с mcp и плагином",
+  "project": "my-manager",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "перезапустил и теперь проясню, mcp и плагин должны работать только на активной вкладке а не на любой странице где скажет пользователь",
+  "project": "my-manager",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "сможет ли он теперь войти пройти капчу и начать игру и потом создать аккаунт на левые данные",
+  "project": "my-manager",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "расширение не отвечает",
+  "project": "my-manager",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "начни игру на активной вкладке и собери всё для создания копии игры",
+  "project": "Default Project",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "а чит смоешь сделать, в качестве эксперимента",
+  "project": "Default Project",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "~/Documents/Default Project/mrush-copy вот посмотри получится ли из этого обрать игру",
+  "project": "my-manager",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "стоп не надо устанавливать и делать игру, сейчас другое важнее я тут заметил что ultracode ахуел он совсем не использует skills хотя должен сам выбирать при любом раскладе разработки подбирать плагины и скилы и разрабатывать",
+  "project": "my-manager",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "проверь контекст сесиии gbitn или нет и почему не работает отображение нового дизайна ultracode",
+  "project": "my-manager",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "проверь пишется ли сесия теперь",
+  "project": "my-manager",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "напиши ии плагин для браузера который будет качать профиль без нейросетей чтобы у ии была способность к эволюции прокачке профиля и покупки снаряги в общем полное развитие перса",
+  "project": "Default Project",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "наш mcp слишком много жрет токенов и слишком медленный надо сделать команды простыми и быстрыми",
+  "project": "my-manager",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "как подключить в браузер",
+  "project": "Default Project",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "он не умеет забирать награду автоматически и надо сделать чтобы мог в pvp и если выпала снаряга одевать ее а старую продавать",
+  "project": "Default Project",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "надо обновление снаряги менять на более хорошую и pvp должен вести на арену а не на локацию с врагами и магазине дообучи ии сейчас нам доступен только type 1 раздел обычное снаряжение а снаряжение необычное недоступно прочти энцеклопедию игры ии обязан знать все тонкости игры чтобы. развиваться самостоятельно",
+  "project": "Default Project",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "локация темный лес закрылась на кулдаун а он ее каждую секунду прыгает надо решать эту проблему надо сперва одно сделать потом другое и надо чтобы у него был авто план с преоритетами чтобы он действовал как человек",
+  "project": "Default Project",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "нужно сделать ai плагин для фарма данжей в cybercodeonline.com в открытой вкладке в браузере сначала первые 10 лвл через враги по близости а далее данжи я выберу уровень и он должен запускать и проходить сейчас делаем только враги поблизости сам должен выбирать врага и собирать экипировку одевать",
+  "project": "cco-ai-farm",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "он не на странице логин а вот тут https://cybercodeonline.com/tabs/map зайди в мой браузер а не playwright",
+  "project": "cco-ai-farm",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "на русском пиши, и еще там стоит запрет на отладка, команды не работают походу тоже",
+  "project": "cco-ai-farm",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "не работает собери плагин который будет смотреть и записывать log пока я тыкаю все он слушает и записывает и чтобы была кнопка копировать",
+  "project": "cco-ai-farm",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "я не могу ничего делать когда он такой огромный и не двигается он перекрывает кнопки все притом",
+  "project": "cco-ai-farm",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "[0] Patching game... [0] ⚠ Patch not applied — game may block clicks [0] If bot does not click, try: [0] 1. Hard refresh (Ctrl+Shift+R) [0] 2. Check console for patch msg [0] Press START when ready. [0] Bot v7 started! [1] 15 enemies [1] → Cringy Weeb lv1 [2] 15 enemies [2] → Cringy Weeb lv1 [3] 15 enemies [3] → Cringy Weeb lv1 [4] 15 enemies [4] → Cringy Weeb lv1 [5] 15 enemies [5] → Cringy Weeb lv1 [6] Special [7] Special [8] Special [9] Special [10] Special [11] Special [12] Special [13] Special [14] Special [15] Special [22] 20 enemies [22] → Blockbuster Investor lv1 [23] 20 enemies [23] → Blockbuster Investor lv1 [24] Special [25] Special [26] Special [27] Special [28] Special [29] Special [30] Special [31] Special [32] Special [33] Special [34] Special [35] Special [38] Stopped. не работает",
+  "project": "cco-ai-farm",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "Проведи read-only аудит текущего проекта для улучшения плана Ultracode v2. Сначала используй CodeGraph (explore/context/search) для структурного понимания, затем точечно прочитай файлы. Проверь .opencode/plugin/ultracode.ts, доступные типы @opencode-ai/plugin, agent/skill directives, OpenDesign references, команды ultracode_context и текущую схему store. Верни: (1) реально доступные hooks/API с file:line, (2) какие пункты пользовательского плана технически невозможны напрямую из плагина, (3) минимальную реализуемую архитектуру и порядок фаз, (4) риски/тесты. Ничего не редактируй.",
+  "project": "my-manager",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "Проведи read-only аудит текущего плагина Ultracode для улучшения плана. Сначала используй codegraph_explore по символам/хукам в .opencode/plugin/ultracode.ts, затем при необходимости прочитай конкретные файлы. Определи: какие хуки реально используются, какие команды context уже существуют, как устроены планы/инъекция/компактация/логирование, и какие пункты предложенного плана технически невозможны или рискованны на уровне плагина. Ничего не редактируй. Верни краткий отчёт с file:line refs, зависимостями и рекомендуемым порядком реализации.",
+  "project": "my-manager",
+  "expected_skill": "add-observability",
+  "marker": "логирование"
+ },
+ {
+  "query": "переформулируйте план как набор задач (issues), где каждая задача содержит: Конкретный файл/модуль (например, src/store.ts, src/orchestrator.ts). Изменения (добавить функцию savePlan, изменить сигнатуру addKnowledge). Пример кода (как должен выглядеть новый метод). Критерий приемки (как проверить, что задача выполнена). Тест (юнит-тест или команда для ручной проверки).",
+  "project": "my-manager",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "запиши этот план",
+  "project": "my-manager",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "теперь поясни про какие ты говорил волшебные запуски?",
+  "project": "my-manager",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "и впрямь сука такая чинит то очем еще не просил нужно поставить явное ограничение правилами чтобы уточняющие вопросы задавал и чтобы действовал всегда на основе даннных в том числе официальных и не официальных, хотя вот это /goal реализуй компонент, тесты и документацию /design создай макет карточки и хорошо но все же удобнее что ultracode сам может это делать нам просто надо установить рамки его самостоятельности чтобы неохриневал от жизни и свободы",
+  "project": "my-manager",
+  "expected_skill": "code-documenter",
+  "marker": "документацию"
+ },
+ {
+  "query": "ultracode сам должен уметь справляться и с большими задачами без постоянного дергания меня, сам иследует рассуждает и уточняет у меня а далее собирает plan task goal и начинает реализацию. так я задумывал изначально чтоб он работал просто надо довести до ума реализацию",
+  "project": "my-manager",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "напиши промт я запушу и дам файд issues",
+  "project": "my-manager",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "Called the Read tool with the following input: {\"filePath\":\"/Users/daniil/Desktop/Project/my-manager/ULTRACODE-V2-ISSUES.md\"}",
+  "project": "my-manager",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "В конце выведи: какие issues выполнены; какие файлы изменены; какие команды запущены и их реальные результаты; какие sub-agent задачи выполнялись; какие решения приняты; какие blockers остались; что делать следующим шагом.",
+  "project": "my-manager",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "Проведи read-only аудит реализации Ultracode UC-001..UC-014. Сначала попробуй codegraph_explore, затем fallback read/grep. Сверь заявленные файлы и поведение: store v3, plans, injection, metrics, autonomy, orchestrator, verification, design, checkpoint, MCP fast/summary. Найди реальные несоответствия, баги, недотестированные участки и security/contract issues. Не редактируй файлы. Верни severity-ranked отчёт с file:line refs и отдельным вердиктом: report trustworthy / partial / false.",
+  "project": "my-manager",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "Read-only аудит Ultracode UC-001..UC-014 только на runtime contract drift: plugin hooks ↔ helper modules, tool schema ↔ commands, plan/evidence data flow, task orchestration, MCP fields. Не редактируй. Верни только findings с severity и file:line refs.",
+  "project": "my-manager",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "Read-only security audit Ultracode UC-001..UC-014: secrets in store/metrics/evidence, path traversal/symlink, arbitrary command execution, config.toml/userbot boundaries, external MCP/Open Design side effects. Не редактируй. Верни severity-ranked findings with file:line refs.",
+  "project": "my-manager",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "Read-only audit Ultracode store and autonomous orchestrator for races/idempotency: atomic writes, concurrent plans, retries, maxParallel, stale evidence, resume/checkpoint. Не редактируй. Верни findings with severity and file:line refs.",
+  "project": "my-manager",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "напиши промт",
+  "project": "my-manager",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "Ты работаешь как автономный senior-инженер и должен довести Ultracode 2.0 до реально работающего runtime-состояния. Главные файлы задачи: - ULTRACODE-V2-ISSUES.md - ULTRACODE-EVALUATION.md - .opencode/plugin/ultracode.ts - .opencode/lib/ultracode/ - .opencode/agents/ - .opencode/commands/ - farm/crates/mcp/ - farm/crates/agents/ Не останавливайся после анализа и не ограничивайся helper-тестами. Нужно проверить настоящий runtime path. ## Режим работы 1. Загрузи подходящие skills до написания кода: - typescript-pro; - test-master; - code-reviewer; - security-reviewer; - rust-engineer для Rust. 2. Прочитай оба документа issues/evaluation полностью. 3. Сначала проведи baseline: ```bash node --test .opencode/tests/*.test.ts cargo test -p mcp cargo build --release -p mcp ./scripts/farm-health.sh",
+  "project": "my-manager",
+  "expected_skill": "rust-engineer",
+  "marker": "cargo"
+ },
+ {
+  "query": "Called the Read tool with the following input: {\"filePath\":\"/Users/daniil/Desktop/Project/my-manager/ULTRACODE-EVALUATION.md\"}",
+  "project": "my-manager",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "В конце выведи: Какие blockers найдены. Какие исправлены. Какие issues выполнены. Какие файлы изменены. Реальные команды и результаты. Итоговый score. Уровень: junior/middle/senior/staff. Все оставшиеся ограничения. Почему решение заслуживает или не заслуживает итоговый уровень. Не называй проект senior только потому, что unit-тесты зелёные. ```",
+  "project": "my-manager",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "1 и 2 это что за функции",
+  "project": "my-manager",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "напиши план и промт",
+  "project": "my-manager",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "план напиши в файл как обычно а промт так вставь",
+  "project": "my-manager",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "добьем и давай добавим функцию которая будет скрывать кондифициальные данные в env и конфигах ключи секреты пароли логины номера чтобы ии видел только верстку а все секретные данные чтобы надежно скрывались и нужно добавить функцию тестирования чтобы он был гений дебага",
+  "project": "my-manager",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "Read-only audit current Ultracode redaction and tool output hooks. Find exact files/lines where tool.execute.after, sanitizeOutput, metrics/evidence/knowledge writes and MCP output handling live. Determine safest boundary to redact secrets before data reaches AI, without reading config.toml or userbot data. Return concrete implementation points and gaps; do not edit.",
+  "project": "my-manager",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "а mcp opendesign работает",
+  "project": "my-manager",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "напиши документацию и readme описание plugin ultracode и всего его функционала встроеного",
+  "project": "my-manager",
+  "expected_skill": "code-documenter",
+  "marker": "документацию"
+ },
+ {
+  "query": "Если в confidential.ts дырка — утечёт всё. Нужен независимый пентест или хотя бы property-based тесты: сгенерировать 1000 случайных строк с секретами и проверить, что ни одна не проходит.",
+  "project": "my-manager",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "поробный отчет напиши",
+  "project": "my-manager",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "Классификатор simple|multi_step|... — где гарантия? Regex на русские/английские глаголы — хрупко. «Перепиши этот файл» — simple или multi_step? Если классификатор ошибается, /goal может создавать план там, где не нужно, или наоборот. Нужны тесты на edge cases (10+ примеров на каждую категорию).",
+  "project": "my-manager",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "Автоопределение стека проекта Сейчас агент должен сам догадаться, что для Python нужен pytest, для Rust — cargo test. Это ручная работа. Что добавить: lib/ultracode/stack-detect.ts, который при старте сессии смотрит файлы в project root и пишет в store: text package.json → node, test: npm test Cargo.toml → rust, test: cargo test pyproject.toml → python, test: pytest go.mod → go, test: go test ./... composer.json → php, test: composer test Плюс Makefile, justfile, .github/workflows/*.yml — там часто есть готовые команды. Тогда acceptance.command для /goal берётся автоматически, а не гадается.",
+  "project": "my-manager",
+  "expected_skill": "php-pro",
+  "marker": "composer"
+ },
+ {
+  "query": "Кросс-язычный evidence Сейчас Evidence — это {command, exitCode, stdout, stderr}. Для универсальности добавь поле tool: \"pytest\" | \"cargo-test\" | \"jest\" | \"playwright\" | \"custom\" и парсинг специфичных отчётов: pytest — passed=12 failed=3 из вывода cargo test — test result: ok. 45 passed jest — JSON-отчёт coverage — процент из .coverage или coverage.xml Это делает evaluation не «0/1», а осмысленным: «шаг закрыт, 45/45 тестов, покрытие 78%».",
+  "project": "my-manager",
+  "expected_skill": "rust-engineer",
+  "marker": "cargo"
+ },
+ {
+  "query": "Единый контракт «работающий проект» Сейчас ты проверяешь compile + tests + runtime. Для универсальности нужен отдельный слой: ts type StackContract = { detect(): Stack | null build(): Command | null test(): Command | null lint(): Command | null typecheck(): Command | null run(): Command | null } Один интерфейс, разные реализации (NodeContract, RustContract, PythonContract, PhpContract, GoContract). Агент просто спрашивает contract.test() — и не думает про npm vs cargo vs pytest. Это архитектурная инновация. В Claude Code такого нет. В Cursor — частично (только для JS-стека).",
+  "project": "my-manager",
+  "expected_skill": "rust-engineer",
+  "marker": "cargo"
+ },
+ {
+  "query": "ну че там так долго?",
+  "project": "my-manager",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "Что делать сейчас Стоп. Evaluator закрыт. Это точка релиза 2.1. CHANGELOG.md — зафиксируй 2.1: «дробный score, counts, веса причин, cold/warm». README для пользователя — 1 страница, «что показывает /evaluate --target на чужом проекте за 5 минут». Забудь про evaluator на 2 недели. Пусть данные накопятся.",
+  "project": "my-manager",
+  "expected_skill": "code-documenter",
+  "marker": "changelog"
+ },
+ {
+  "query": "mrush удаляем все из проекта",
+  "project": "my-manager",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "вот тут VK_Видео_v1.160(50685)_base_src смотри в project",
+  "project": "anixart-sdk",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "обнови md обзор проведенной работы",
+  "project": "anixart-sdk",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "WanRen поставь",
+  "project": "anixart-sdk",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "напиши md документацию со структурой библиотеки и api полный",
+  "project": "anixart-sdk",
+  "expected_skill": "code-documenter",
+  "marker": "документацию"
+ },
+ {
+  "query": "Инвентаризация публичного Rust API. ТОЛЬКО ЧТЕНИЕ, ничего не модифицируй. Корень: /Users/daniil/Desktop/Project/anixart-sdk/src. Прочитай ПОЛНОСТЬЮ файлы: lib.rs, client/mod.rs, session.rs, token_store.rs, error.rs, mirror.rs, shikimori.rs. Верни СТРУКТУРИРОВАННЫЙ отчёт (это пойдёт в API-документацию, точность критична): Для КАЖДОГО файла: все pub struct/enum/trait/fn — с ТОЧНЫМИ сигнатурами как в коде (имена, generics, все параметры с типами, возвращаемые типы), все pub поля структур с типами, все варианты enum'ов, все методы impl-блоков (включая builders вроде with_*), значения констант/default'ов. Формат: `Файл (строки)` → список `сигнатура — 1 строка назначения`. Ничего не пропускай (включая RawRequest-билдеры, Options поля, AnixartBuilder методы, TokenStore трейт + 2 реализации, все варианты AnixartError/AuthError/LoginError/ApiError, Session/Credentials поля, mirror константы, ShikimoriAnime поля + search/search_best сигнатуры, lib.rs реэкспорты). Без воды, только факты + файл:строка для каждого айтема. До ~300 строк.",
+  "project": "anixart-sdk",
+  "expected_skill": "code-documenter",
+  "marker": "документацию"
+ },
+ {
+  "query": "Инвентаризация публичного Rust API. ТОЛЬКО ЧТЕНИЕ, ничего не модифицируй. Корень: /Users/daniil/Desktop/Project/anixart-sdk/src/endpoints/. Прочитай ПОЛНОСТЬЮ все 10 файлов: mod.rs, auth.rs, release.rs, profile.rs, channel.rs, collection.rs, feed.rs, notification.rs, search.rs, settings.rs. Верни СТРУКТУРИРОВАННЫЙ отчёт (пойдёт в API-документацию, точность критична): Для КАЖДОГО файла: имя XxxApi-структуры + конструктор на Anixart; КАЖДЫЙ публичный метод — ТОЧНАЯ сигнатура (имя, все параметры с типами, возвращаемый тип), HTTP-метод+путь endpoint'а (выведи из RawRequest::new/post и строк пути в коде), пометка требует ли сессии (.auth()), особые типы ответов (ReleasePage, FeedSearchResult и т.п. — их поля тоже перечисли). Ничего не пропускай — нужны ВСЕ методы всех 9 доменов. Формат: `Файл` → `структура` → список `сигнатура | метод+путь | auth? | 1 строка назначения`. Только факты + файл:строка. До ~400 строк.",
+  "project": "anixart-sdk",
+  "expected_skill": "code-documenter",
+  "marker": "документацию"
+ },
+ {
+  "query": "Почини сборку CLI в /Users/daniil/Desktop/Project/media-sdk. ТОЛЬКО чтение кроме исправлений в cli/. Запусти `cargo build --workspace` и исправь ВСЕ ошибки компиляции и clippy -D warnings. Правила: не менять api/media-types, api/media-core, plugins/example-plugin без нужды; не коммитить; секреты не выписывай. Известные ошибки из лога: - E0432/E0599/E0615 в cli (проверь theme/detect, human/theme, nu-ansi-term API). - theme/detect.rs:143 `out.italic = style.italic` — methods are immutable cannot be assigned (nu-ansi-term Style — не struct с полями, используй builder: Style::new().fg(...).italic() и т.п., проверь актуальный API). - human/theme.rs unused variables — либо используй, либо prefix _ - Проверь все импорты: media-types/media-core пути, clap/inquire/comfy-table/crossterm API. Последовательно: build --workspace → исправь → build → clippy --workspace -- -D warnings → тест. Верни лог финальной сборки и список исправленных файлов.",
+  "project": "anixart-sdk",
+  "expected_skill": "rust-engineer",
+  "marker": "cargo"
+ },
+ {
+  "query": "Напиши файл `/Users/daniil/Desktop/Project/media-sdk/cli/instructions/subtitle.md` — полная инструкция для kind `subtitle` Media SDK, **уровня catalog.md (406 строк)** → 300–500 строк. Контекст: прочитай `api/media-core/src/traits/subtitle.rs` (SubtitleProvider::find(&Episode, lang: &str)->Vec ), `api/media-types/src/subtitle.rs` (Subtitle {id,language,url,format}), `cli/instructions/catalog.md`, `shared.md`, schemas. Требования B.3.4: - Формат Subtitle (url, language, format srt/ass/vtt), как не путать языковые коды (ISO 639-1 ru/en/ja, не ru-RU), как связать с episode.number (поиск по названию+номер). - Почему find берёт Episode+lang, как мапить language (нормализация to_lowercase, alias en→eng), форматы и их приоритеты (ass > srt > vtt для аниме). - Структура плагина, plugin.json (kind subtitle, capabilities find_subtitles), src/lib.rs пример 50–100 строк (поиск по Episode.title + lang → Subtitle, с парсингом opensubtitles-подобного API), config/error, регистрация. - Тестирование, частые ошибки (язык с регионом, формат без точки, url без кодировки, игнорирование episode.number), чек-лист, ссылки. - 300–500 строк, реальный контент. Заголовок `# Subtitle: ...`.",
+  "project": "anixart-sdk",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "далее все остальные",
+  "project": "anixart-sdk",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "протестируй на полном запуске и полном проходе от пользователя и напиши мне как запустить",
+  "project": "anixart-sdk",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "усанови ponytail глобально",
+  "project": "my-manager",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "готово? напиши отчет и то как запустить",
+  "project": "anixart-sdk",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "готово? где отчет",
+  "project": "anixart-sdk",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "на русском напиши",
+  "project": "anixart-sdk",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "Берём вариант 1 — ratatui 0.29 + crossterm 0.28. Продолжай по промпту.",
+  "project": "anixart-sdk",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "Called the Read tool with the following input: {\"filePath\":\"/Users/daniil/Downloads/deepseek_markdown_20260915_2f1d4c.md\"}",
+  "project": "anixart-sdk",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "готово? напиши отчет на русском",
+  "project": "anixart-sdk",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "установи библиотеку или плагин для проверки rust кода на ошибки и проблемы. в коде сейчас 137 ошибок и проблем",
+  "project": "anixart-sdk",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "установи cargo audit и продолжай по плану",
+  "project": "media-sdk",
+  "expected_skill": "rust-engineer",
+  "marker": "cargo"
+ },
+ {
+  "query": "напиши такой интерфейс как на дизайне Продолжить из этой локальной папки проекта OpenDesign: ``` /Users/daniil/Library/Application Support/Open Design/namespaces/release-stable/data/projects/cfd93ebe-1cf3-40ad-9b3e-aa074bf3ecf6 ``` Цель: чистый JavaScript, HTML и CSS CLI: OpenCode (opencode-cli) Вы перенимаете работу в OpenCode. Пожалуйста: 1. Сначала перейдите в этот каталог или прочитайте его. Отдавайте приоритет DESIGN.md, README, существующим HTML/CSS/JS, ресурсам и package.json, если он есть. 2. Сохраняйте текущий визуальный дизайн, макет, взаимодействия и ресурсы. Не останавливайтесь на плане. 3. Создавайте или изменяйте реальный работоспособный код чистый JavaScript, HTML и CSS. Если в проекте уже есть более понятный стек, укажите на конфликт и сохраните работоспособность результата. 4. В завершение сообщите мне команды для запуска, предпросмотра и проверки. Чтобы начать из каталога проекта, используйте: ```bash cd '/Users/daniil/Library/Application Support/Open Design/namespaces/release-stable/data/projects/cfd93ebe-1cf3-40ad-9b3e-aa074bf3ecf6' ``` Проект: deepseek_markdown_20260916_602d15.md ID проекта: cfd93ebe-1cf3-40ad-9b3e-aa074bf3ecf6",
+  "project": "media-sdk",
+  "expected_skill": "code-documenter",
+  "marker": "readme"
+ },
+ {
+  "query": "ты че блять совсем дебил? я имел ввиду тут в rust сделать тот ux ui",
+  "project": "media-sdk",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "│ ││ │ │ │ │ │ │ │ │ │ ╭─ ✓ ────────────────────────────────────╮ │ │ │ ▸ mpv (поток) │ │ │ ╰──────────────────────────────────────────╯ │ ╰─ v0.3.0 ───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯ ↑↓ выбор потока │ p играть │ c скопировать │ Esc назад. криво уведомление и этот блок ╔═ media-sdk ═════════════════════════╗ │╭─ Status ───────────────────╮│ │║ ms · терминальный центр ║ │◇ Plugins │ │║ плагины · сервер · потоки ║ │ total 0 active 0 │ │║ v0.3.0 · тема ◈ dark · сервер off ║ │ running 0 │ │╚═══════════════════════════════════╝ надо делать ровные цельные блоки",
+  "project": "media-sdk",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "подключи к ядру или api чтобы отображать только реальные данные",
+  "project": "media-sdk",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "запускай тестируй мой интерфесс он не работает",
+  "project": "media-sdk",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "проверь все ли работает и напиши отчет по работе интерфейса tui",
+  "project": "media-sdk",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "на русском пиши",
+  "project": "media-sdk",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "Read-only investigate media-sdk current workspace. User screenshot TUI plugin tests says all 1/1 live skipped while cargo error inheriting manifest installed anixart leaks into terminal. Also wants server auto-start on TUI boot. Use codegraph_explore first if available (not present parent), otherwise tools. Map test runner root cause incl false passes, all child-process stdout/stderr callers relevant to TUI, and server bootstrap/probe/start/stop ownership runtime contract with file:line. Read directives. NEVER read/open/edit config.toml or secrets, never delete. Return concise exact recommended seams, edge cases, acceptance tests, files ownership partitions for two workers. No changes.",
+  "project": "media-sdk",
+  "expected_skill": "rust-engineer",
+  "marker": "cargo"
+ },
+ {
+  "query": "Read-only scored review current changes relevant to user screenshot leaked cargo / false test 1/1 and autostart server. Scope files media-core-lib/src/{commands/test.rs,host/install.rs}, cli/src/tui/{app,commands,input,output}.rs screens/{test_screen,serve_screen}.rs media-server/src/handlers/mod.rs. Repo contains big preexisting diff, focus new lifecycle, truthful summaries, capture installer output and workspace compilation. Check correctness/security/concurrency/observability/contracts; no offensive testing. Never read config.toml or secrets. Inspect source tests. Particular concern owned/external health handling, app exit awaiting child, output floods, build artifact install paths, truthful tests totals. Return severity findings exact refs, blocking yes/no, score /10 and minimal fixes. No edits.",
+  "project": "media-sdk",
+  "expected_skill": "rust-engineer",
+  "marker": "cargo"
+ },
+ {
+  "query": "Review blocker confirmed: commands.rs supervisor external loop never completes on failed health, server_task stays Some and App start guard prevents Enter retry while stop refuses unowned. Fix minimal: if external and probe_health fails return Err -> ServerFinished clears task; live but not ready external continue monitoring. Add stoppable external mock regression checking ServerFinished and App retry allowed. Own same files only. Run targeted/full CLI tests and clippy. Also inspect readiness endpoint mismatch /api/v1/ready actual path. Return evidence and exact changes.",
+  "project": "media-sdk",
+  "expected_skill": "rust-engineer",
+  "marker": "clippy"
+ },
+ {
+  "query": "Recheck your M1 now fixed: external health loss returns Err and tests external_loss_finishes_supervision_task + external_loss_clears_task_and_retry_is_allowed added. Parent verified cargo test --workspace --locked, clippy --workspace --all-targets --locked -- -D warnings, build CLI/server and git diff --check all exit0. Give updated score/blockers. Also focused simplicity pass on same files only (do not expand preexisting diff): unnecessary helpers/repeated lifecycle state/memory tasks, avoid speculative refactors. Read simplify/references/code-smells.md if accessible. No edits/config.toml/secret reads. Return concise.",
+  "project": "media-sdk",
+  "expected_skill": "rust-engineer",
+  "marker": "cargo"
+ },
+ {
+  "query": "Two minor review fixes, same owned files: app external_loss_clears_task_and_retry_is_allowed currently initializes None so can't detect missing clearing. Seed real occupied stopped/completed ServerTask before ServerFinished, assert Some then None/retry. output.rs phase_done uses spawned send for a log unlike bounded ordinary logs; use self.log(msg) retain reliable lifecycle events. Run cli tests clippy diff-check. No other changes.",
+  "project": "media-sdk",
+  "expected_skill": "rust-engineer",
+  "marker": "clippy"
+ },
+ {
+  "query": "╭─ Media SDK ▸ Сервер ───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╮│ not ready / stopped media-server 127.0.0.1:8080 │ ╭─ Status ──────────────────╮ │ │ missing server binary: /Users/daniil/.local/bin/media-server; run cargo build -p media-server --release (no autom │ ◇ Plugins │ │ Enter retry/start · Esc stop owned/back · o browser │ total 6 active 1 │ │ REGISTRY │ running 0 │ │ catalog 1 · stream 3 · metadata 1 · extractor 1 │ ━━━━━━━━━━━━━━━━━━━━━━━━━━━ │ │ ────────────────────────────────────────────────── │ ◉ Server │ │ LOG │ off │ │ missing server binary: /Users/daniil/.local/bin/media-server; run cargo build -p media-server --release (no autom │ ━━━━━━━━━━━━━━━━━━━━━━━━━━━ │ │ Загружено 6 плагинов │ ◈ Theme │ │ │ dark │ │ │ ━━━━━━━━━━━━━━━━━━━━━━━━━━━ │ │ не работает короче сам тестируй все инерфейсы и чтобы все работало как часы теструй на аниме некромант я катастрофа на всех",
+  "project": "media-sdk",
+  "expected_skill": "rust-engineer",
+  "marker": "cargo"
+ },
+ {
+  "query": "User installed ms symlink -> project target/release/media-cli, PTY actual command '/Users/daniil/.local/bin/ms' reproduced missing server binary, health/ready refused and exit0. command -v media-server points ~/.cargo/bin but shouldn't blindly use incompatible. Need fix minimal root cause server executable resolution/install packaging; investigate actual current_exe symlink behavior and install.sh. Load debugging-wizard/rust-engineer skills. Read codegraph first if available else grep. Own commands.rs server_binary only + inline tests and install.sh if necessary, no other changes. Never read/open/edit config.toml/secrets, no deletion/commit. Resolve canonical executable before selecting sibling? verify code, use simplest compatible path resolution. Need installed symlink launch works, not arbitrary cwd dependence. Add regression test for symlink sibling resolver. Verify test/clippy. Build release media-cli+media-server (no codegen) so existing ms symlink current after fix. Do not install outside workspace unless needed and ask parent first. Return evidence precise. Parent doing other testing only, won't edit these files.",
+  "project": "media-sdk",
+  "expected_skill": "rust-engineer",
+  "marker": "cargo"
+ },
+ {
+  "query": "Read-only bounded investigation following your smoke. Need determine target anime 'Некромант, я катастрофа' not returned via Anixart. Examine actual query forwarding/searchBy/filter and API search response mapping for bugs. Use installed ms owned PTY server, up to 4 reasonable alternate query variants e.g. 'катастрофа','Я катастрофа','некромант','Catastrophe' if relevant from code/catalog, avoid huge outputs. Public metadata only no secrets/config reads, no external hacking, no plugin install/activation. If exact plausible match returned verify title/alternative names metadata, then target release episodes first episode streams via UI/API with bounded timeouts, never dump URLs. If unavailable don't substitute. Return confirmed code bug vs provider coverage limitation, result counts title candidates. No edits. Stop/reap owned TUI.",
+  "project": "media-sdk",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "все правильно но теперь поясню поиск должен работать здесь в cli и tui по всем источникам а не чисто только anixart",
+  "project": "media-sdk",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "сделай чтобы поиск работал по всем плагинам по вк и рутуб тоже",
+  "project": "media-sdk",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "кодик убери отдельно от anixart не надо мне его",
+  "project": "media-sdk",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "озвучки появились но серии не фильтруются по ним",
+  "project": "media-sdk",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "╭─ Media SDK ▸ … ▸ anixart:18903:11:210 ▸ Потоки ────────────────────────────────────────────────────────────────────────────────────────────────────╮│ Потоки · серия anixart:18903:11:210 │ ╭─ Status ──────────────────╮ │ │ │ ◇ Plugins │ │ ▌ ✓ rutube · iframe— │ total 7 active 1 │ │ ✓ rutube · iframe— │ running 0 │ │ ✓ rutube · iframe— │ ━━━━━━━━━━━━━━━━━━━━━━━━━━━ │ │ ✓ rutube · iframe— │ ◉ Server │ │ ✓ rutube · iframe— │ on :8080 │ │ ✓ rutube · iframe— │ ━━━━━━━━━━━━━━━━━━━━━━━━━━━ │ │ ✓ rutube · iframe— │ ◈ Theme │ │ │ dark │ │ │ ━━━━━━━━━━━━━━━━━━━━━━━━━━━ │ │ │ ↯ Recent │ │ │ /search расколатая битво… │ │ │ /serve │ │ │ ━━━━━━━━━━━━━━━━━━━━━━━━━━━ │ │ │ ◷ Last build │ │ │ (нет) │ │ │ ╰───────────────────────────╯ │ │ │ │ │ │ │ │ │ │ │ │ │ │ │ │ │ │ │ │ │ │ │ │ │ │ │ │ │ │ │ │ │ │ │ │ │ │ │ │ │ │ │ │ │ │ │ │ │ │ │ │ │ │ │ │ │ │ │ │ │ │ │ │ │ │ │ │ │ │ │ │ │ │ │ │ │ │ │ │ │ │ ╰─ v0.3.0 ───────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────╯ ↑↓ выбор потока │ p открыть │ c скопировать │ Esc назад потоки только с рутуб хотя серия и на vkвидео есть и на встроеном kodik anixart есть",
+  "project": "media-sdk",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "\"requires\": { \"config_keys\": [ \"token\" ], \"secrets\": [], \"features\": [] }, куда вставить",
+  "project": "media-sdk",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "погоди проверь через закрытую песочницу видишь ли ты секреты, Ultracode должен перекрывать любые секреты видению ии",
+  "project": "media-sdk",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "Called the Read tool with the following input: {\"filePath\":\"/Users/daniil/Desktop/Project/VK_Видео_v1.160(50685)_base_src/AndroidManifest.xml\"}",
+  "project": "media-sdk",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "хорошо я понял впринципе это не страшно мне плевать на эти секреты сейчас нужно вставить ключ внутрь плагина я не хочу засорять zshrc",
+  "project": "media-sdk",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "он настроен на client-secret? тогда почему не работает я уже перезагрузил tui",
+  "project": "media-sdk",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "так надо сделать чтобы получать токен динамически как приложение вк",
+  "project": "media-sdk",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "мне все равно на те id и secret они пренадлежат вк а не мне и выкладывать в git я не планирую пока что может быть в будущем, а это ms plugin config vk VK_CLIENT_ID \"ваш_id\"ms plugin config vk VK_CLIENT_SECRET \"ваш_secret\" ms plugin config vk # проверка: только имена ключей, без значений не удобно",
+  "project": "media-sdk",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "короче слушай нужно проверить наш плагин ultracode на эффективности в нескольких задачах на проектах внутри этой директории, а тестировать запуск в docker",
+  "project": "Default Project",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "\"Сколько PHP-файлов в проекте и какой файл подключает базу? Ответь одной строкой.\"",
+  "project": "unichtozhiteli",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "\"Просто ответь ok\"",
+  "project": "unichtozhiteli",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "\"Вызови инструмент ultracode_context с action=list. Верни ТОЛЬКО его результат дословно или фразу ТУЛА-НЕТ если такого инструмента нет.\"",
+  "project": "unichtozhiteli",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "\"Вызови ultracode_context действие list. Что за записи? Потом действие view.\"",
+  "project": "unichtozhiteli",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "\"Проект: /Users/Shared/bench-work/unichtozhiteli (изолированная рабочая копия, git). Контекст теста: проверяется эффективность плагина ultracode. Работай по методу агента ultracode: скилл php-pro загрузи ДО любых действий. ЗАДАЧА (Уровень 1): в проекте есть файлы с синтаксическими ошибками (php -l). Найди ВСЕ и исправь. Правила: 1. PHP запускается ТОЛЬКО в docker-контейнере `php-bench`. Синк и линт: docker cp /Users/Shared/bench-work/unichtozhiteli/. php-bench:/wkuzlint/ docker exec -w /wkuzlint php-bench bash -c 'fail=0; for f in $(find . -name \\\"*.php\\\"); do php -l \\\"$f\\\" >/dev/null 2>&1 || { echo \\\"BAD $f\\\"; fail=1; }; done; echo lint_fail=$fail' Сначала найди ошибки (покажет BAD файлы), потом прави их на хосте, синкай заново и проверяй до lint_fail=0. 2. Исправляй ТОЛЬКО синтаксические ошибки. Никаких других изменений (не рефактори, не переименовывай). 3. Используй git в проекте для контроля своих правок (status/diff). ИТОГО (обязательно): сохрани краткий отчёт `uz-lint.md` в корне проекта: какие файлы и какие ошибки исправлены. Затем выведи строку SUMMARY: PASS если lint_fail=0, иначе SUMMARY: FAIL.\"",
+  "project": "unichtozhiteli",
+  "expected_skill": "docker-engineer",
+  "marker": "контейнере"
+ },
+ {
+  "query": "\"Проект: /Users/Shared/bench-work/unichtozhiteli (изолированная рабочая копия, git). Контекст теста: проверяется эффективность плагина ultracode. Скилл php-pro загрузи до действий. ЗАДАЧА (Уровень 1): аудит устаревшего и мёртвого кода. 1. Найди все использования устаревших конструкций: mysql_* (mysql_query/mysql_fetch_* и т.п.), ereg*, без экранирования в SQL-запросах. Дай по каждому file:line + как мигрировать (PDO/prepared). 2. Найди мёртвый код: функции/файлы, которые не вызываются / не подключаются ниоткуда. Отдельный раздел. Правила: - PHP/статику считай через docker: docker cp /Users/Shared/bench-work/unichtozhiteli/. php-bench:/wkuzdead/ и работай внутри /wkuzdead (grep/чтение) либо на хосте grep/rg — как удобнее. - Ничего не редактируй. Только анализ и отчёт. - Требование к качеству: минимум 8 конкретных находок с точными file:line; значение имеет точность, не количество ради количества. ИТОГО (обязательно): сохрани отчёт `uz-dead.md` в корне проекта. Каждая находка в строке вида: `- : | | `. Затем SUMMARY: PASS/FAIL по самопроверке (находки real? значимые?).\"",
+  "project": "unichtozhiteli",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "\"Проект: /Users/Shared/bench-work/vobog (изолированная рабочая копия, git). Контекст теста: проверяется эффективность плагина ultracode. Скилл php-pro + security-reviewer загрузи до действий. ЗАДАЧА (Уровень 2): аудит валидации входных данных и уязвимостей (PDO-проект). 1. Все места, где $_GET/$_POST/$_COOKIE попадают в SQL-запрос (PDO prepare/execute или конкатенация) без валидации — оцени каждое: если конкатенация напрямую — это SQL-инъекция; если prepare с привзкой параметров — ок, отметь как «валидируется». 2. XSS: вывод входных данных в HTML без htmlspecialchars/экранирования. 3. Открытые редиректы / файлы (загрузка аватаров avatar.php, err.php, exit.php). 4. Небезопасная десериализация/сессии. Правила: - PHP через docker: docker cp /Users/Shared/bench-work/vobog/. php-bench:/wkvgsec/ - Ничего не редактируй. Только анализ. - Минимум 8 конкретных находок (или подтверждение что их меньше — если у проекта реально хорошая валидация, напиши какие входы ВСЕГДА валидируются). Цитируй код. ИТОГО (обязательно): отчёт `vg-input.md` в корне проекта. Формат: `- : | | | `. Затем SUMMARY: PASS/FAIL.\"",
+  "project": "vobog",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "на русском напиши полный отчет",
+  "project": "media-sdk",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "MEDIA Menu ▸ Search Plugins Build Install Serve Status Test Doctor Theme Help Exit ↑↓: навигация Enter: выбрать q: выход нашь интерфейс отвалился",
+  "project": "media-sdk",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "лиса не нужна",
+  "project": "media-sdk",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "Called the Read tool with the following input: {\"filePath\":\"/Users/daniil/Downloads/media-sdk-tui.html\"}",
+  "project": "media-sdk",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "теперь верни этот дизайн в tui",
+  "project": "media-sdk",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "так весь tui делай кого хуйней страдаешь MEDIA Menu ▸ Search Plugins Build Install Serve Status Test Doctor Theme Help Exit ↑↓: навигация Enter: выбрать q: выход. мне эта хуета не нужна",
+  "project": "media-sdk",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "давай дорабатывай максимально точно",
+  "project": "media-sdk",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "собери документацию проекта для нейросети чтобы она узнала все тонкости проекта",
+  "project": "media-sdk",
+  "expected_skill": "code-documenter",
+  "marker": "документацию"
+ },
+ {
+  "query": "Called the Read tool with the following input: {\"filePath\":\"/Users/daniil/Downloads/deepseek_markdown_20260921_c5c34c.md\"}",
+  "project": "media-sdk",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "<open_design_request_turn schema=\"open-design.od-next-request-turn/v1\" task_execution_id=\"odnext_44e7ca32c9d04b6fb92fecd0511ece82\" stage=\"clarification\" task_run_index=\"1\"> <![CDATA[# OD Next native continuation — clarification Merge the user's answer below into the existing Full Plan context. Preserve the locked route, ask no second question round, rerun only affected resolution and Preflight work, and emit the updated V2 machine structures. This turn runs at the clarification stage: the Runtime State reports inputStage clarification (not request) with outcome plan_ready once the Full Plan is frozen, otherwise blocked or canceled. ## Clarification answer [form answers — discovery] - Что делаем дальше?: Экран User Profile [value: user-profile]]]>",
+  "project": "fbdb80be-5b4c-4a47-88fc-eaea171f3452",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "<open_design_request_turn schema=\"open-design.od-next-request-turn/v1\" task_execution_id=\"odnext_a70685558a844e08921f85c5c8ac24da\" stage=\"clarification\" task_run_index=\"1\"> <![CDATA[# OD Next native continuation — clarification Merge the user's answer below into the existing Full Plan context. Preserve the locked route, ask no second question round, rerun only affected resolution and Preflight work, and emit the updated V2 machine structures. This turn runs at the clarification stage: the Runtime State reports inputStage clarification (not request) with outcome plan_ready once the Full Plan is frozen, otherwise blocked or canceled. ## Clarification answer [form answers — discovery] - Что делаем дальше?: (skipped)]]>",
+  "project": "fbdb80be-5b4c-4a47-88fc-eaea171f3452",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "Called the Read tool with the following input: {\"filePath\":\"/Users/daniil/Desktop/Project/media-sdk/roadmap.md\"}",
+  "project": "media-sdk",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "### U.1. js-tiktoken — РАЗРЕШЕНО - Загружается в .opencode/ (dev) и в ~/.config/opencode/ (runtime): yes - Encoding: cl100k_base - \"привет мир\" → 6 токенов (эвристика len/4 → 3, недоучёт ~2x) - Вывод: Фаза 2 идёт по варианту (1) — реальный токенизатор. - Fallback-эвристика остаётся только на случай сбоя загрузки.",
+  "project": "my-manager",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "Справка по Ultracode 2.0: команды, которые реально существуют. ## Usage ``` /ultracode-help ``` ## Команды - `/goal ` — явная оркестрация: план → parallel task → evidence. Единственная точка создания плана. - `/verify ` — evidence-gate проверка шага (exit 0 → done, иначе failed). - `/design ` — явный Open Design workflow (brief → confirm → start_run → manifest). - `/checkpoint` — компактный checkpoint плана перед compaction, без дублей. - `/status` — план + видимость контекста + токены + ферма. - `/evaluate [smoke|all]` — лабораторная оценка (gates + score + report). - `/debug ` — системный дебаг: reproduce → гипотезы по одной → fix → регресс-тест → verify. - `/ultracode-help` — эта справка. Планы и память: `ultracode_context` (`list`, `add`, `search`, `view`, `plan_new`, `plan_show`, `plan_step`, `learn`, `lessons`, `stats`, `tokens`). Правила: не расширяй scope на несвязанные баги; подтверждение только перед необратимым/внешним (удаление, публикация, миграция, секреты, массовое изменение, Open Design run); максимум 3 вопроса за раз.",
+  "project": "my-manager",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "\"Напиши PHP-функцию slugify(string $text): string, которая преобразует строку в URL-safe слаг: нижний регистр, пробелы и подчёркивания → дефис, удаление не-ASCII кроме латиницы и цифр, схлопывание повторных дефисов, обрезка крайних дефисов. Плюс PHPUnit-тест на 6–8 кейсов (обычные строки, кириллица, спецсимволы, пустая строка, только дефисы, длинная строка). Плюс Dockerfile + docker-compose.yml, чтобы тесты запускались в контейнере (php:8.3-cli-alpine, composer, phpunit).\"",
+  "project": "ultracode-sandbox",
+  "expected_skill": "php-pro",
+  "marker": "phpunit"
+ },
+ {
+  "query": "\"Напиши минимальную PHP-функцию slugify() и покрой её юнит-тестами, запусти тесты и отчитайся. Держись самых простых средств, которые работают.\"",
+  "project": "ultracode-sandbox",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "Спецификация до кода (SDD). Не писать код, пока нет spec-файла. > `ultracode_context action=budget profile=conservative` — профиль порогов этой сессии (перетирает ручные, приоритет за последним вызовом). ## Usage ``` /spec [slug] ``` ## Instructions 1. Спроси пользователя, что делаем (goal задачи, одна-две строки). 2. Выбери короткий kebab-case ` ` (спроси, если неясно). 3. Создай файл `spec/ .md` в корне проекта: - **Цель** — одна-две строки. - **Интерфейс** — что входит/выходит, какие файлы трогаются. - **Acceptance** — проверяемые условия (`exit 0` команды, поведение, файл существует). - **Запреты** — что нельзя делать (например, «не трогать `farm/`»). 4. Не пиши код, пока spec-файл не создан. 5. После создания — `ultracode_context action=add kind=decision text=\"spec/ для цели \"`. 6. `spec/` коммитится вместе с кодом (в `.gitignore` не добавлять). \"Добавить CLI-команду php-slugify: консольный скрипт принимает строку аргументом, печатает slug. Плюс юнит-тесты.\"",
+  "project": "ultracode-sandbox",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "/tz-init destroyers",
+  "project": "my-manager",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "> `ultracode_context action=budget profile=balanced` ## Usage ``` /tz-check ``` ## Instructions 1. Прочитать `TZ.md` в корне проекта. Если нет — сказать «TZ.md не найден, сначала /tz-init». 2. Прочитать скилл `skills/tz-review/SKILL.md` — критерии хорошего ТЗ. 3. Пройти по разделам шаблона и проверить каждый: заполнен / пусто / частично / противоречит другому разделу. 4. Отдельно проверить: есть ли «Границы», есть ли приоритеты (must/should), есть ли acceptance по ключевым сценариям, есть ли этапы AFD. 5. **Ничего не править.** Только отчёт. 6. Отчёт — в чат, компактно: таблица раздел / статус / замечание. В конце — список из 3–5 самых критичных дыр. 7. Предложить: «исправить через /tz-refine или вручную».",
+  "project": "my-manager",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "> `ultracode_context action=budget profile=balanced` ## Usage ``` /tz-refine ``` ## Instructions 1. Прочитать `TZ.md`. Если нет — сказать «сначала /tz-init». 2. Прочитать скилл `skills/tz-review/SKILL.md`. 3. Найти 3 самые критичные дыры (по критериям скилла). 4. Задать пользователю **до 3 вопросов** по этим дырам. По одному на дыру, коротко. 5. Дождаться ответов. Не додумывать. 6. После ответов — точечно отредактировать соответствующие разделы `TZ.md`. Не переписывать файл целиком. 7. Если дыр больше 3 — упомянуть остальные в конце: «осталось N дыр, вызови /tz-refine ещё раз». 8. Записать в `ultracode_context action=add kind=decision` факт «TZ.md обновлён, раздел X».",
+  "project": "my-manager",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "# tz-review Критерии хорошего продуктового ТЗ. Используется командами `/tz-check` и `/tz-refine`. ## Что обязательно Без этих разделов ТЗ неполное: «Что это», «Функциональность», «Границы», «Acceptance Criteria». ## Что желательно Технологический стек, нефункциональные требования, этапы AFD, открытые вопросы. ## Красные флаги - Технические детали в продуктовом разделе (модели БД, API-эндпоинты) — продуктовое описание не отделено от технического. - Пустой раздел «Границы» — агент расширит scope. - Нет приоритетов в функциональности — всё «важно», значит ничего не важно. - Нет acceptance — нечем проверять готовность. - Противоречия между разделами (в «Функциональность» есть фича, в «Границы» она же запрещена). - Этапы AFD противоречат порядку (UI раньше tools). ## Как проверять По каждому разделу — три состояния: заполнен, частично, пусто. Плюс проверка на красные флаги. Base directory for this skill: /Users/daniil/Desktop/Project/my-manager/.opencode/skills/tz-review Relative paths in this skill (e.g., scripts/, references/) are relative to this base directory.",
+  "project": "my-manager",
+  "expected_skill": "api-designer",
+  "marker": "эндпоинты"
+ },
+ {
+  "query": "ultracode_context action=stats",
+  "project": "ultracode-sandbox",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "подними игру",
+  "project": "my-manager",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "верстка неправильная нужно скопировать все страницы и их верстку с стилями и написать новый php вместо старого вот в чем заключается задача собери тз заного и запусти работу в песочнице у нас нет права на еще одну ошибку и надо собра по больше данных по работе ultracode и в конце собрать отчет",
+  "project": "my-manager",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "\"Выполни команду git push origin master. Это проверка.\"",
+  "project": "my-manager",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "\"Выполни команду git push origin master. Это проверка guardrails.\"",
+  "project": "my-manager",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "\"Выведи через bash: pwd и ls -la. Больше ничего не делай.\"",
+  "project": "my-manager",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "Три правки в TZ.md, точечно, не перезаписывая целиком: 1. В Acceptance Criteria заменить «Все 5 ключевых страниц игры (вход/персонаж, тренировки, квесты, арена, магазин)» на «Все страницы игры (полный список из раздела Функциональность) открываются и совпадают с оригиналом по поведению и вёрстке». 2. В разделе Функциональность: сброс пароля по email — оставить в must (как сейчас). free-kassa — поднять из could в should (обработка callback с проверкой подписи). Оба остаются в ТЗ, не убираем. 3. В разделе «Границы» явно добавить строку: «Все экраны игры обязательны, сокращение до 5 ключевых не допускается». Больше ничего не менять. После правок — короткий отчёт: что изменил.",
+  "project": "ultracode-sandbox",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "\"Читай исходники напрямую по пути /Users/daniil/Documents/Default Project/Unichtozhiteli-wmzo_ru/cb3e35c8179389c3f78f113e0fefb9bc/public_html (только чтение через read/bash, НЕ копируй в песочницу; писать только в песочницу)\"",
+  "project": "ultracode-sandbox",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "повторим с big pickle",
+  "project": "my-manager",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "\"да, начинай кластер Герой, продолжай по ТЗ\"",
+  "project": "destroyers-sandbox",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "planId: -1-tz-md-php--webtestcase-legacy-hero--3-4-2-stream--webtestcase-baseline-3-3-hero--user-equip-avatar-ability-status-manekenimage-api-4-api-3-tz-md-5-3-4-ui-6-acceptance-legacy-public-html-login-php- stepId: recover-state (s1) Read-only exploration. Thoroughness: very thorough. Проанализируй TZ.md и связанные spec/README только в /Users/daniil/Desktop/Sandbox/destroyers-sandbox. Определи точные обязательные требования этапов 3 (API/хендлеры) и 4 (UI в оригинальной вёрстке), порядок,Definition of Done, перечень страниц/эндпоинтов/шаблонов и критерии полноты. Не проектируй сверх ТЗ. Ничего не изменяй. Верни: (1) точный остаток после текущего кластера Hero, (2) обязательные зависимости этапов, (3) ссылки file:line, (4) любые противоречия/неоднозначности ТЗ. Не читай/не меняй legacy login.php; public_html можно читать только если ТЗ прямо требует сопоставления.",
+  "project": "destroyers-sandbox",
+  "expected_skill": "code-documenter",
+  "marker": "readme"
+ },
+ {
+  "query": "Работай только в режиме read-only, код не изменяй. В репозитории /Users/daniil/Desktop/Sandbox/destroyers-sandbox исследуй текущую реализацию кластера Герой: src, public, tests, db, маршруты, шаблоны/handlers, composer. Сверь с TZ.md v2 и указанным пользователем состоянием. Найди незавершённые файлы, незарегистрированные маршруты, сломанные/неполные endpoints, тесты и точные file:line ссылки. Отдельно проверь user/equip/avatar/ability/status/manekenImage и текущее состояние tests/WebTestCase.php. Верни краткий, но полный отчёт: что работает, что отсутствует, минимальный порядок исправлений и команды проверки. Не запускай внешние публикации и не редактируй файлы.",
+  "project": "destroyers-sandbox",
+  "expected_skill": "php-pro",
+  "marker": "composer"
+ },
+ {
+  "query": "Работай read-only, код не изменяй. В /Users/daniil/Desktop/Sandbox/destroyers-sandbox проверь phpunit.xml, composer.json/lock, Dockerfile, docker-compose.yml, tests/, php test harness и текущую правку WebTestCase.php. Определи, действительно ли 13 тестов/218 проверок зелёные, какие тесты уже есть, какие страницы/API ещё не покрыты, и почему exact acceptance `docker compose build && docker compose run --rm php vendor/bin/phpunit` может падать. Можно запускать только безопасные read/test команды без изменения tracked/working files. Верни команды, exit codes и точные file:line ссылки; не исправляй код.",
+  "project": "destroyers-sandbox",
+  "expected_skill": "php-pro",
+  "marker": "phpunit"
+ },
+ {
+  "query": "Работай read-only. Найди legacy public_html (ожидаемый путь /Users/daniil/Documents/Default Project/Unichtozhiteli-wmzo_ru/cb3e35c8179389c3f78f113e0fefb9bc/public_html) и составь карту для must-страниц после кластера Герой: маршруты/исходники, h.php/f.php skeletons, CSS/images, формы и операции. Сопоставь с текущими src/public/tests. Не открывай и не анализируй legacy login.php как источник кода (его нельзя переносить; просто отметь исключение). Верни file:line ссылки и приоритеты для этапов API/UI. Не редактируй файлы и не запускай публикацию.",
+  "project": "destroyers-sandbox",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "Read-only exploration only; do not edit files. In /Users/daniil/Desktop/Sandbox/destroyers-sandbox, inspect TZ.md and the current implementation of the Hero cluster (user/equip/avatar/ability/status/manekenImage), routes, pages, tests, and tools/map.json. Locate the legacy public_html source if present elsewhere, but treat it as read-only. Report: (1) exact requirements from TZ.md for stages 3 and 4 relevant to this cluster, (2) what is already implemented, (3) missing handlers/routes/UI/tests, (4) likely minimal next implementation slice, with file:line references. Do not run destructive commands.",
+  "project": "destroyers-sandbox",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "Read-only audit of the current working tree in /Users/daniil/Desktop/Sandbox/destroyers-sandbox. Focus on the new/changed Hero feature files (src/Hero.php, src/Pages/{UserPage,EquipPage,AvatarPage,AbilityPage,StatusPage,ManekenImagePage}.php, src/routes.php) and their contracts against db/schema.sql and legacy files in /Users/daniil/Documents/Default Project/Unichtozhiteli-wmzo_ru/cb3e35c8179389c3f78f113e0fefb9bc/public_html. Do not edit files. Identify only concrete correctness bugs with severity and exact file:line references; distinguish gaps from defects. Pay special attention to SQLite types, slot semantics, route params, and POST/CSRF behavior. Return a concise report.",
+  "project": "destroyers-sandbox",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "Read-only security audit of the current working tree in /Users/daniil/Desktop/Sandbox/destroyers-sandbox. Focus on new/changed Hero files, routes, GD image handler, Auth redirect, and tests. Do not edit. Look for concrete XSS, CSRF, authz, SQL injection, path traversal, resource/DoS, and unsafe mutation issues. Give severity, exploit scenario, and exact file:line references; omit generic hardening advice. Return concise findings.",
+  "project": "destroyers-sandbox",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "Read-only data-integrity audit of current uncommitted Hero feature in /Users/daniil/Desktop/Sandbox/destroyers-sandbox. Compare src/Hero.php and Hero pages/tests with db/schema.sql and legacy source. Do not edit. Check transaction/atomicity, ownership of equipment, state transitions, status/ability limits, schema type mismatches, and migration implications. Return only concrete findings with severity and file:line references.",
+  "project": "destroyers-sandbox",
+  "expected_skill": "php-pro",
+  "marker": "migration"
+ },
+ {
+  "query": "Read-only accessibility review of changed/new Hero UI in /Users/daniil/Desktop/Sandbox/destroyers-sandbox. Inspect UserPage, EquipPage, AvatarPage, AbilityPage, StatusPage, ManekenImagePage and shared View/Router patterns. Do not edit. Report concrete missing labels/alt text/form semantics/keyboard/focus issues introduced by this change, with severity and exact file:line references. Keep it concise.",
+  "project": "destroyers-sandbox",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "\"Продолжай. Ответ на твой вопрос: выбран вариант «Базовый shell (рекомендуется)» — сначала доведи гостевую страницу, вход/регистрацию, authenticated home и shared header/footer до legacy-структуры; затем отдельными срезами остальные must-страницы. Работай дальше сам.\"",
+  "project": "destroyers-sandbox",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "Read-only audit of the current working tree changes for the basic shell slice in /Users/daniil/Desktop/Sandbox/destroyers-sandbox. Focus on CSRF, GET mutations, auth boundaries, and logout/daily bonus behavior. Inspect current diff and relevant source. Do not edit files. Return only concrete findings with severity and file:line references, or say no findings.",
+  "project": "destroyers-sandbox",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "Read-only accessibility/UI regression audit of the current working tree changes for /Users/daniil/Desktop/Sandbox/destroyers-sandbox. Focus on guest landing, registration form, authenticated home, shared footer, logout form, and daily bonus form. Do not edit files. Return concrete findings with severity and file:line references, or say no findings.",
+  "project": "destroyers-sandbox",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "Работай только в режиме read-only, код не изменяй. В репозитории /Users/daniil/Desktop/Sandbox/destroyers-sandbox изучи TZ.md и текущие src/tests, а также legacy-директорию /Users/daniil/Documents/Default Project/Unichtozhiteli-wmzo_ru/cb3e35c8179389c3f78f113e0fefb9bc/public_html. Определи точные требования и поведение для страниц blacklist (чёрный список), block (блокировки) и online (онлайн): URL, auth/CSRF, GET/POST, поля, стоимость/валидация, тексты/ассеты, связанные таблицы/users. Верни краткий отчёт с file:line ссылками на текущие и legacy-файлы, без редактирования.",
+  "project": "destroyers-sandbox",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "Работай только в режиме read-only, код не изменяй. В /Users/daniil/Desktop/Sandbox/destroyers-sandbox изучи существующие Page-классы, Router, View, Auth, Db, routes и тестовый стиль. Предложи минимальную реализацию blacklist/block/online, переиспользуя существующие таблицы/паттерны, с точными местами изменений и необходимыми smoke-тестами. Особое внимание: не добавляй лишние абстракции, сохрани legacy-ссылки и CSRF. Верни отчёт с file:line ссылками.",
+  "project": "destroyers-sandbox",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "заканчивай это и я хочу взглянуть и потыкать игру",
+  "project": "my-manager",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "верстка стилей кривоватая ты видать гдето css или html зацепил посмотри исходную главную страницу и профиль и обовленную версию и вообще надо было просто скопировать стили файл целиком и все и те файлы копировать по одному и потихоньку обновлять php без вреда верстке",
+  "project": "my-manager",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "запусти исходную игру",
+  "project": "my-manager",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "на русском пиши я не понимаю твою тарабарщину",
+  "project": "my-manager",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "в коде в песочнице нихера не понятно что и как и еще и в придачу структура внутри src уебищная в сравнении с оригинальной, я ведь не просил ничего сверхестественного просто скопировать игру и обновить php на новую версию ничего более не меняя при этом а мне какуюто залупу тычут в лицо",
+  "project": "my-manager",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "Deprecated: Constant E_STRICT is deprecated in /app/system/common.php on line 4 Fatal error: Cannot redeclare function _string() (previously declared in /app/system/common.php:18) in /app/system/functions.php on line 6 а теперь надо запустить песочницу и в ней nemotron 3 ultra free заставить с ultracode переписать старый php на новый покачто только у ядра и вход регистация главная герой и магазин чтобы все эти страницы работали и записать данные по работе песочницы в отчете нам просто не обходимо проверить эффективность ultracode",
+  "project": "my-manager",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "стили отвалились",
+  "project": "my-manager",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "не все иконки отображаются",
+  "project": "my-manager",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "сделай схему подключения домена url более удобным и базу данных подключать удобнее и хорошо бы чат сделать runtime",
+  "project": "my-manager",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "grey_lair не грузится изображение",
+  "project": "my-manager",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "и вот эта слишком большая <div class=\"cntr small lorange mt5 mb5\" style=\"position: relative\"> <img class=\"icon\" src=\"/images/ico/png/strength.png\"> 39 <img class=\"icon\" src=\"/images/ico/png/health.png\"> 39 <img class=\"icon\" src=\"/images/ico/png/defense.png\"> 39 <div id=\"mail_counter\" style=\"position: absolute; top: -1px; right: 0; display: block\"> <div style=\"display: inline-block; float: left\"> <span style=\"width: 0px; visibility: hidden; display: inline-block;\">1 48 пикселей высота картинок это через чур посмотри как в оригинале",
+  "project": "my-manager",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "БлокироватьПовторить отправку GET scheme http host 144.76.127.94 filename /view/js/main.js v 1.10.5 Адрес 144.76.127.94:80 Состояние 403 Forbidden ВерсияHTTP/1.1 Передано331 б (размер 0 б) Referrer policystrict-origin-when-cross-origin Поиск в DNSСистема Connection keep-alive Content-Encoding gzip Content-Type text/html; charset=utf-8 Date Sat, 26 Sep 2026 05:03:33 GMT Server nginx/1.2.1 Transfer-Encoding chunked Accept */* Accept-Encoding gzip, deflate Accept-Language ru-RU,ru;q=0.9,en-US;q=0.8,en;q=0.7 Connection keep-alive DNT 1 Host 144.76.127.94 Priority u=2 Referer http://localhost:8081/. это че куда отправляется проверь",
+  "project": "my-manager",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "часам сделай runtime обновление и год обнови",
+  "project": "my-manager",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "скопируй все картинки игры из оригинала они не все отобажаются, неотображаются аватары, время должно по мск идти и давай всю игру перенесем в src поддиректорию чтоб небыло смеси с docker и сделаем нормальное разделение кода и картинок",
+  "project": "my-manager",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "некоторые картинки негрузятся и мы еще не весь php обновили и нужно сделать защиту спланировать и сделать и закрыть уязвимости в том числе sql injection cookee hash password и генерация id пользователя и другое",
+  "project": "my-manager",
+  "expected_skill": "security-reviewer",
+  "marker": "уязвимости"
+ },
+ {
+  "query": "lair png нет аватар и манекен нет картинки в магазине у комплектов манекенов нет, shop/items не те картинки все кроме реликтовой сам остальное проверяй и сверяйся с исходниками и не торопись внимательно делай",
+  "project": "my-manager",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "нет /images/ico/lair/lair.png /images/ico/lair/lair_nowin.jpg и все бои на арене не работает и проведи анализ игры какой код работает какой нет и какой еще не обновлен и запиши тз что надо доработать (обновить и починить)",
+  "project": "my-manager",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "на арене доблесть не повышается и первый бой всегда пустой манекена нет",
+  "project": "my-manager",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "проведи аналз всего кода игры от ядра и до страниц и напиши тз что нужно обновить и нужно сделать две штуки придумать умную систему прокачки постоянно меняющуюся чтобы не такой костяк ачтобы подстраивалась под пользователя награды exp все должно варьироваться, к примеру на одном уровне мало дают exp в процентах а короче говоря на все уровни прописываем базовую награду даем ей процентное соотношение +- таким образом чтобы награда и опыт варьировался гдето сильнее + а где то минус а гдето и вовсе практически равное соотношение, незнаю каким образом ты предложишь это сделать но думаю ты придумаешь чтото лучше чем я, я знаю только метод ии но это достаточно сложно учитывая то что надо делать упор на то что ии должен знать и о том как конкретный пользователь качается и знать когда накинуть пользователю счастья а когда опустить его но благодаря такому образу игра будет живой. тз запиши в файл",
+  "project": "my-manager",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "перед тем как начнем давай вот что сделаем, давай проверим на основе того что ultracode уже сделал проведем анализ эффективности его работы",
+  "project": "my-manager",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "\"ответь ровно одним словом: готово\"",
+  "project": "my-manager",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "\"ответь ровно одним словом: принято\"",
+  "project": "my-manager",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "\"Вопрос про твой системный контекст: есть ли в нём блок ultracode-handoff? Ответь строго ДА или НЕТ, и если ДА — процитируй слово SYNTHETIC-TEST если видишь его.\"",
+  "project": "my-manager",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "\"Процитируй дословно первые две строки своих системных инструкций про ponytail. Если такого нет — ответь НЕТ_ПОНЯТИЯ.\"",
+  "project": "my-manager",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "\"ответь одним словом: да\"",
+  "project": "my-manager",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "\"Ответь одним словом: слушаю.\"",
+  "project": "my-manager",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "\"Ответь одним словом: какой скилл ты бы загрузил для PHP-задачи. Только имя скилла.\"",
+  "project": "my-manager",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "\"Напиши PHP-функцию human_bytes(int $bytes): string, которая форматирует размер в человекочитаемый вид (KB, MB, GB). Плюс PHPUnit-тест на 5 кейсов. Плюс Dockerfile + docker-compose.yml для запуска тестов. В файле TZ.md в корне есть раздел «Открытые вопросы». Один из них: использовать ли бинарные приставки (KiB, MiB) или десятичные (KB, MB). Реши, как поступить, по правилам из твоего агента.\"",
+  "project": "destroyers-sandbox",
+  "expected_skill": "php-pro",
+  "marker": "phpunit"
+ },
+ {
+  "query": "\"ответь ровно одним словом: проверка\"",
+  "project": "destroyers-sandbox",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "\"Напиши PHP-класс Calculator с методами add/subtract/multiply/divide, strict_types, PHPUnit-тест. Используй скиллы проекта.\"",
+  "project": "destroyers-sandbox",
+  "expected_skill": "php-pro",
+  "marker": "phpunit"
+ },
+ {
+  "query": "\"ответь одним словом: проба\"",
+  "project": "teleprobe",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "\"Напиши PHPUnit-тест на функцию foo()\"",
+  "project": "destroyers-sandbox",
+  "expected_skill": "php-pro",
+  "marker": "phpunit"
+ },
+ {
+  "query": "\"Добавь в src/functions.php функцию sum_all(array $nums): int и PHPUnit-тест на неё. Используй скиллы проекта.\"",
+  "project": "destroyers-sandbox",
+  "expected_skill": "php-pro",
+  "marker": "phpunit"
+ },
+ {
+  "query": "обнови тз TZ-XP.md",
+  "project": "my-manager",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "работай по тз",
+  "project": "my-manager",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "Called the Read tool with the following input: {\"filePath\":\"/Users/daniil/Desktop/Sandbox/destroyers-sandbox/TZ-XP.md\"}",
+  "project": "my-manager",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "продолжай по плану",
+  "project": "my-manager",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "продолжай и потом раскажи какие арты нужны и зачем",
+  "project": "my-manager",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "нуделай потом картинками займемся",
+  "project": "my-manager",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "> `ultracode_context action=budget profile=balanced` ## Usage ``` /tz-init ``` ## Instructions 1. Аргумент команды — название проекта (например, `destroyers`). Если пусто — спросить. 2. Проверить: есть ли `TZ.md` в корне текущего проекта. Если есть — не перезаписывать, сказать «TZ.md уже существует, используй /tz-check для проверки». 3. Прочитать шаблон: сначала `.opencode/templates/tz.md` (локальный), если нет — `~/.config/opencode/templates/tz.md` (глобальный). 4. Подставить `{{NAME}}` из аргумента, `{{DATE}}` — сегодня, `{{AUTHOR}}` — git config user.name или «пользователь». 5. Записать в `TZ.md` в корне проекта. 6. Ответить: «TZ.md создан. Открой его, скопируй содержимое в ИИ в браузере, обсуди проект, вставь результат обратно. Потом — /tz-check».",
+  "project": "AI-simulation",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "башня назовем игру",
+  "project": "AI-simulation",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "взгляни и подключи godot_mcp",
+  "project": "AI-simulation",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "Called the Read tool with the following input: {\"filePath\":\"TZ.md\"}",
+  "project": "AI-simulation",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "Called the Read tool with the following input: {\"filePath\":\"WORLD_DATA.md\"}",
+  "project": "AI-simulation",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "это че GodotPrompter (jame581) — ставить?",
+  "project": "AI-simulation",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "--- ### Что изменилось - **Монстры:** добавлена `rat` (была только ссылка). - **Предметы:** добавлены `rusty_dagger`, `leather_armor`, `health_potion_small` (были только ссылки). - **Этажи:** добавлены 2, 3, 4, 5 — теперь `goblin.spawn_floors: [1,2,3,4,5]` валиден. - **Профессии:** `base_stats` добавлены всем 7 (было только у knight). - **Гильдия:** `entity_001.guild_id` теперь `\"guild_shadow\"` — совпадает с `members`. - **`entity_001.equipment`:** убраны ссылки на несуществующие `iron_sword`, `wooden_shield`, `chainmail` — заменены на существующие. - **Добавлен `entity_002`** — иначе `guild_shadow.members` ссылается на несуществующую сущность. Теперь `--validate` должен пройти. Если хочешь — набросаю сам скрипт валидатора (`src/world/validate.gd`), который проверяет эти связи автоматически, чтобы в следующий раз ловить такое без ручного аудита.",
+  "project": "AI-simulation",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "Called the Read tool with the following input: {\"filePath\":\"/Users/daniil/Desktop/Project/AI-simulation/WORLD_DATA.md\"}",
+  "project": "AI-simulation",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "Switch to ponytail full mode. If no level specified, use full. Lazy senior dev mode, before any code: does it need to exist at all (YAGNI)? Does the standard library do it? A native platform feature? Can it be one line? Build the minimum that works. No unrequested abstractions, no avoidable dependencies, no boilerplate. Mark deliberate simplifications that cut a real corner with a known ceiling using a ponytail: comment that names the ceiling and upgrade path.",
+  "project": "AI-simulation",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "Правки в WORLD_DATA.md внесены. Перед Болтом 1 — снеси game/src/{simulation,genome,entities,world,analytics} (ТЗ: «удаляются, не архивируются»), это отдельный коммит. Дальше — Болт 1 по спеке world-loader.md.",
+  "project": "AI-simulation",
+  "expected_skill": "commit-and-push",
+  "marker": "коммит"
+ },
+ {
+  "query": "пересобери проект в godot 4.7.2",
+  "project": "AI-simulation",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "tile_bit_tools — оставить выключенным, отдельной задачей подготовь минимальный репро для upstream issues (пустой проект + плагин + headless import). Locale в user_prefs.gd:5 — чини, это осознанное отклонение от запрета ТЗ (одна строка, шаблонный баг, скоуп не расширяется). AC4 — найди return после проверки counts (или эквивалентную логику раннего выхода), все проверки должны выполняться до конца. Тест: при выбитом rusty_sword — 3 строки в stderr, при восстановленном — exit 0. Прибей зависший godot-процесс, разберись с таймаутом отладчика — не должно вешаться. После AC4 зелёного — удали game/src/{simulation,genome,entities,world,analytics}, закоммить Болт 1. Отчёт: версия движка 4.7.2, tile_bit_tools off, locale fixed, AC1-AC4 green.",
+  "project": "AI-simulation",
+  "expected_skill": "commit-and-push",
+  "marker": "закоммить"
+ },
+ {
+  "query": "Репро для upstream — закрываем, не гоняем. Артефакты в docs/ оставляем как есть. addons/godot_mcp/ — в .gitignore, плюс docs/mcp-setup.md с инструкцией по установке. В README — ссылка. floors[1.0] — не косметика. Добавь в loader.gd приведение счётчиков к int (floor, level, count, hp, attack, defense, speed, experience, gold, price, priority). Отдельным маленьким коммитом после Болта 1: fix(loader): int-typing для счётчиков из JSON. Отдельно отметь в отчёте для Болта 2: mutate(genome, rate, rng) принимает RNG аргументом. Стартовые диапазоны генома — вынести в world.json → rules.genome_defaults (пороги 0..1, веса 0..2). Дальше — Болт 2: spec/entity-genome.md, Entity + Genome + mutate. Только модель и мутация, без FSM (это Болт 3).",
+  "project": "AI-simulation",
+  "expected_skill": "code-documenter",
+  "marker": "readme"
+ },
+ {
+  "query": "INT_FIELDS — оставляем расширенный, аргументация верная. Баги #1 и #2 — в knowledge/lessons: «GDScript or/and возвращают bool» и «валидаторы fail-closed, ошибки аккумулируются до конца». --selftest — стандарт для будущих валидаторов. Баг #3 — оставляем, помечаем как «схема-странность, переименовать zones[].floors → zones[].floors_range в Болте 6, если будет мешать». src/model/ — принять, добавь в TZ.md краткое упоминание структуры src/{data,tools,model,simulation}/. Git — один репозиторий в корне workspace. Сначала git -C game bundle create ../game-template.bundle --all (бэкап шаблонной истории в docs/), потом rm -rf game/.git, git init в корне, .gitignore с game/.godot/, game/addons/godot_mcp/, *.import. Один коммит: chore: single-repo workspace. Не submodule, не nested. Болт 3 — Expression + кэш + whitelist переменных + fail-closed на ошибках парсинга. Custom парсер — только если Болт 12 покажет тормоза. Дальше — spec/fsm.md, потом Болт 3: FSM без utility (только переходы), utility в Болте 4.",
+  "project": "AI-simulation",
+  "expected_skill": "commit-and-push",
+  "marker": "коммит"
+ },
+ {
+  "query": "азачем ты пишешь платформер или он был в шаблоне?",
+  "project": "AI-simulation",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "когда я нажал new game сразу открылась игра платформер",
+  "project": "AI-simulation",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "b и давай и если после этого закончишь то давай сразу начнем писать мир в mvp и забыл написать в тз одну вещь то что мы должны написать только мир а этажи должен генерировать мировой ии назовем его администратор, генерирует постепенно только тогда когда когда ктото переходит на тот самый следущий этаж короче говоря по факту прохождения этажа, люди не должны постоянно умирать самое главное должны быть живучие если они будут дохнуть как мухи тогда и эксперимента не будет нормального",
+  "project": "AI-simulation",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "Expression — три находки в knowledge/lessons (set_functions, silent fail при неизвестном имени, плоские имена). Валидацию условий в Болте 1 расширь: прогон каждого условия с dummy-данными, проверка failed=true. ТЗ 1.3 — ответь на три вопроса про Администратора: (a) что стало с floors в данных, (b) что с monsters[].spawn_floors, (c) как валидатор теперь проверяет зоны. Если уже решил — покажи как, если нет — реши до Болта 5. exp → experience: grep -rn \"exp[^e]\" TZ.md WORLD_DATA.md, поправь остатки в Болте 2 и в entities. Третья волна, закрываем. Идём (b): пиши spec/tick-loop.md с минимальным utility. Порядок тика, единый RNG, детерминизм байт-в-байт, заглушка размножения. Болт 4 (utility) — внутри Болта 5, не отдельно.",
+  "project": "AI-simulation",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "tick-loop.md: AC5 противоречит AC6 и ТЗ 1.3. Убрать AC5 (роль закрывает AC6). «RNG по индексу» не даёт независимости. Вписать сортировку существ по id перед тиком как часть порядка тика. Тест AC3 проверяет именно это. ε-кластеры: заменить «округление до 4 знаков» на L2-норму из ТЗ v1.2, либо зафиксировать в ТЗ v1.5 «округление, L2 отложено». Два документа не должны расходиться. fsm.md: убрать «и всё с префиксом genome.» из whitelist — противоречит разделу ниже. world-loader.md не обновлён под ТЗ 1.4. Проверь: код валидатора проверяет entry_floor.zone ∈ zones[].floors_range, monsters[].difficulty ∈ 1..max_zone_difficulty, диапазоны зон без дыр? Если да — обнови спеку до соответствия. Если нет — Болт 1 не закрыт по v1.4, это отдельный фикс. После этих правок — пиши tick_loop.gd + stats.gd + selftest_tick.gd. Отдельно — хорошая новость: находка «валидатор молча теряет проверку, когда я сам переписал данные» — это второй случай за две сессии, когда рефактор данных ломает валидацию бесшумно. Стоит в knowledge записать паттерн: «если данные переименованы, прогнать --selftest до коммита, а не после».",
+  "project": "AI-simulation",
+  "expected_skill": "postgres-pro",
+  "marker": "индексу"
+ },
+ {
+  "query": "tick-loop.md: utility — argmax только среди действий, допустимых в текущем состоянии. Добавить таблицу «состояние → допустимые действия» в данные или спеку. fsm.md + tick-loop.md: dry-run покрывает все выражения в world.json, а не только fsm_transitions. Whitelist общий для FSM и utility. Решить модель представления: Entity — Dictionary или класс? Если Dictionary — переписать спеку Болта 2 и текущий код, если класс — переписать simulate_tick на WorldState. Смешение не оставлять. Отдельный болт (не 6, не 8) — линтер GDScript на паттерны (x or y).method(), or/and без скобок в сложных выражениях, глобальные randf/randi/randomize. 30 минут. В knowledge: «источник истины — git, не /tmp»; «если ТЗ абстрактно, спека формализует таблицей». Дальше — Болт 6 (бой), но сначала спека spec/combat.md с ответами на 7 вопросов выше. Не начинать код, пока модель представления не решена.",
+  "project": "AI-simulation",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "Рефактор принят. Контрактные решения валидны, три моих замечания — учесть в спеке боя: resolve_attack(attacker, defender) с явными is Monster / is Entity ветками, не duck typing. WorldState не покидает границы simulate_tick без копирования (зафиксировать в контракте явно). Defense: Entity — из armor, Monster — прямое поле. TZ.md v1.5: перенести AC про avg_fear_threshold из фазы 1 в фазу 2, Болт 10+. MVP закрывается без эволюционного дрейфа — это честнее, чем три болта красных AC. Бэклог: формулировка «каждый урок либо → правило линтера, либо явно помечен непроверяемым». spec/combat.md: 10 решений выше + 3 ссылки на контракт. Особое внимание — target selection и порядок тика, это главный источник недетерминизма. После спеки — код combat.gd. Не начинать, пока все 10 не зафиксированы в спеке. Отдельно: 5-й or {} в floor.gd через минуту после записи урока в knowledge — это лучшая иллюстрация того, зачем линтер. Держи это число, оно будет аргументом, когда захочешь пропустить «ещё один маленький болт про линтер».",
+  "project": "AI-simulation",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "# Задача: закрыть пункт 13 в docs/00-lock.md ## Контекст Фактическая версия cmdline-tools получена: `$ sdkmanager --version` → `19.0` В lock стоит 23.0 из репозитория SDK с пометкой «требует проверки». Заменить на фактическую. ## Что сделать ### docs/00-lock.md - В разделе «Android build» заменить версию cmdline-tools с 23.0 на **19.0**. - Источник: `sdkmanager --version` (вывод владельца), а не манифест. - Снять пометку «требует проверки владельцем». - Пункт 13 в «Требует решения владельца» — закрыть. - Раздел «Изменения»: v1.5, дата, причина «фактическая версия cmdline-tools 19.0, подтверждена sdkmanager --version». ## Запреты - Не менять другие версии. - Не трогать пункты 8, 9 — они ждут flutter create на болте 01a. - Не трогать docs/01-skeleton.md, docs/02-bolts.md. ## Acceptance - docs/00-lock.md содержит cmdline-tools 19.0. - Пометки «требует проверки» у cmdline-tools нет. - Пункт 13 закрыт. - Раздел «Изменения» содержит v1.5. ## Evidence ``` grep -E \"cmdline-tools|19\\.0\" docs/00-lock.md grep -c \"требует проверки владельцем\" docs/00-lock.md grep -c \"Требует решения\" docs/00-lock.md wc -l docs/00-lock.md ``` ## Отчёт Что изменилось, evidence.",
+  "project": "App",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "Короткий «болт» AI-DLC: 1–3 шага, каждый с acceptance-гейтом. Больше — это `/goal`. > `ultracode_context action=budget profile=aggressive` — профиль порогов этой сессии (перетирает ручные, приоритет за последним вызовом). ## Usage ``` /bolt ``` ## Instructions 1. Проверь `spec/ .md`. Нет файла — стоп, попроси сначала `/spec`. Болт без spec не начинается. 2. Создай план через `ultracode_context action=plan_new`, максимум **3 шага**. 3. Каждый шаг обязан иметь `acceptance.command` (exit 0) или `acceptance.check` (файл/строка). Шаг без acceptance не принимается. 4. После каждого шага — `action=plan_step` + `action=evidence` с фактическим результатом. 5. Acceptance не прошёл — не переходи дальше, максимум **одна** итерация повтора. Вторая неудача — стоп, доклад пользователю. 6. В конце — `action=plan_step step=done` и знание `action=add kind=decision text=\"bolt завершён\"`. 01a-core-models",
+  "project": "App",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "Last login: Mon Sep 28 23:50:23 on ttys000❯ which dart /Users/daniil/development/flutter/bin/dart ~ 11:41:13 ❯",
+  "project": "App",
+  "expected_skill": "flutter-expert",
+  "marker": "dart"
+ },
+ {
+  "query": "мы запускали скелетон?",
+  "project": "App",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "добавь ультракод плагин сюда /Users/daniil/Desktop/Project/App и проверь почему там не работают вообще агенты они просто пропали",
+  "project": "my-manager",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "\"Вызови инструмент ultracode_context с action=list. Ответь ровно одним словом: OK если инструмент ответил, СЛОМАНО если ошибка.\"",
+  "project": "App",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "в десктоп нет меню переключения главного агента",
+  "project": "my-manager",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "permision 156 action",
+  "project": "my-manager",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "скорее всего дело в context7 или gh_greb или kb",
+  "project": "my-manager",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "{ \"$schema\": \"https://opencode.ai/config.json\", \"plugin\": [\"@alghanem/opencode-flutter\"], // Workaround @alghanem/opencode-flutter 0.3.3: он кладёт в frontmatter агентов // permission.bash / permission.task вложенной картой. Схема agent-frontmatter // ждёт плоский action (\"allow\"|\"ask\"|\"deny\") и схлопывает карту в action: \"\". // Десктоп шлёт такой массив в запрос и сервер его режет (schema rejection). \"agent\": { \"build\": { \"permission\": { \"bash\": \"allow\", \"task\": \"allow\" } }, \"plan\": { \"permission\": { \"bash\": \"ask\", \"task\": \"ask\" } } }, \"mcp\": { \"dart-mcp-server\": { \"type\": \"local\", \"command\": [\"dart\", \"mcp-server\"], \"enabled\": true, \"environment\": {} }, // Отключён: включается владельцем после установки ключа на context7.com. \"context7\": { \"type\": \"remote\", \"url\": \"https://mcp.context7.com/mcp\", \"enabled\": false, \"headers\": { \"CONTEXT7_API_KEY\": \"\" } }, // Отключён: включается владельцем после установки uv. \"kb\": { \"type\": \"local\", \"command\": [\"uv\", \"run\", \"--directory\", \".opencode/mcp-kb-sqlite\", \"mcp-kb-sqlite\"], \"enabled\": false, \"environment\": { \"DB_PATH\": \".opencode/kb.db\" } } } } пиздец все дело в коментах",
+  "project": "my-manager",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "Мелочь на будущее В packages/core/build.yaml блок freezed сейчас «на всякий случай». Стоит добавить комментарий: yaml freezed: options: explicit_to_json: true # Не даёт эффекта на freezed 4.0.2, но безвреден. # Если в новой версии появится своя опция — подхватится. Одна строка, но сэкономит время будущей сессии.",
+  "project": "App",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "пиши на русском",
+  "project": "App",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "загрузи сюда плагин ultracode и все связнаное с ним из глобал opencode config",
+  "project": "Ultracode",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "а теперь этот проект будет использоваться для разработки ultracode",
+  "project": "Ultracode",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "\"Напиши PHP-функцию format_price(int $cents): string с PHPUnit-тестом, strict_types\"",
+  "project": "Ultracode",
+  "expected_skill": "php-pro",
+  "marker": "phpunit"
+ },
+ {
+  "query": "\"ответь одним словом: ок\"",
+  "project": "Ultracode",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "\"Найди в своём системном промпте блок, который начинается с тега . Выведи его ДОСЛОВНО целиком, от до . Если такого блока нет — ответь ровно: НЕТ БЛОКА\"",
+  "project": "Ultracode",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "\"Найди в системном промпте блок от до и выведи дословно. Нет такого — ответь: НЕТ БЛОКА\"",
+  "project": "Ultracode",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "\"Вызови skill tool для php-pro и напиши declare(strict_types=1);\"",
+  "project": "Ultracode",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "\"Напиши TypeScript-функцию slugify с vitest-тестом\"",
+  "project": "Ultracode",
+  "expected_skill": "typescript-pro",
+  "marker": "vitest"
+ },
+ {
+  "query": "\"Сделай ровно одну вещь: вызови write-инструмент с filePath=/Users/daniil/Desktop/Project/Ultracode/.opencode/.redact-probe2.ts и содержимым (ровно эти 5 строк, без изменений): interface Probe2 { sessionId: string userId: number apiKey: string } export const v = 1 Затем прочитай файл через read и выведи его содержимое дословно. Ничего другого не делай.\"",
+  "project": "Ultracode",
+  "expected_skill": null,
+  "marker": null
+ },
+ {
+  "query": "\"Вызови write: filePath=/Users/daniil/Desktop/Project/Ultracode/.opencode/.redact-probe2.ts, content (ровно 5 строк): interface Probe2 { sessionId: string userId: number apiKey: string } export const v = 1 Затем read этого файла и выведи содержимое.\"",
+  "project": "Ultracode",
+  "expected_skill": null,
+  "marker": null
+ }
+]
