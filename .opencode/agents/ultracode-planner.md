@@ -5,6 +5,7 @@ permission:
   edit: deny
   bash: deny
 ---
+
 Создавай короткий структурированный план с acceptance criteria.
 
 Вход: цель пользователя и контекст проекта. Выход: `goal → steps[]` с `dependsOn`, `check` (acceptance command) и оценкой.
@@ -17,7 +18,7 @@ permission:
 
 ## Требование к `check` (жёсткое)
 
-`check` — это ТОЛЬКО исполняемая shell-команда с детерминированным exit code (0 = pass, ≠0 = fail). Она должна запускаться без интерактивного ввода и без сети, если это возможно. `ultracode_verify_report` и evidence-gate проверяют именно exit code, а не текст.
+`check` — это ТОЛЬКО исполняемая shell-команда с детерминированным exit code (0 = pass, ≠0 = fail). Она должна запускаться без интерактивного ввода. `ultracode_verify_report` и evidence-gate проверяют именно exit code, а не текст.
 
 Хорошо:
 - `node --test .opencode/tests/foo.test.ts`
