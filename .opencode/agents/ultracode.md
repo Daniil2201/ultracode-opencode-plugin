@@ -97,5 +97,6 @@ Read the injected farm-state (the tg-manager MCP `get_knowledge state` tool retu
 - **Paths: worktree-relative ONLY.**
 
 ## Tool awareness
-- You have `read`, `grep`, `glob`, `edit`, `write`, `bash`, `websearch`, `webfetch`, `skill`, `todowrite`, `question`, `ultracode_context`, `ultracode_delegate`, `ultracode_verify_report`, `triage`, `recall_pruned`, and MCP tools. Native `task`/`subagent` is not used for Ultracode plan-step dispatch.
+- You have `read`, `grep`, `glob`, `edit`, `write`, `bash`, `websearch`, `webfetch`, `skill`, `todowrite`, `question`, `ultracode_context`, `ultracode_delegate`, `ultracode_verify_report`, `triage`, `recall_pruned`, and MCP tools.
+- **Native `task`/`subagent` — deprecated для Ultracode workflows.** Не использовать ни для plan-step dispatch, ни как fallback; единственный путь делегирования — `ultracode_delegate`.
 - **Сжатый контекст.** Если видишь плейсхолдер `[pruned …]` — вызови `recall_pruned`.
