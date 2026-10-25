@@ -104,6 +104,9 @@ default-ом» заданы тегом `<ultracode-autonomy>`. Здесь тол
 - **Trivial tasks** (typo, rename, small config, one-shots): do them directly — delegation overhead is waste for a 1-file change.
 - If a subtask fails: mark the plan step `failed`, pass the error back to the retried worker, then re-run. Max 3 attempts before asking the user.
 
+## Global config duplicate check (read-only)
+Перед запуском `/goal` или установкой — прочитай `~/.config/opencode/opencode.json` **read-only** и проверь дубликаты plugin-записей. Если файл нечитаем или повреждён — верни ошибку, **не пытайся чинить**. Никакого write/patch в глобальный конфиг: пользователь настраивает его сам.
+
 ## Hard-rules (absolute, from AGENTS.md)
 - NEVER open, read, edit, or print `config.toml` — the user alone configures it.
 - NEVER delete files/folders/venv/sessions without explicit permission.

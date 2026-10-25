@@ -1,9 +1,9 @@
 # ТЗ: ultracode
 
 ## Мета
-- Версия: 1.1
-- Дата: 2026-09-30
-- Статус: draft (заполнено, ждёт согласования)
+- Версия: 1.2
+- Дата: 2026-10-25
+- Статус: draft (дополнение v1.2; ждёт решения по открытым вопросам)
 - Автор: пользователь
 
 ## Что это
@@ -113,18 +113,23 @@ AFD, evidence, метрики, инъекция контекста, лабора
 
 ## Технологический стек
 
+Baseline v1.1 зафиксирован 2026-09-30; активные runtime-версии на 2026-10-25 указаны отдельно:
+
 TypeScript (ESM, `.ts`-импорты с расширением), Node.js ≥ 22 (проверено на v24.20.0),
-opencode 1.18.27+ (бинарь 1.18.31), `@opencode-ai/plugin` 1.18.27, `js-tiktoken` 1.0.21
+opencode 1.18.27+ (бинарь v1.18.31 на дату исходного ТЗ), `@opencode-ai/plugin` 1.18.27, `js-tiktoken` 1.0.21
 (реальный `cl100k_base` для бюджета), `node:test` как раннер (без vitest/jest/bun),
 bash для обвязки (`scripts/*.sh`, `tests/install-smoke.sh`). Зависимостей не добавляем:
 всё на stdlib. Фреймворков нет — плагин, а не приложение.
 
+Текущая проверенная среда v1.2: `opencode v2.0.32`, `@opencode-ai/plugin` и SDK `1.18.27`.
+
 ## Нефункциональные требования
 
-- **Регресс-гейт:** 229 существующих тестов (`node --test .opencode/tests/*.test.ts
-  .opencode/tests/runtime/*.test.ts .opencode/tests/adversarial/*.test.ts`) не должны
-  падать; baseline — 225 pass / 4 fail, где 4 падения принадлежат `farm/` (см. открытые
-  вопросы).
+- **Регресс-гейт:** полный suite (`node --test .opencode/tests/*.test.ts
+  .opencode/tests/runtime/*.test.ts .opencode/tests/adversarial/*.test.ts`) не должен
+  ухудшать актуальный baseline 349 total / 346 pass / 0 fail / 3 skip
+  (проверен 2026-10-25; skip — отсутствующий farm binary). Исторический baseline
+  225 pass / 4 fail superseded.
 - **Скорость sentinel:** < 2 сек на шаг на проекте до 10k файлов; только fs + фиксированный git.
 - **Откат:** каждое изменение — отдельный обратимый diff; затрагивать store нельзя,
   иначе откат ломает данные.
@@ -148,10 +153,10 @@ bash для обвязки (`scripts/*.sh`, `tests/install-smoke.sh`). Зави�
 7. Sentinel ничего не пишет: снимок `context.json` до и после `sentinelCheck` побайтово
    идентичен.
 8. `node --test .opencode/tests/sentinel.test.ts` → exit 0.
-9. Полный прогон: `ℹ pass 225` и `ℹ fail 4` (без роста fail), либо 229 при переносе
-   `farm/`.
-10. `bash .opencode/tests/install-smoke.sh` → не хуже 50 OK / 1 MISS (MISS — `farm.ts`,
-    ферма вне scope).
+9. Полный прогон: 349 total / `ℹ pass 346` / `ℹ fail 0` / `ℹ skipped 3`
+   (проверено 2026-10-25; историческое `225/4` superseded, `farm/` не переносится).
+10. `bash .opencode/tests/install-smoke.sh` → пройти; прежнее ожидание 50 OK / 1 MISS
+    является историческим и должно быть перепроверено перед реализацией.
 
 ## Этапы (AFD)
 
@@ -171,7 +176,9 @@ AFD применим: сначала tools для агента, потом API, 
    телеметрия выбора скилла. Независим от этапов 1–4, можно параллельно.
 6. **Headroom** — вне плана, только после замера расхода контекста.
 
-## Открытые вопросы
+## Открытые вопросы v1.1 (исторический список; актуальные статусы ниже)
+
+Вопросы ниже были открыты в исходном draft 2026-09-30; таблица «Сверка открытых вопросов v1.1» ниже фиксирует, что уже закрыто и что ещё требует решения.
 
 1. **Sentinel: advisory или allowlist-spawn?** Check `syntax/lint` без spawn ловит
    только ошибки, уже попавшие в вывод acceptance-команды. Настоящий `php -l` /
@@ -196,3 +203,44 @@ AFD применим: сначала tools для агента, потом API, 
 6. **Версия `@opencode-ai/plugin`.** opencode при старте переписывает
    `.opencode/package.json` на свою (1.18.31). Выравнивание на 1.18.27 может быть
    перезаписано — нужно ли это учитывать в CI?
+
+## Сверка открытых вопросов v1.1 (2026-10-25)
+
+| № | Статус | Основание / решение для текущего обновления |
+|---|---|---|
+| 1 | Решён | Sentinel остаётся advisory; произвольный shell не запускает, разрешён только фиксированный `git status --porcelain`. См. `spec/sentinel.md` и `lib/ultracode/sentinel.ts`. |
+| 2 | Решён для v1.2 | Основной поток метрик уже `metrics.jsonl`; имя skill сейчас сохраняется в knowledge-сторе. Для телеметрии делегации используем существующий `metrics.jsonl`, отдельный поток не добавляем. Отдельная расширенная телеметрия скиллов вне scope этого обновления. |
+| 3 | Решён | Тесты farm явно пропускаются без бинаря. Проверенный прогон 2026-10-25: 346 pass / 0 fail / 3 skip; старый baseline 225/4 устарел. |
+| 4 | Решён | `scripts/sync-ultracode.sh` существует и синхронизирует только Ultracode-часть; `install-farm.sh` из этого проекта не запускается. |
+| 5 | Решён для v1.2 | Read-only проверка `~/.config/opencode/opencode.json` на дубликаты plugin-записей — read-only, без записи. Если файл нечитаем или повреждён, вернуть ошибку и остановиться. Запускать эксперимент только в disposable copy, не в рабочем дереве. |
+| 6 | Решён для v1.2 | Эксперимент по перезаписи `.opencode/package.json` — в disposable copy: скопировать `.opencode` во временную директорию, запустить opencode, зафиксировать, изменился ли package.json. Не запускать в рабочем дереве проекта. |
+
+## Дополнение к ТЗ v1.2: выбор модели для подзадач и надёжность плагина
+
+- **Статус:** draft; исходная спецификация v1.1 сохранена как история. Это дополнение не разрешает начинать реализацию без отдельного `/bolt` или `/goal`.
+- **Цель:** дать Ultracode per-call выбор уже настроенной модели для subagent-задачи и добавить в обновление устранение подтверждённых дефектов из `spec/plugin-error-audit.md`.
+- **Текущий контракт:** встроенный OpenCode `task`/subagent не принимает модель на отдельный вызов; роли задаются в `.opencode/agents/`. Установленный SDK 1.18.27 умеет связать child через `session.create(parentID)` и передать `agent`/`model` в `session.prompt`. Модель не добавляется в `PlanStep` и не сохраняется между resume в этой версии.
+- **Обязательное:** новый plugin tool делегирования принимает роль и опциональные `providerID/modelID`, проверяет модель по уже настроенным провайдерам, возвращает ответ ребёнка с фактически использованной моделью; не добавляет provider/key/tier, не меняет текущий evidence-gate и не закрывает шаг автоматически.
+- **Обязательное:** исправить P1 из `spec/plugin-error-audit.md`: исполнение команд для внешнего `evaluate --target` без отдельного trust gate; чтение `farm-state` через symlink; fail-open redaction; lost update/ложное подтверждение `learn`; handoff без retry после ошибки записи; падение `system.transform` на malformed persisted thread; постоянный отказ Budget Manager после transient provider error; потерю per-step acceptance при создании плана. Dispatcher не меняет evidence-gate; отдельная PLAN-01 работа может изменить producer/consumer per-step acceptance.
+- **Acceptance только через команды.** `PlanStep.check` в v1.2 — только shell-команда с детерминированным exit code (0 = pass, 1 = fail). Любая «проверка строки/паттерна» должна быть упакована в команду (например, `grep -q 'pattern' file.txt`). File/line verifier исключён: языковые модели галлюцинируют, exit code — детерминированный факт. Изменить `commands/bolt.md` соответственно.
+- **Требования к оркестрации:** сохранить зависимости шагов, не более 3 параллельных делегаций, retry до 3 попыток и текущий контракт `planId/stepId` + evidence. Новая диспетчеризация не должна опираться на `runAutonomousGoal`, пока его фактическая последовательность/resume не исправлены; текущий `/goal` dispatch задан инструкциями проекта и ещё не подтверждён в runtime v2.0.32.
+- **Рекомендуемое:** синхронизировать поля/имена между `/bolt`, `ultracode-help`, `recall_pruned` и runtime tool; исправить скрытые ошибки recall; убрать неоднозначные `kind` для knowledge; выбрать активный план в `plan_show`; валидировать конечность usage; записывать исключения pruner в уже существующий диагностический лог; освобождать session-scoped state.
+- **Ограничения:** никаких правок глобального OpenCode-конфига, `my-manager`, `farm/`, `EventKind`, новых зависимостей или нового публичного HTTP API. Не менять storage schema v3 ради временного model override. Если позже потребуется сохранять модель в плане, это отдельная миграция.
+- **Обязательное (Q5/Q6):** read-only проверка `~/.config/opencode/opencode.json` на дубликаты plugin-записей (read-only, без write/patch; файл нечитаем → вернуть ошибку, не чинить); эксперимент перезаписи `.opencode/package.json` в disposable copy (mktemp -d, скопировать .opencode, запустить opencode, зафиксировать изменение). Не запускать эксперимент в рабочем дереве.
+- **Acceptance только через команды:** `PlanStep.check` = shell-команда с exit code (0/1). Проверки строк/паттернов упаковываются в команду (`grep -q 'pattern' file.txt`). File/line verifier исключён — языковые модели галлюцинируют, exit code детерминирован.
+- **AFD:** 1) plugin tool + корневые исправления (Tools); 2) unit/runtime-проверка на fake client и установленном SDK (Validation); 3) проверка совместимости внутреннего OpenCode session API на v2.0.32 без нового публичного API; 4) UI отсутствует.
+- **Acceptance:** `spec/subagent-model-routing.md` и `spec/plugin-error-audit.md` являются источником требований; каждая P1 имеет регрессионный тест; полный suite не хуже 346 pass / 0 fail / 3 skip; тест запускается против реальной формы SDK 1.18.27, а model-routing smoke — на OpenCode v2.0.32. Успешный dispatcher не может сам переводить шаг в `done`.
+- **Решённое открытые вопросы:** (1) read-only проверка глобального конфига разрешена — только чтение, без write/patch, ошибка чтения = стоп; (2) эксперимент перезаписи `.opencode/package.json` включён в acceptance, только в disposable copy; (3) per-step acceptance — только команды с exit code, file/line verifier исключён.
+
+## Критическая находка runtime smoke (2026-10-25)
+
+OpenCode v2.0.32 **не загружает** V1-плагины (`export default (async (ctx) => {...})`). Все V1-плагины отклоняются:
+`Plugin must export a default definition with an id and an effect or setup function.`
+
+Это означает:
+1. Весь Ultracode plugin должен быть мигрирован на V2-формат (`Plugin.define({ id, setup })`).
+2. V2 Plugin API предоставляет `ctx.session.create({parentID, agent, model})` — модель при создании сессии.
+3. Все P1 дефекты должны реализовываться через V2 hooks, а не V1.
+4. Go/No-Go gate 11 пересматривается: сначала миграция, затем smoke.
+
+Полный отчёт: `out/runtime-smoke-v2.0.32.md`.

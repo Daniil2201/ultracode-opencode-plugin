@@ -10,46 +10,53 @@
 
 ## Состав
 
-```text
-.opencode/
-  plugin/
-    ultracode.ts   # ядро: хуки, инъекция, инструмент ultracode_context (~1380 строк)
-    farm.ts        # L3: лог вызовов фермы в farm/knowledge/state.md
-  lib/ultracode/   # чистая логика (stdlib only, покрыта тестами)
-    schema.ts          # типы стора v3, freshStore, migrateStore
-    store.ts           # per-project файлы, atomic save, lockfile
-    plan.ts            # планы, transitionStep, evidence-gate переходы
-    injection.ts       # идемпотентная инъекция, раздельные бюджеты
-    metrics.ts         # session-scoped метрики, bounded metrics.jsonl
-    classifier.ts      # pure-hint: simple|multi_step|design|research|bugfix
-    orchestrator.ts    # nextBatch (maxParallel=3), retry≤3, resume, runAutonomousGoal
-    verification.ts    # createEvidence/applyEvidence, clip 4000 + redact, парсеры pytest/cargo/jest/playwright/node-test/go-test/phpunit/coverage
-                      # UC-030 гейт: evidence только из in_progress|verify_required, только по команде acceptance, статус через transitionStep
-    sentinel.ts        # UC-029 advisory pre-check: 5 чеков перед evidence, без spawn и без записи в стор
-    skill-router.ts    # UC-032 детерминированный роутер по скиллам: скан диска, скоринг, срез <available_skills>
-    confidential.ts    # firewall секретов (единая точка)
-    pruner.ts          # context-pruner: planPrune (soft/hard/emergency), applyPrune in-place, плейсхолдер
-    prune-store.ts     # стор оригиналов: pruned/<sessionID>.jsonl (append-only, redact, pin)
-    autonomy.ts        # AUTONOMY_TAG — единственный источник текста policy автономности (инжектится плагином)
-    design.ts          # safeArtifactPath, canStartRun (Open Design)
-    checkpoint.ts      # компактный checkpoint PLAN/GOAL/CURRENT/BLOCKERS
-    debug.ts           # debug-сессии: гипотезы по одной, fix только с регресс-тестом
-    stack-detect.ts    # автоопределение стека: манифесты, make/just, workflows
-    stack-contract.ts  # контракт «работающий проект»: test/build/lint/typecheck/run
-    runtime-contract.ts# единый контракт tool-схемы (источник правды)
-    evaluation/        # schema, lab-runner, scoring, report, criteria, cli
-  agents/          # ultracode (+planner/executor/reviewer/designer, read-only reviewer)
-  commands/        # goal, verify, design, checkpoint, status, evaluate, debug, ultracode-help (+ферма)
-  tests/           # 344 node-теста (3 скипа: farm/ вне проекта) + install-smoke.sh
-  package.json     # {"type":"module"} — ESM без ворнингов
-```
+Состав проекта генерируется из кода — см. блок ниже (обновляется
+`bash scripts/build-docs.sh`). Правь исходники, не этот список.
 
 Глобальная установка (`~/.config/opencode/`) — скриптом `scripts/sync-ultracode.sh`:
 он копирует только plugin/lib/agents/commands/skills/templates и **не трогает**
-`opencode.json`, `mcp.*` и ферму. `scripts/install-farm.sh` — установщик фермы
-my-manager, из этого проекта его запускать нельзя. **После любых правок нужен
-рестарт OpenCode** — плагин грузится один раз при старте.
+`opencode.json`, `mcp.*` и ферму. **После любых правок нужен рестарт OpenCode** —
+плагин грузится один раз при старте.
 
+<!-- AUTO:inventory -->
+
+```text
+.opencode/
+  plugin/
+    agentmemory-capture.ts    [250 строк]
+    guardrails.ts             [107 строк]
+    ultracode.ts             # ядро: хуки, инъекция, инструмент ultracode_context  [1861 строк]
+  lib/ultracode/   # чистая логика (stdlib only, покрыта тестами)
+    autonomy.ts              32 строк  UC-013 — policy автономности. ЕДИНСТВЕННЫЙ источник текста, кото
+    budget.ts                99 строк  Budget Manager: снимок usage на сессию + пороги. Чистые функции,
+    checkpoint.ts            28 строк  UC-010 — checkpoint при compaction: только компактный summary, б
+    classifier.ts            98 строк  UC-005 — классификатор сложности. Чистый hint, без сайд-эффектов
+    confidential.ts         156 строк  UC-021 — confidential-data firewall: модель видит вёрстку/структ
+    debug.ts                109 строк  UC-022 — debugger workflow: reproduce → isolate → hypothesize → 
+    design.ts                42 строк  UC-009 — явный Open Design workflow. Никакого авто-запуска по сл
+    handoff.ts               43 строк  Handoff сброса контекста: писатель/читатель. Запись — через upda
+    injection.ts            262 строк  UC-003 — идемпотентная инъекция + раздельные бюджеты.
+    metrics.ts              141 строк  UC-004 — session-scoped метрики + корректные ошибки + bounded me
+    orchestrator.ts          69 строк  UC-006 + UC-014 — оркестрация: готовые шаги, батчи, ретраи.
+    plan.ts                 189 строк  UC-002 — модель плана и безопасные переходы статусов.
+    prune-store.ts          202 строк  Стор оригиналов context-pruner. Отдельный append-only jsonl рядо
+    pruner.ts               396 строк  context-pruner: сжатие истории сообщений перед отправкой в LLM.
+    runtime-contract.ts     151 строк  UC-017 — runtime-контракт tool `ultracode_context`: единый источ
+    schema.ts               345 строк  Ultracode v3 — схема хранилища. Только типы + чистая миграция, б
+    sentinel.ts             221 строк  UC-029 — Sentinel: дешёвые advisory-проверки шага плана перед фи
+    skill-router.ts         267 строк  UC-032 — skill-router: дешёвый детерминированный роутер по скилл
+    stack-contract.ts       221 строк  UC-025 — единый контракт «работающий проект»: один интерфейс,
+    stack-detect.ts         218 строк  UC-023 — автоопределение стека проекта для acceptance по умолчан
+    store.ts                146 строк  UC-001 — надёжное хранилище v3: per-project файлы + atomic save 
+    tokens.ts               105 строк  Токены: реальный cl100k_base (js-tiktoken, CJS) + fallback-эврис
+    verification.ts         446 строк  UC-007 — evidence-gated verification. Шаг закрывается только evi
+    evaluation/            7 модулей
+  agents/          # 5: ultracode, ultracode-designer, ultracode-executor, ultracode-planner, ultracode-reviewer
+  commands/        # 13: bolt, checkpoint, debug, design, evaluate, goal, spec, status, tz-check, tz-init, tz-refine, ultracode-help, verify
+  skills/          # 44 скиллов
+```
+
+<!-- /AUTO:inventory -->
 ## Как работает
 
 ### Хуки (`plugin/ultracode.ts`)
@@ -204,9 +211,9 @@ node --test .opencode/tests/*.test.ts .opencode/tests/runtime/*.test.ts .opencod
 ../my-manager/scripts/farm-health.sh && ../my-manager/scripts/install-farm.sh --status   # скрипты фермы живут в my-manager, отсюда и относительный путь
 ```
 
-Эталонное состояние: node 294/294 (3 skip — farm/ вне проекта),
-evaluator 13/13, score 100/100 staff. Правило приёмки: задача готова при зелёном acceptance
-**и** ревью без блокеров; «компилируется» — не финиш.
+Эталонное состояние — в блоке «Состояние» ниже (генерируется из прогона CI).
+Правило приёмки: задача готова при зелёном acceptance **и** ревью без блокеров;
+«компилируется» — не финиш.
 
 ## Состояние
 
@@ -214,10 +221,9 @@ evaluator 13/13, score 100/100 staff. Правило приёмки: задач�
 успешного прогона), skill-router (алиасы + приоритет стека проекта), файрвол
 секретов (fail-closed, фаззер 1000×60), autonomy (ограниченная автономия).
 
-CI: 294 pass / 0 fail / 3 skip.
-
 Ключевые числа: 14 256 токенов экономии на сообщение; skill-router top-1 26.7%,
-top-3 35.6% на 345 исторических запросах (45 меток).
+top-3 35.6% на 345 исторических запросах (45 меток) — пересчитать
+`bash scripts/skill-router-bench.sh`.
 
 Отложено: Headroom (не нужен), Jev (не нужен), TF-IDF (не нужен), чистка скиллов.
 
@@ -228,3 +234,53 @@ top-3 35.6% на 345 исторических запросах (45 меток).
 
 Унаследованы от `AGENTS.md`: не читать/править `config.toml`; не удалять файлы
 без разрешения; не печатать секреты; не трогать `[userbot]`.
+
+<!-- AUTO:inventory -->
+
+```text
+.opencode/
+  plugin/
+    agentmemory-capture.ts    [250 строк]
+    guardrails.ts             [107 строк]
+    ultracode.ts             # ядро: хуки, инъекция, инструмент ultracode_context  [1861 строк]
+  lib/ultracode/   # чистая логика (stdlib only, покрыта тестами)
+    autonomy.ts              32 строк  UC-013 — policy автономности. ЕДИНСТВЕННЫЙ источник текста, кото
+    budget.ts                99 строк  Budget Manager: снимок usage на сессию + пороги. Чистые функции,
+    checkpoint.ts            28 строк  UC-010 — checkpoint при compaction: только компактный summary, б
+    classifier.ts            98 строк  UC-005 — классификатор сложности. Чистый hint, без сайд-эффектов
+    confidential.ts         156 строк  UC-021 — confidential-data firewall: модель видит вёрстку/структ
+    debug.ts                109 строк  UC-022 — debugger workflow: reproduce → isolate → hypothesize → 
+    design.ts                42 строк  UC-009 — явный Open Design workflow. Никакого авто-запуска по сл
+    handoff.ts               43 строк  Handoff сброса контекста: писатель/читатель. Запись — через upda
+    injection.ts            262 строк  UC-003 — идемпотентная инъекция + раздельные бюджеты.
+    metrics.ts              141 строк  UC-004 — session-scoped метрики + корректные ошибки + bounded me
+    orchestrator.ts          69 строк  UC-006 + UC-014 — оркестрация: готовые шаги, батчи, ретраи.
+    plan.ts                 189 строк  UC-002 — модель плана и безопасные переходы статусов.
+    prune-store.ts          202 строк  Стор оригиналов context-pruner. Отдельный append-only jsonl рядо
+    pruner.ts               396 строк  context-pruner: сжатие истории сообщений перед отправкой в LLM.
+    runtime-contract.ts     151 строк  UC-017 — runtime-контракт tool `ultracode_context`: единый источ
+    schema.ts               345 строк  Ultracode v3 — схема хранилища. Только типы + чистая миграция, б
+    sentinel.ts             221 строк  UC-029 — Sentinel: дешёвые advisory-проверки шага плана перед фи
+    skill-router.ts         267 строк  UC-032 — skill-router: дешёвый детерминированный роутер по скилл
+    stack-contract.ts       221 строк  UC-025 — единый контракт «работающий проект»: один интерфейс,
+    stack-detect.ts         218 строк  UC-023 — автоопределение стека проекта для acceptance по умолчан
+    store.ts                146 строк  UC-001 — надёжное хранилище v3: per-project файлы + atomic save 
+    tokens.ts               105 строк  Токены: реальный cl100k_base (js-tiktoken, CJS) + fallback-эврис
+    verification.ts         446 строк  UC-007 — evidence-gated verification. Шаг закрывается только evi
+    evaluation/            7 модулей
+  agents/          # 5: ultracode, ultracode-designer, ultracode-executor, ultracode-planner, ultracode-reviewer
+  commands/        # 13: bolt, checkpoint, debug, design, evaluate, goal, spec, status, tz-check, tz-init, tz-refine, ultracode-help, verify
+  skills/          # 44 скиллов
+```
+
+<!-- /AUTO:inventory -->
+
+<!-- AUTO:facts -->
+
+CI (2026-10-01): **346 pass / 0 fail / 3 skip**
+всего тестов: 349 · `install-smoke.sh`: 53 OK / 0 MISS
+
+Плагин: `plugin/ultracode.ts` · SDK `@opencode-ai/plugin`.
+Сгенерировано `scripts/build-docs.sh` — правь руками не числа, а код.
+
+<!-- /AUTO:facts -->

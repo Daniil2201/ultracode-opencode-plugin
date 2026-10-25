@@ -37,7 +37,7 @@ import type { Usage as UsageV3 } from "../lib/ultracode/budget.ts"
 // context-pruner: сжатие истории перед запросом. Ядро чистое (тестируется без
 // плагина), здесь только хук, гейт эпох и стор оригиналов.
 import { planPrune as planPruneV3, applyPrune as applyPruneV3, levelFor as levelForV3, originalContent as originalContentV3, PRUNE_EPOCH_TURNS as PRUNE_EPOCH_TURNS_V3 } from "../lib/ultracode/pruner.ts"
-import { prunedFileFor as prunedFileForV3, appendOriginal as appendOriginalV3, appendPin as appendPinV3, loadPins as loadPinsV3, findOriginals as findOriginalsV3 } from "../lib/ultracode/prune-store.ts"
+import { prunedFileFor as prunedFileForV3, prunedLogFor as prunedLogForV3, appendPrunerLog as appendPrunerLogV3, appendOriginal as appendOriginalV3, appendPin as appendPinV3, loadPins as loadPinsV3, findOriginals as findOriginalsV3 } from "../lib/ultracode/prune-store.ts"
 import { buildHandoff as buildHandoffV3, writeHandoff as writeHandoffV3, readHandoff as readHandoffV3 } from "../lib/ultracode/handoff.ts"
 import { redactConfidential as redactConfidentialV3, deepRedact as deepRedactV3 } from "../lib/ultracode/confidential.ts"
 import { AUTONOMY_TAG as AUTONOMY_TAG_V3 } from "../lib/ultracode/autonomy.ts"
@@ -60,6 +60,10 @@ declare const process: {
 }
 
 const DEBUG = process.env.OPENCODE_ULTRACODE_DEBUG === "1"
+// Троттлинг диагностического лога pruner'а (pruned/<sid>.log): не чаще раза в N
+// ходов на сессию. Без троттлинга пустой проход писал бы строку на каждом ходе
+// (замер 30.09: 127 проходов вхолостую подряд на одном уровне).
+const PRUNER_LOG_EVERY_TURNS = 50
 // Стор уважает XDG_DATA_HOME (песочницы/тесты) — иначе живёт в ~/.local/share.
 const STORE_DIR = process.env.XDG_DATA_HOME
   ? path.join(process.env.XDG_DATA_HOME, "opencode", "ultracode")
@@ -507,14 +511,15 @@ export default (async (ctx) => {
   // не-"off" уровнем, lastPruneTurn — ход последнего реального prune.
   // Прыжок уровня вниз (ok) сбрасывает lastLevel, иначе после отката бюджета
   // pruner больше никогда не включится на том же уровне.
-  const pruneState = new Map<string, { turns: number; lastLevel: string; lastPruneTurn: number }>()
+  // lastLogTurn — последний ход, на который писали в pruned/<sid>.log (троттлинг).
+  const pruneState = new Map<string, { turns: number; lastLevel: string; lastPruneTurn: number; lastLogTurn: number }>()
   // Сессия, для которой сейчас идёт компактация: следующий transform на ней
   // жать нельзя (портим саммари и дублируем стор).
   const compactionPending = new Set<string>()
-  function pruneStateFor(sid: string): { turns: number; lastLevel: string; lastPruneTurn: number } {
+  function pruneStateFor(sid: string): { turns: number; lastLevel: string; lastPruneTurn: number; lastLogTurn: number } {
     let st = pruneState.get(sid)
     if (!st) {
-      st = { turns: 0, lastLevel: "off", lastPruneTurn: 0 }
+      st = { turns: 0, lastLevel: "off", lastPruneTurn: 0, lastLogTurn: -PRUNER_LOG_EVERY_TURNS }
       pruneState.set(sid, st)
     }
     return st
@@ -761,18 +766,44 @@ export default (async (ctx) => {
           return
         }
         st.turns++
+        // Диагностика pruner'а: решения и отказы. console.error плагина в
+        // opencode.log не попадает (лог на 100% структурированный), поэтому пишем
+        // в свой файл. Троттлинг — не чаще раза в PRUNER_LOG_EVERY_TURNS ходов.
+        const diagFile = prunedLogForV3(projectPath, sid)
+        const diag = (msg: string): void => {
+          if (st.turns - st.lastLogTurn < PRUNER_LOG_EVERY_TURNS) return
+          st.lastLogTurn = st.turns
+          appendPrunerLogV3(diagFile, `turn=${st.turns} level=${level} ${msg}`)
+          log("pruner", `turn=${st.turns} level=${level} ${msg}`)
+        }
         // Эпоха: не чаще раза в N ходов, иначе prompt cache инвалидируется
         // каждый ход. Первый не-"off" ход сжимает сразу — ждать 5 ходов при уже
         // переполненном бюджете незачем.
-        if (st.lastPruneTurn > 0 && st.turns - st.lastPruneTurn < PRUNE_EPOCH_TURNS_V3) return
+        if (st.lastPruneTurn > 0 && st.turns - st.lastPruneTurn < PRUNE_EPOCH_TURNS_V3) {
+          diag("skip=epoch")
+          return
+        }
         // Тот же уровень повторно: правила уже применены, а транскрипт каждый ход
         // пересобирается заново — второй проход дал бы тот же результат и только
         // сжёг бы кеш.
-        if (level === st.lastLevel) return
+        //
+        // Проверено на замере 30.09 (902 хода): гейт приносит больше, чем стоит.
+        // Валовая экономия от снятия 1 558 889, цена инвалидации кэша 12 359 043 —
+        // чистая −10 800 154 (−5.46% от cache.read). Причина: сжатие меняет СТАРЫЕ
+        // части, а префиксное кеширование обрывается с точки изменения, поэтому
+        // каждый проход перечитывает защищённый хвост (медиана 41 320 токенов).
+        // Смотри spec/context-pruner.md, раздел «Решения по эпохам».
+        if (level === st.lastLevel) {
+          diag("skip=same-level")
+          return
+        }
 
         const file = prunedFileForV3(projectPath, sid)
         const { messages: pruned, report } = planPruneV3(messages, level, { pinned: loadPinsV3(file) })
-        if (report.actions.length === 0) return
+        if (report.actions.length === 0) {
+          diag(`empty level=${level} msgs=${messages.length}`)
+          return
+        }
         let stored = 0
         let failed = 0
         for (const a of report.actions) {
@@ -789,6 +820,7 @@ export default (async (ctx) => {
         // оригинала в сторе обещает recall, которого не будет. Следующая
         // эпоха попробует снова (уровень/счётчик намеренно не тронуты).
         if (failed > 0) {
+          diag(`skipped ${failed}/${report.actions.length} originals unwritable`)
           log("prune skipped", sid.slice(0, 8), `${failed}/${report.actions.length} originals unwritable`)
           return
         }
@@ -797,6 +829,7 @@ export default (async (ctx) => {
         // Только мутация на месте: вызывающий читает локальную переменную
         // массива, output.messages = [...] не пробрасывает ничего.
         applyPruneV3(output as { messages: unknown[] }, { messages: pruned })
+        diag(`pruned ${report.actions.length} parts (${stored} new), ${report.charsBefore}->${report.charsAfter} chars`)
         log("prune", level, sid.slice(0, 8), `${report.actions.length} parts (${stored} new), ${report.charsBefore}->${report.charsAfter} chars`)
       } catch (e) {
         // Текст ошибки через firewall: содержимое сообщений сюда попасть не должно.

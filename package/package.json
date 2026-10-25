@@ -1,0 +1,31 @@
+{
+  "name": "ultracode-plugin",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Оркестратор для opencode: бюджет контекста, skill-router, evidence-гейт, план/цель, сжатие истории, файрвол секретов",
+  "license": "MIT",
+  "type": "module",
+  "main": "./plugin/ultracode.ts",
+  "exports": {
+    ".": "./plugin/ultracode.ts"
+  },
+  "files": [
+    "plugin",
+    "lib",
+    "agents",
+    "commands",
+    "templates",
+    "README.md"
+  ],
+  "dependencies": {
+    "@opencode-ai/plugin": "1.18.33",
+    "js-tiktoken": "^1.0.21"
+  },
+  "keywords": [
+    "opencode-plugin",
+    "opencode",
+    "orchestrator",
+    "context-budget",
+    "sd"
+  ]
+}
