@@ -147,6 +147,12 @@ function pushSystemOnce(system: unknown[], sid: string, tag: string, text: strin
   ;(system as any[]).push({ type: "text", text: `${marker}\n${text}` })
 }
 
+// Эвристика OpenCode inference API: бесплатные модели имеют суффикс "-free" в id.
+// Работает только для provider "opencode"; для сторонних провайдеров возвращает false.
+function isFreeModel(modelId: string): boolean {
+  return typeof modelId === "string" && modelId.toLowerCase().endsWith("-free")
+}
+
 // ─── main plugin ──────────────────────────────────────────────────────
 
 export default define({
@@ -579,6 +585,13 @@ export default define({
               }
             }
             lines.push(`${C_OPEN}${G_HIT}${C_RST} Hit rate: ${hitPct}% (${hits}/${hits + misses})`)
+            // Free/paid indicator for known models
+            const sm = Array.from(sessionModel.entries())
+            if (sm.length > 0) {
+              const [sid, m] = sm[sm.length - 1]
+              const free = isFreeModel(m.modelID)
+              lines.push(`${C_ULTRA}${G_MEM}${C_RST} Model:    ${m.providerID}/${m.modelID} (${free ? "free" : "paid"})`)
+            }
             lines.push(`${C_WAIT}${G_HIST}${C_RST} Loaded:   ${loaded} записей | Skipped: ${skipped} (не влезли в бюджет ${tokK(budget)})`)
             lines.push(`${C_WAIT}${G_TIME}${C_RST} History:  ${historyCount} инъекций, budget ${C_OPEN}${tokK(budget)}${C_RST} tok (измени: ${C_ULTRA}budget number${C_RST})`)
             lines.push(`╰${"─".repeat(52)}╯`)
@@ -1369,6 +1382,7 @@ export default define({
             prompt: { type: "string" },
             providerID: { type: "string" },
             modelID: { type: "string" },
+            preferFree: { type: "boolean" },
             planId: { type: "string" },
             stepId: { type: "string" },
           },
@@ -1398,9 +1412,9 @@ export default define({
           }
 
           // model override (optional)
-          const providerID = args?.providerID ? String(args.providerID).trim() : ""
-          const modelID = args?.modelID ? String(args.modelID).trim() : ""
-          const hasModel = !!(providerID && modelID)
+          let providerID = args?.providerID ? String(args.providerID).trim() : ""
+          let modelID = args?.modelID ? String(args.modelID).trim() : ""
+          let hasModel = !!(providerID && modelID)
           if ((providerID && !modelID) || (!providerID && modelID)) {
             return { output: `${C_ERR}${G_ERR}${C_RST} delegate: укажи оба providerID и modelID` }
           }
@@ -1421,6 +1435,26 @@ export default define({
             if (!found) {
               return { output: `${C_ERR}${G_ERR}${C_RST} delegate: модель ${providerID}/${modelID} не найдена в каталоге` }
             }
+          }
+
+          // preferFree: если модель не указана явно, выбрать бесплатную из каталога OpenCode
+          if (args?.preferFree === true && !hasModel) {
+            try {
+              const res = await ctx.provider?.list?.()
+              const catalog = Array.isArray(res) ? res : Object.values(res || {})
+              outer: for (const prov of (catalog || [])) {
+                const pid = (prov as any)?.id
+                const models = (prov as any)?.models ?? {}
+                for (const mid of Object.keys(models)) {
+                  if (isFreeModel(mid)) {
+                    providerID = String(pid ?? "")
+                    modelID = String(mid)
+                    hasModel = true
+                    break outer
+                  }
+                }
+              }
+            } catch { /* best effort — оставить без модели */ }
           }
 
           // concurrency gate

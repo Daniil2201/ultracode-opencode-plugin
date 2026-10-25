@@ -127,6 +127,26 @@ test("delegate: no model override -> model omitted from prompt", async () => {
   assert.equal(prompted[0].model, undefined)
 })
 
+test("delegate: preferFree auto-selects free model from catalog", async () => {
+  const { ctx, tools, prompted } = makeCtx({ providerModels: { opencode: ["gpt-5", "beam-free"] } })
+  await loadPlugin(ctx)
+  const tool = tools["ultracode_delegate"]
+  const r = await tool.execute({ agent: "ultracode-executor", prompt: "x", preferFree: true }, tctx())
+  assert.match(r.output, /delegate ultracode-executor/)
+  assert.equal(prompted.length, 1)
+  assert.deepEqual(prompted[0].model, { providerID: "opencode", modelID: "beam-free" })
+})
+
+test("delegate: preferFree with no free model leaves model unset", async () => {
+  const { ctx, tools, prompted } = makeCtx({ providerModels: { opencode: ["gpt-5", "gpt-4"] } })
+  await loadPlugin(ctx)
+  const tool = tools["ultracode_delegate"]
+  const r = await tool.execute({ agent: "ultracode-executor", prompt: "x", preferFree: true }, tctx())
+  assert.match(r.output, /delegate ultracode-executor/)
+  assert.equal(prompted.length, 1)
+  assert.equal(prompted[0].model, undefined)
+})
+
 test("delegate: result includes actual model from AssistantMessage", async () => {
   const { ctx, tools } = makeCtx()
   ctx.session.prompt = async (o: any) => ({ info: { providerID: "realp", modelID: "realm", error: undefined }, parts: [{ type: "text", text: "answer" }] })
