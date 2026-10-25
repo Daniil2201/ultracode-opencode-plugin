@@ -13,9 +13,22 @@ async function bootIsolated() {
   fs.mkdirSync(project, { recursive: true })
   process.env.XDG_DATA_HOME = path.join(dir, "xdg")
   const mod = await import(`../../plugin/ultracode.ts?idle=${Date.now().toString(36)}${Math.floor(Math.random() * 1e6)}`)
-  const hooks = await mod.default({ worktree: project, project: { id: project } })
+  const ctx: any = {
+    location: { directory: project, project: { id: project, directory: project, canonical: project } },
+    options: {},
+    worktree: project,
+    directory: project,
+    storage: { get: async () => undefined, set: async () => {}, remove: async () => {}, scan: async () => ({ entries: [], next: undefined }) },
+    tool: { transform: async (cb: any) => { cb({ list: () => [], get: () => undefined, namespace: () => {}, add: () => {}, update: () => {}, remove: () => {} }); return { dispose: async () => {} } }, list: async () => [], reload: async () => {}, hook: async () => ({ dispose: async () => {} }) },
+    session: { hook: async (kind: string, cb: any) => { return { dispose: async () => {} } }, create: async (o: any) => ({ id: "c", ...o }), prompt: async () => ({ info: {}, parts: [] }), wait: async () => {}, context: async () => [], interrupt: async () => {}, get: async () => ({}), remove: async () => {}, switchAgent: async () => {}, switchModel: async () => {}, update: async () => {}, move: async () => {}, generate: async () => ({ text: "" }), command: async () => {}, compact: async () => ({}), synthetic: async () => ({}) },
+    event: { subscribe: async function* () {} },
+    provider: { list: async () => [] },
+    model: { list: async () => [], default: async () => undefined },
+    _usageBySession: new Map(),
+  }
+  await mod.default.setup(ctx)
   return {
-    dir, project, hooks,
+    dir, project, ctx,
     cleanup: () => { try { fs.rmSync(dir, { recursive: true, force: true }) } catch { /* best effort */ } },
   }
 }
@@ -24,7 +37,7 @@ test("5 idles подряд: knowledge не растёт, коммитов нет
   const rt = await bootIsolated()
   try {
     for (let i = 0; i < 5; i++) {
-      await rt.hooks.event({ event: { type: "session.idle", properties: { sessionID: `idle-sid-${i}` } } })
+      await (rt.ctx as any)._handleEvent({ type: "session.idle", properties: { sessionID: `idle-sid-${i}` } })
     }
     const file = storeFileFor(rt.project)
     const store = JSON.parse(fs.readFileSync(file, "utf8"))

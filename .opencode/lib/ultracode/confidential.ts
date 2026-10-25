@@ -106,20 +106,30 @@ function redactPhones(s: string): string {
 
 // Рекурсивная зачистка tool-ответа любой формы (C2): мутирует на месте,
 // глубина ограничена — циклы безопасны.
+const SECRET_FIELD_RE = /(?:api[_-]?key|access[_-]?token|refresh[_-]?token|password|secret|token|authorization|private[_-]?key|passwd|pwd)/i
+
 export function deepRedact(x: unknown, depth = 0): void {
-  if (x === null || x === undefined || depth > 5) return
+  if (x === null || x === undefined) return
   if (Array.isArray(x)) {
     for (let i = 0; i < x.length; i++) {
       if (typeof x[i] === "string") x[i] = redactConfidential(x[i])
-      else deepRedact(x[i], depth + 1)
+      else if (depth < 5) deepRedact(x[i], depth + 1)
+      // depth >= 5: fail closed — redact string values but don't recurse further
     }
     return
   }
   if (typeof x === "object") {
     const o = x as Record<string, unknown>
     for (const k of Object.keys(o)) {
-      if (typeof o[k] === "string") o[k] = redactConfidential(o[k] as string)
-      else deepRedact(o[k], depth + 1)
+      if (SECRET_FIELD_RE.test(k)) {
+        // Secret-named key: redact value regardless of type
+        if (typeof o[k] === "string") o[k] = "[redacted]"
+        else if (o[k] !== null && o[k] !== undefined) o[k] = "[redacted]"
+      } else if (typeof o[k] === "string") {
+        o[k] = redactConfidential(o[k] as string)
+      } else if (depth < 5) {
+        deepRedact(o[k], depth + 1)
+      }
     }
   }
 }

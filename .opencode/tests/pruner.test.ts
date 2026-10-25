@@ -641,7 +641,7 @@ test("стор: отказ записи не помечает ключ — сл�
     assert.equal(appendOriginal(file, rec), "failed", "ключ не помечен, повтор не считается дублем")
   } finally {
     forgetPruneCache()
-    cleanup([path.dirname(path.dirname(blocked))])
+    cleanup([path.dirname(blocked)]) // только свой uc-prune-*: уровень выше — общий os.tmpdir()
   }
 })
 

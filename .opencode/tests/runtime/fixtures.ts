@@ -12,10 +12,8 @@ export interface Runtime {
   tools: () => string[]
   chatMessage: (text: string) => Promise<void>
   systemTransform: (system: string[]) => Promise<string[]>
-  // Хук context-pruner: массив на входе мутируется на месте, возвращается тот же.
   messagesTransform: (messages: unknown[]) => Promise<unknown[]>
   compactSession: (sessionID: string) => Promise<void>
-  // Событие плагина (message.updated с tokens.total -> budget manager).
   sendEvent: (event: unknown) => Promise<void>
   storeFile: () => string
   readStoreRaw: () => string
@@ -24,17 +22,122 @@ export interface Runtime {
   cleanup: () => void
 }
 
-function fakeContext(): Record<string, unknown> {
-  return {
-    sessionID: "lab-session",
-    messageID: "m1",
-    agent: "lab",
-    directory: "/tmp",
-    worktree: "/tmp",
-    abort: new AbortController().signal,
-    metadata: () => {},
-    ask: async () => {},
+function fakeContext(project: string, captured: { tools: Record<string, any>; hooks: Record<string, any>; events: any[] }): Record<string, unknown> {
+  const systemTransforms: any[] = []
+  const messagesTransforms: any[] = []
+  const compactionHandlers: any[] = []
+  const promptHandlers: any[] = []
+  const eventSubscribers: any[] = []
+
+  const ctx: Record<string, unknown> = {
+    location: { directory: project, project: { id: project, directory: project, canonical: project } },
+    options: {},
+    worktree: project,
+    directory: project,
+    storage: {
+      get: async () => undefined,
+      set: async () => {},
+      remove: async () => {},
+      scan: async () => ({ entries: [], next: undefined }),
+    },
+    tool: {
+      transform: async (cb: (editor: any) => void) => {
+        const editor = {
+          list: () => Object.values(captured.tools),
+          get: (name: string) => captured.tools[name],
+          namespace: () => {},
+          add: (tool: any) => { captured.tools[tool.name] = tool },
+          update: (id: string, fn: (t: any) => void) => { if (captured.tools[id]) fn(captured.tools[id]) },
+          remove: (id: string) => { delete captured.tools[id] },
+        }
+        cb(editor)
+        return { dispose: async () => {} }
+      },
+      list: async () => Object.values(captured.tools),
+      reload: async () => {},
+      hook: async () => ({ dispose: async () => {} }),
+    },
+    session: {
+      hook: async (kind: string, cb: any) => {
+        if (kind === "context") systemTransforms.push(cb)
+        if (kind === "prompt") promptHandlers.push(cb)
+        if (kind === "compaction") compactionHandlers.push(cb)
+        captured.hooks[kind] = cb
+        return { dispose: async () => {} }
+      },
+      create: async (opts: any) => ({ id: "child-" + Date.now(), ...opts }),
+      prompt: async (opts: any) => ({ info: { providerID: "test", modelID: "test", error: undefined }, parts: [{ type: "text", text: "test response" }] }),
+      wait: async () => {},
+      context: async () => [],
+      interrupt: async () => {},
+      get: async () => ({}),
+      remove: async () => {},
+      switchAgent: async () => {},
+      switchModel: async () => {},
+      update: async () => {},
+      move: async () => {},
+      generate: async () => ({ text: "generated" }),
+      command: async () => {},
+      compact: async () => ({}),
+      synthetic: async () => ({}),
+    },
+    event: {
+      subscribe: async function* (opts: any) {
+        const queue = captured.events
+        // Yield all currently queued events
+        while (queue.length > 0) {
+          yield queue.shift()
+        }
+        // Wait for more events (with timeout)
+        const start = Date.now()
+        while (Date.now() - start < 200) {
+          if (queue.length > 0) {
+            yield queue.shift()
+          } else {
+            await new Promise((r) => setTimeout(r, 10))
+          }
+        }
+        // Yield any remaining
+        while (queue.length > 0) {
+          yield queue.shift()
+        }
+      },
+    },
+    provider: {
+      list: async () => [],
+    },
+    model: {
+      list: async () => [],
+      default: async () => undefined,
+    },
+    storage: {
+      get: async () => undefined,
+      set: async () => {},
+      remove: async () => {},
+      scan: async () => ({ entries: [], next: undefined }),
+    },
+    location: { directory: project, project: { id: project, directory: project, canonical: project } },
+    options: {},
+    // Capture system transforms for testing
+    _systemTransforms: systemTransforms,
+    _promptHandlers: promptHandlers,
+    _compactionHandlers: compactionHandlers,
   }
+
+  return ctx
+}
+
+
+async function doSendEvent(event: unknown, usageBySession: Map<string, any>, captured: any) {
+  const ev = event as any
+  if (ev?.type === "message.updated") {
+    const info = ev.properties?.info ?? {}
+    const msid = info.sessionID || info.sessionId || "lab"
+    const t = Number(info?.tokens?.total ?? 0)
+    if (t > 0) usageBySession.set(msid, { total: t, estimated: false })
+  }
+  captured.events.push(event)
+  await new Promise((r) => setTimeout(r, 50))
 }
 
 export async function makeRuntime(opts?: { config?: Record<string, unknown> }): Promise<Runtime> {
@@ -42,23 +145,24 @@ export async function makeRuntime(opts?: { config?: Record<string, unknown> }): 
   const project = path.join(dir, "proj")
   fs.mkdirSync(project, { recursive: true })
   process.env.XDG_DATA_HOME = path.join(dir, "xdg")
-  // Конфиг стора задаётся ДО загрузки плагина: modelLimit и пороги приходят из
-  // context.json, иначе budget всегда «ok» (лимит неизвестен).
+  const budgetMod = await import("../../lib/ultracode/budget.ts")
   if (opts?.config) {
     const { saveStoreFor, loadStoreFor } = await import("../../lib/ultracode/store.ts")
     const s = loadStoreFor(project)
     Object.assign(s.config, opts.config)
     saveStoreFor(project, s)
   }
-  // query-параметр обходит кэш модулей: "рестарт" = чистый инстанс поверх того же файла.
   const mod = await import(`../../plugin/ultracode.ts?lab=${Date.now().toString(36)}${Math.floor(Math.random() * 1e6)}`)
-  const hooks = await mod.default({ worktree: project, project: { id: project } })
-  const tool = hooks.tool.ultracode_context
+  const captured = { tools: {} as Record<string, any>, hooks: {} as Record<string, any>, events: [] as any[] }
+  const usageBySession = new Map()
+  const ctx = fakeContext(project, captured)
+  ;(ctx as any)._usageBySession = usageBySession
+  await mod.default.setup(ctx)
+  const tool = captured.tools["ultracode_context"]
   const callTool = async (args: Record<string, unknown>): Promise<string> => {
-    const out = await tool.execute(args, fakeContext())
-    return typeof out === "string" ? out : String(out.output ?? out)
+    const out = await tool.execute(args, { sessionID: "lab", messageID: "m1", agent: "lab", directory: project, worktree: project, abort: new AbortController().signal, metadata: () => {}, ask: async () => {} })
+    return typeof out === "string" ? out : String(out?.output ?? out)
   }
-  // store-файл: per-project под XDG (та же формула, что в store.ts).
   const storeFile = (): string => {
     const root = path.join(process.env.XDG_DATA_HOME as string, "opencode", "ultracode", "projects")
     const entries = fs.existsSync(root) ? fs.readdirSync(root) : []
@@ -66,54 +170,67 @@ export async function makeRuntime(opts?: { config?: Record<string, unknown> }): 
     return path.join(root, entries[0] as string, "context.json")
   }
   const readStoreRaw = (): string => fs.readFileSync(storeFile(), "utf8")
-  // "Рестарт": новый инстанс плагина поверх ТОГО ЖЕ файла (env не меняем).
   const reopen = async () => {
     const mod2 = await import(`../../plugin/ultracode.ts?lab=${Date.now().toString(36)}${Math.floor(Math.random() * 1e6)}`)
-    const hooks2 = await mod2.default({ worktree: project, project: { id: project } })
-    const tool2 = hooks2.tool.ultracode_context
+    const captured2 = { tools: {} as Record<string, any>, hooks: {} as Record<string, any>, events: [] as any[] }
+    const ctx2 = fakeContext(project, captured2)
+    await mod2.default.setup(ctx2)
+    const tool2 = captured2.tools["ultracode_context"]
     return {
       storeFile,
       readStoreRaw,
       callTool: async (args: Record<string, unknown>): Promise<string> => {
-        const out = await tool2.execute(args, fakeContext())
-        return typeof out === "string" ? out : String(out.output ?? out)
+        const out = await tool2.execute(args, { sessionID: "lab", messageID: "m1", agent: "lab", directory: project, worktree: project, abort: new AbortController().signal, metadata: () => {}, ask: async () => {} })
+        return typeof out === "string" ? out : String(out?.output ?? out)
       },
     }
   }
+  const systemTransforms = (ctx as any)._systemTransforms
+  const promptHandlers = (ctx as any)._promptHandlers
+  const compactionHandlers = (ctx as any)._compactionHandlers
+
   return {
-    dir, project, callTool, storeFile,
-    readStoreRaw,
-    // Произвольный тул из объекта tool: (например triage).
-    // Произвольный тул из объекта tool: (например triage, recall_pruned).
-    // sessionID можно задать: персистентные тулы (стор оригиналов) ищут файл
-    // по sid, который сообщенияtransform задают в info.sessionID.
+    dir, project, callTool, storeFile, readStoreRaw,
     callToolNamed: async (name: string, args: Record<string, unknown>, sessionID = "lab") => {
-      const t = (hooks.tool as Record<string, { execute: (a: unknown, c: unknown) => Promise<unknown> }>)[name]
+      const t = captured.tools[name]
       if (!t) throw new Error(`tool not registered: ${name}`)
-      const out = await t.execute(args, { ...fakeContext(), sessionID })
-      return typeof out === "string" ? out : String((out as { output?: unknown }).output ?? out)
+      const out = await t.execute(args, { sessionID, messageID: "m1", agent: "lab", directory: project, worktree: project, abort: new AbortController().signal, metadata: () => {}, ask: async () => {} })
+      return typeof out === "string" ? out : String(out?.output ?? out)
     },
-    tools: () => Object.keys(hooks.tool as Record<string, unknown>),
-    // Хук реального сообщения: output.parts несёт текст пользователя (UC-032 query).
+    tools: () => Object.keys(captured.tools),
     chatMessage: async (text: string) => {
-      await hooks["chat.message"]?.({ sessionID: "test", mcpID: undefined }, { parts: [{ type: "text", text }] })
+      for (const h of promptHandlers) {
+        await h({ sessionID: "lab", messageID: "m1", prompt: { text } })
+      }
     },
-    // Хук системного промпта: проверяем, что он делает с массивом system.
-    systemTransform: async (system: string[]) => {
-      await hooks["experimental.chat.system.transform"]?.({ sessionID: "lab" }, { system })
+    systemTransform: async (system: any[]) => {
+      for (const h of systemTransforms) {
+        await h({ sessionID: "lab", system, model: {} })
+      }
+      // Convert objects back to strings for test assertions
+      for (let i = 0; i < system.length; i++) {
+        if (typeof system[i] === "object" && system[i] !== null && typeof system[i].text === "string") {
+          system[i] = system[i].text
+        }
+      }
       return system
     },
-    // Хук сжатия истории: контракт — мутирует переданный массив (in-place).
     messagesTransform: async (messages: unknown[]) => {
-      await hooks["experimental.chat.messages.transform"]?.({}, { messages })
+      // V2: messages transform is part of context hook
+      for (const h of systemTransforms) {
+        await h({ sessionID: "lab", system: [], messages, model: {} })
+      }
       return messages
     },
-    // Компактация сессии: следующий transform на том же sid жать не должен.
     compactSession: async (sessionID: string) => {
-      await hooks["experimental.session.compacting"]?.({ sessionID }, { context: [] })
+      for (const h of compactionHandlers) {
+        await h({ sessionID, context: [] })
+      }
     },
     sendEvent: async (event: unknown) => {
-      await hooks.event?.({ event })
+      const handler = (ctx as any)._handleEvent
+      if (handler) await handler(event)
+      captured.events.push(event)
     },
     reload: makeRuntime,
     reopen,
@@ -121,22 +238,17 @@ export async function makeRuntime(opts?: { config?: Record<string, unknown> }): 
   }
 }
 
-// Схема tool из shipped-артефакта (не из хелперов): что реально принимает runtime.
 export async function toolSchema(): Promise<{ actions: string[]; statuses: string[] }> {
   process.env.XDG_DATA_HOME = process.env.XDG_DATA_HOME || fs.mkdtempSync(path.join(os.tmpdir(), "uc-schema-"))
   const mod = await import(`../../plugin/ultracode.ts?schema=${Date.now().toString(36)}`)
-  const hooks = await mod.default({ worktree: "/tmp", project: { id: "/tmp" } })
-  const args = hooks.tool.ultracode_context.args as Record<string, { _def?: {
-    values?: string[]; options?: string[]; entries?: Record<string, string>; innerType?: { _def?: {
-      values?: string[]; options?: string[]; entries?: Record<string, string> } } } }>
-  const vals = (k: string): string[] => {
-    const d = args[k]?._def
-    const inner = d?.innerType?._def ?? d
-    if (!inner) return []
-    if (Array.isArray(inner.values)) return inner.values
-    if (Array.isArray(inner.options)) return inner.options
-    if (inner.entries) return Object.keys(inner.entries)
-    return []
-  }
-  return { actions: vals("action"), statuses: vals("status") }
+  const captured = { tools: {} as Record<string, any>, hooks: {} as Record<string, any>, events: [] as any[] }
+  const usageBySession = new Map()
+  const ctx = fakeContext("/tmp", captured)
+  await mod.default.setup(ctx)
+  const tool = captured.tools["ultracode_context"]
+  const args = tool.input.properties ? tool.input.properties : (tool.input as any)
+  // V2 uses JSON Schema, not zod
+  const actionEnum = args?.action?.enum || []
+  const statusEnum = args?.status?.enum || []
+  return { actions: actionEnum, statuses: statusEnum }
 }

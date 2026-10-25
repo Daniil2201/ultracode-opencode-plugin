@@ -80,6 +80,7 @@ export function validateEvidenceArgs(args: Record<string, unknown>): EvidenceArg
 export interface PlanNewArgs {
   goal: string
   steps: string[]
+  stepChecks?: string[]   // per-step acceptance commands (parallel to steps)
   acceptanceCommand?: string
   dependsOn?: Record<string, string[]>
 }
@@ -108,10 +109,18 @@ export function validatePlanNewArgs(args: Record<string, unknown>): PlanNewArgs 
   if (!goal.trim()) throw new Error("plan_new: goal required (goal or text)")
   let steps: string[] = []
   const rawSteps = args["steps"]
+  const stepChecks: string[] = []
   if (Array.isArray(rawSteps)) {
-    steps = (rawSteps as unknown[]).map((s) =>
-      typeof s === "string" ? s : String((s as Record<string, unknown>)["text"] ?? ""),
-    ).filter(Boolean)
+    steps = (rawSteps as unknown[]).map((s) => {
+      if (typeof s === "string") return s
+      const obj = s as Record<string, unknown>
+      if (typeof obj["check"] === "string" && (obj["check"] as string).trim()) {
+        stepChecks.push((obj["check"] as string).trim())
+      } else {
+        stepChecks.push("")
+      }
+      return String(obj["text"] ?? "")
+    }).filter(Boolean)
   } else if (typeof rawSteps === "string" && rawSteps.trim()) {
     // Tool-схема не выражает массивы: JSON-array или построчный список.
     const t = rawSteps.trim()
@@ -119,9 +128,16 @@ export function validatePlanNewArgs(args: Record<string, unknown>): PlanNewArgs 
       try {
         const parsed: unknown = JSON.parse(t)
         if (Array.isArray(parsed)) {
-          steps = (parsed as unknown[]).map((s) =>
-            typeof s === "string" ? s : String((s as Record<string, unknown>)["text"] ?? ""),
-          ).filter(Boolean)
+          steps = (parsed as unknown[]).map((s) => {
+            if (typeof s === "string") { stepChecks.push(""); return s }
+            const obj = s as Record<string, unknown>
+            if (typeof obj["check"] === "string" && (obj["check"] as string).trim()) {
+              stepChecks.push((obj["check"] as string).trim())
+            } else {
+              stepChecks.push("")
+            }
+            return String(obj["text"] ?? "")
+          }).filter(Boolean)
         }
       } catch {
         steps = splitStepLines(t)
@@ -134,6 +150,7 @@ export function validatePlanNewArgs(args: Record<string, unknown>): PlanNewArgs 
   }
   if (steps.length === 0) throw new Error("plan_new: at least one step required")
   const out: PlanNewArgs = { goal: goal.slice(0, 500), steps }
+  if (stepChecks.length > 0 && stepChecks.some((c) => c)) out.stepChecks = stepChecks
   const acc = args["acceptanceCommand"] ?? args["acceptance_command"] ?? args["check"]
   if (typeof acc === "string" && acc.trim()) out.acceptanceCommand = acc.slice(0, 500)
   const rawDeps = args["dependsOn"] ?? args["depends_on"]

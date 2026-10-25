@@ -119,6 +119,11 @@ export interface MetricsLine {
   tool: string
   durationMs: number
   isError: boolean
+  // Bolt 5 dispatch fields (optional, backward-compat)
+  agent?: string
+  providerID?: string
+  modelID?: string
+  outcome?: string
 }
 
 // Bounded append: файл не растёт бесконечно (окно MAX_METRICS_LINES).
@@ -131,6 +136,10 @@ export function appendMetrics(file: string, line: MetricsLine): void {
     durationMs: Math.max(0, Math.round(line.durationMs)),
     isError: Boolean(line.isError),
   }
+  if (line.agent) safe.agent = sanitizeText(line.agent).slice(0, 64)
+  if (line.providerID) safe.providerID = sanitizeText(line.providerID).slice(0, 64)
+  if (line.modelID) safe.modelID = sanitizeText(line.modelID).slice(0, 64)
+  if (line.outcome) safe.outcome = sanitizeText(line.outcome).slice(0, 32)
   fs.appendFileSync(file, JSON.stringify(safe) + "\n", "utf8")
   try {
     const raw = fs.readFileSync(file, "utf8").split("\n").filter(Boolean)

@@ -198,7 +198,14 @@ export function migrateKnowledge(k: unknown): Knowledge {
     source: typeof x["source"] === "string" ? (x["source"] as string) : undefined,
     status: x["status"] === "closed" ? "closed" : "open",
     archived: Boolean(x["archived"]),
-    thread: Array.isArray(x["thread"]) ? (x["thread"] as Knowledge["thread"]) : undefined,
+    thread: Array.isArray(x["thread"])
+      ? (x["thread"] as unknown[]).flatMap((v) => {
+          if (!v || typeof v !== "object") return []
+          const t = v as Record<string, unknown>
+          if (typeof t.author !== "string" || typeof t.text !== "string") return []
+          return [{ ts: typeof t.ts === "string" ? t.ts : "", author: t.author, text: t.text }]
+        })
+      : undefined,
   }
 }
 

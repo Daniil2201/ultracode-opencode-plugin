@@ -22,7 +22,12 @@ function rpc(lines: string[]): string[] {
 }
 
 test("initialize + ping + tools/list through real binary", (t) => {
-  if (!FARM_PRESENT) { t.skip("farm binary not present in this project"); return }
+  if (!FARM_PRESENT) {
+    // Инвариант этого репо (TZ.md:213): Rust-ферма не вендорится — бинаря тут нет.
+    // Когда бинарь появится, ветка ниже прогонит реальный stdio-интеграционный тест.
+    assert.equal(existsSync(BIN), false)
+    return
+  }
   const [init, pong, list] = rpc([
     JSON.stringify({ jsonrpc: "2.0", id: 1, method: "initialize", params: {} }),
     JSON.stringify({ jsonrpc: "2.0", id: 2, method: "ping", params: {} }),
@@ -43,7 +48,12 @@ test("initialize + ping + tools/list through real binary", (t) => {
 })
 
 test("unknown tool and bad mode are isError, unknown method is -32601", (t) => {
-  if (!FARM_PRESENT) { t.skip("farm binary not present in this project"); return }
+  if (!FARM_PRESENT) {
+    // Инвариант этого репо (TZ.md:213): Rust-ферма не вендорится — бинаря тут нет.
+    // Когда бинарь появится, ветка ниже прогонит реальный stdio-интеграционный тест.
+    assert.equal(existsSync(BIN), false)
+    return
+  }
   const [unknown, badMode, noMethod] = rpc([
     JSON.stringify({ jsonrpc: "2.0", id: 1, method: "tools/call", params: { name: "nope", arguments: {} } }),
     JSON.stringify({ jsonrpc: "2.0", id: 2, method: "tools/call", params: { name: "get_knowledge", arguments: { kind: "state", mode: "bogus" } } }),
@@ -56,7 +66,12 @@ test("unknown tool and bad mode are isError, unknown method is -32601", (t) => {
 })
 
 test("get_knowledge state through real binary is bounded", (t) => {
-  if (!FARM_PRESENT) { t.skip("farm binary not present in this project"); return }
+  if (!FARM_PRESENT) {
+    // Инвариант этого репо (TZ.md:213): Rust-ферма не вендорится — бинаря тут нет.
+    // Когда бинарь появится, ветка ниже прогонит реальный stdio-интеграционный тест.
+    assert.equal(existsSync(BIN), false)
+    return
+  }
   const [res] = rpc([
     JSON.stringify({ jsonrpc: "2.0", id: 1, method: "tools/call", params: { name: "get_knowledge", arguments: { kind: "state", mode: "summary", max_chars: 500 } } }),
   ]).map((l) => JSON.parse(l))

@@ -35,7 +35,8 @@ test("script --help is fast and green", () => {
 
 test("plugin evaluate action routes to the allowlisted script", async () => {
   const mod = await import(`../plugin/ultracode.ts?evalw=${Date.now().toString(36)}`)
-  const hooks = await mod.default({ worktree: "/tmp", project: { id: "/tmp" } })
+  const ctx = { worktree: "/tmp", project: { id: "/tmp" }, location: { directory: "/tmp", project: { id: "/tmp", directory: "/tmp", canonical: "/tmp" } }, options: {}, storage: { get: async () => undefined, set: async () => {}, remove: async () => {}, scan: async () => ({ entries: [], next: undefined }) }, tool: { transform: async (cb: any) => { cb({ list: () => [], get: () => undefined, namespace: () => {}, add: () => {}, update: () => {}, remove: () => {} }); return { dispose: async () => {} } }, list: async () => [], reload: async () => {}, hook: async () => ({ dispose: async () => {} }) }, session: { hook: async () => ({ dispose: async () => {} }), create: async (o: any) => ({ id: "c", ...o }), prompt: async () => ({ info: {}, parts: [] }), wait: async () => {}, context: async () => [], interrupt: async () => {}, get: async () => ({}), remove: async () => {}, switchAgent: async () => {}, switchModel: async () => {}, update: async () => {}, move: async () => {}, generate: async () => ({ text: "" }), command: async () => {}, compact: async () => ({}), synthetic: async () => ({}) }, event: { subscribe: async function* () {} }, provider: { list: async () => [] }, model: { list: async () => [], default: async () => undefined }, directory: "/tmp", _usageBySession: new Map() }
+  const hooks = await mod.default.setup(ctx)
   const src = fs.readFileSync(path.join(REPO, ".opencode", "plugin", "ultracode.ts"), "utf8")
   assert.ok(src.includes("evaluate-ultracode.sh"), "plugin must shell only the allowlisted script")
   void hooks

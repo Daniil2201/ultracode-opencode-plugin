@@ -26,7 +26,7 @@ description: "Планирует большую задачу с измеримы
 
 Цикл:
 - Разбей цель на шаги → сохрани в контекст-стор (ultracode_context `plan_new`). План: `goal → plan → tasks → implementation → evidence`.
-- Независимые шаги запускай параллельно одним сообщением через `task` (каждому `planId` + `stepId`), `maxParallel=3`. Зависимые — только после предшественников (`dependsOn`).
+- Независимые шаги запускай параллельно одним сообщением через `ultracode_delegate` (каждому `planId` + `stepId`), `maxParallel=3`. Встроенный `task/subagent` как скрытый fallback не использовать. Зависимые — только после предшественников (`dependsOn`).
 - **Перед использованием любой библиотеки** — проверь её реальную версию и API (npm view / типы в node_modules), не пиши код из памяти (см. Dependency discipline агента).
 - Выполняй шаги, отмечай `plan_step`; `done` только с успешным evidence (`/verify`), без evidence шаг остаётся `verify_required`.
 - После ошибки повтори шаг (до 3 попыток), затем сохрани blocker и останови план с явным blocker.

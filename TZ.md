@@ -244,3 +244,11 @@ OpenCode v2.0.32 **не загружает** V1-плагины (`export default 
 4. Go/No-Go gate 11 пересматривается: сначала миграция, затем smoke.
 
 Полный отчёт: `out/runtime-smoke-v2.0.32.md`.
+
+## Дополнение к ТЗ v1.2: встроенная верификация отчетов
+
+- **Статус:** draft; требует отдельного `/bolt` или `/goal`.
+- **Цель:** сделать так, чтобы отчет агента проходил через слой верификации перед выдачей.
+- **Архитектура:** новый tool `ultracode_verify_report` или action `verify_report` в `ultracode_context`. Разбивает отчет на claims, сверяет с git diff, выводами команд, файлами. Вердикты: SUPPORTED/CONTRADICTED/UNPROVEN/REFUSED. Fail closed.
+- **Источник:** `spec/report-verification.md`.
+- **Ограничения:** только node stdlib + git. Не менять внешние скиллы. Не добавлять зависимости. Не менять storage schema v3.

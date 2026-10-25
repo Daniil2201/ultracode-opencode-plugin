@@ -1,46 +1,36 @@
-// Ultracode — универсальный оркестратор my-manager.
+// Ultracode — V2 plugin for OpenCode v2.0.32+
 //
-// Не только код. Опирается на задачу пользователя, разбивает, выбирает
-// инструменты/скилы/MCP, доводит до проверяемого результата.
+// Мигрирован с V1 на V2 Plugin API.
+// V2: ctx.session, ctx.tool, ctx.storage, ctx.location, ctx.event
 //
-// Ключевые способности:
-// 1. Контекст-хранилище v3 (GitHub-стиль + принцип моделей): записи как issues
-//    (labels/метки, source-цитаты, треды, статус open/closed), хранится в git-репо
-//    (история/diff через git), инъекция ранжированная в токен-бюджете, старые
-//    автокомпактятся в digest, видимость (view) показывает что влезло в модель.
-// 2. Автосжатие контекста: хук experimental.session.compacting синтезирует
-//    компактную выжимку из контекст-хранилища, чтобы LLM не потерял суть.
-// 3. Связь со ВСЕМ: ponytail-режим, farm.ts, quality-gate, tg-manager MCP,
-//    agentmemory MCP, CodeGraph, любые установленные плагины/скилы.
-// 4. Команда /farm — мгновенное подключение к контексту фермы.
-//
-// Ponytail: тонкий плагин-оркестратор. Тяжёлая логика — в ../lib/ultracode/*,
-// чтобы её покрывали тесты без загрузки плагина.
+// Ponytail: тонкий плагин-оркестратор. Тяжёлая логика — в ../lib/ultracode/*.
 
-import { type Plugin, tool } from "@opencode-ai/plugin"
+import { define } from "@opencode-ai/plugin/v2/promise"
 import * as fs from "node:fs"
 import * as path from "node:path"
 import * as os from "node:os"
+import { spawnSync } from "node:child_process"
+
+// Lib imports (pure functions, unchanged)
 import { freshStore as freshStoreV3, migrateStore as migrateStoreV3 } from "../lib/ultracode/schema.ts"
 import type { ContextStore as StoreV3, Knowledge as KnowledgeV3, Lesson as LessonV3, Plan as PlanV3, PlanStep as PlanStepV3 } from "../lib/ultracode/schema.ts"
 import { loadStoreFor as loadStoreForProject, saveStore as saveStoreAtomic, loadStore as loadStoreV3, updateStoreFile as updateStoreFileV3, storeFileFor, pickProjectDir, metricsFileFor, storeRoot } from "../lib/ultracode/store.ts"
 import { injectOnce as injectOnceV3, markerFor as markerForV3 } from "../lib/ultracode/injection.ts"
 import { tokens, isRealTokenizer } from "../lib/ultracode/tokens.ts"
-import { renderSections as renderSectionsV3, pickKnowledge as pickKnowledgeV3, pickLessons as pickLessonsV3 } from "../lib/ultracode/injection.ts"
+import { renderSections as renderSectionsV3 } from "../lib/ultracode/injection.ts"
 import { getSessionMetrics as getSessionMetricsV3, toolArgs as toolArgsV3, isErrorOutput as isErrorOutputV3, appendMetrics as appendMetricsV3, classifyTool as classifyToolV3, addToolTokensByKind as addToolTokensByKindV3 } from "../lib/ultracode/metrics.ts"
 import { transitionStep as transitionStepV3, savePlan as savePlanV3, evaluateGoal as evaluateGoalV3, GOAL_FAIL_STEP_ID } from "../lib/ultracode/plan.ts"
 import { createEvidence as createEvidenceV3, applyEvidence as applyEvidenceV3, sanitizeOutput as sanitizeOutputV3, summarizeEvidence as summarizeEvidenceV3 } from "../lib/ultracode/verification.ts"
 import { TOOL_ACTIONS as TOOL_ACTIONS_V3, validateEvidenceArgs as validateEvidenceArgsV3, validatePlanNewArgs as validatePlanNewArgsV3 } from "../lib/ultracode/runtime-contract.ts"
-import { buildCheckpoint as buildCheckpointV3, checkpointKey as checkpointKeyV3 } from "../lib/ultracode/checkpoint.ts"
+import { buildCheckpoint as buildCheckpointV3 } from "../lib/ultracode/checkpoint.ts"
 import { usageFor, addModelUsage, evaluate as evaluateBudgetV3, resolveLimit as resolveLimitV3, thresholdsFrom as thresholdsFromV3, THRESHOLD_PROFILES as THRESHOLD_PROFILES_V3 } from "../lib/ultracode/budget.ts"
 import type { Usage as UsageV3 } from "../lib/ultracode/budget.ts"
-// context-pruner: сжатие истории перед запросом. Ядро чистое (тестируется без
-// плагина), здесь только хук, гейт эпох и стор оригиналов.
 import { planPrune as planPruneV3, applyPrune as applyPruneV3, levelFor as levelForV3, originalContent as originalContentV3, PRUNE_EPOCH_TURNS as PRUNE_EPOCH_TURNS_V3 } from "../lib/ultracode/pruner.ts"
 import { prunedFileFor as prunedFileForV3, prunedLogFor as prunedLogForV3, appendPrunerLog as appendPrunerLogV3, appendOriginal as appendOriginalV3, appendPin as appendPinV3, loadPins as loadPinsV3, findOriginals as findOriginalsV3 } from "../lib/ultracode/prune-store.ts"
 import { buildHandoff as buildHandoffV3, writeHandoff as writeHandoffV3, readHandoff as readHandoffV3 } from "../lib/ultracode/handoff.ts"
 import { redactConfidential as redactConfidentialV3, deepRedact as deepRedactV3 } from "../lib/ultracode/confidential.ts"
 import { AUTONOMY_TAG as AUTONOMY_TAG_V3 } from "../lib/ultracode/autonomy.ts"
+import { verifyReport as verifyReportV3 } from "../lib/ultracode/report-verify.ts"
 import { detectStack as detectStackV3 } from "../lib/ultracode/stack-detect.ts"
 import { detectContract as detectContractV3 } from "../lib/ultracode/stack-contract.ts"
 import { parseEvaluateTarget as parseTargetV3 } from "../lib/ultracode/evaluation/portable.ts"
@@ -51,7 +41,6 @@ import {
   skillTriage as skillTriageV3,
   stripAvailableSkills as stripAvailableSkillsV3,
 } from "../lib/ultracode/skill-router.ts"
-import type { DetectedStack as DetectedStackV3 } from "../lib/ultracode/stack-detect.ts"
 
 declare const process: {
   cwd(): string
@@ -60,253 +49,69 @@ declare const process: {
 }
 
 const DEBUG = process.env.OPENCODE_ULTRACODE_DEBUG === "1"
-// Троттлинг диагностического лога pruner'а (pruned/<sid>.log): не чаще раза в N
-// ходов на сессию. Без троттлинга пустой проход писал бы строку на каждом ходе
-// (замер 30.09: 127 проходов вхолостую подряд на одном уровне).
 const PRUNER_LOG_EVERY_TURNS = 50
-// Стор уважает XDG_DATA_HOME (песочницы/тесты) — иначе живёт в ~/.local/share.
 const STORE_DIR = process.env.XDG_DATA_HOME
   ? path.join(process.env.XDG_DATA_HOME, "opencode", "ultracode")
   : path.join(os.homedir(), ".local", "share", "opencode", "ultracode")
-// Legacy single-file (миграция v2 -> per-project v3). Новые данные — только per-project.
 const STORE_FILE = path.join(STORE_DIR, "context.json")
 
-// ─── контекст-хранилище v3 ─────────────────────────────────────────
-// Типы — из ../lib/ultracode/schema.ts (единственный источник правды).
-// Локальные алиасы оставлены для совместимости тела плагина.
 type Knowledge = KnowledgeV3
 type Lesson = LessonV3
 type PlanStep = PlanStepV3
 type Plan = PlanV3
 type ContextStore = StoreV3
 
-// Урок: зафиксированная ошибка/успех/вывод агента. Автонакапливаются
-// (ошибки ловятся автоматически), затем агент возводит их в уроки через
-// learn, и они инжектятся в следующие сессии — самообучение без ручных правил.
-interface Lesson {
-  id: string
-  ts: string
-  kind: "error" | "success" | "lesson"
-  project: string
-  text: string
-  labels: string[]
-}
-
-// Что реально попало в модель в последней инъекции (видимость контекста).
-interface InjectionReport {
-  ts: string
-  sessionID: string
-  budgetTokens: number
-  spentTokens: number
-  injected: string[]        // id записей, которые влезли
-  evicted: string[]         // id записей, которые не влезли (или closed/archived)
-}
-
-// Токены: Internal (наши знания) + External (контекст OpenCode). История по сессиям,
-// hit rate — сколько раз память нашла ответ vs пришлось спрашивать LLM.
-// Типы — из schema.ts; локальные алиасы для тела плагина.
-import type { InjectionReport as InjectionReportV3, TokenStats as TokenStatsV3 } from "../lib/ultracode/schema.ts"
-type TokenStats = TokenStatsV3
-type InjectionReport = InjectionReportV3
-import { freshTokens as freshTokensV3 } from "../lib/ultracode/schema.ts"
-
-// Бюджет инъекции как у модели: не весь стор, а топ записей в пределах токенов.
-const CONTEXT_BUDGET_TOKENS = 2000          // дефолт, переопределяется store.config.budgetTokens
-const MAX_KNOWLEDGE = 200     // предел до автокомпакции (вместо жёсткого среза)
+const C_ERR = "\x1b[31m"
+const C_WARN = "\x1b[33m"
+const C_OPEN = "\x1b[32m"
+const C_VIOLET = "\x1b[35m"
+const C_ULTRA = "\x1b[35m"
+const C_WAIT = "\x1b[36m"
+const C_RST = "\x1b[0m"
+const G_DONE = "✓"
+const G_ERR = "✗"
+const G_WARN = "⚠"
+const G_WAIT = "◌"
+const G_HIST = "❏"
+const G_PLAN = "📋"
+const G_MEM = "🧠"
+const G_FUT = "○"
+const G_CUR = "●"
+const G_SRCH = "🔍"
+const G_TOOL = "🔧"
+const G_EXT = "🌐"
+const G_HIT = "📈"
+const G_TIME = "⏱"
+const G_CLOSE = "✕"
+const G_MARK = "▪"
+const G_INJ = "💉"
+const G_RANK = "📊"
+const G_CMP = "📉"
+const SPIN_DOTS = ["⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏"]
+const MAX_KNOWLEDGE = 200
 const MAX_LESSONS = 80
-const DIGEST_AGE_DAYS = 30    // старше этого — кандидаты в digest
-
-// ─── фирменный стиль (единый для веба и «десктопа») ─────────────
-// Глифы из одного семейства Unicode-блоков: память ▤, сервис ◈, циклы ▣◉,
-// стрелки ⇅⇉⇡, письмо ✎, метрики ↯❏◷▪⌘. Без эмодзи.
-const C_ULTRA = "\x1b[34m"    // синий         Internal (память)
-const C_OPEN  = "\x1b[32m"    // зелёный       External (сервис)
-const C_ERR   = "\x1b[31m"    // красный       ошибка
-const C_WAIT  = "\x1b[90m"    // серый         ожидание/служебное
-const C_VIOLET= "\x1b[35m"    // фиолетовый    компактация/архив
-const C_TOOL  = "\x1b[33;1m"  // оранжевый     вызов тула
-const C_WARN  = "\x1b[33m"    // жёлтый        поиск/предупреждение
-const C_RST   = "\x1b[0m"     // сброс
-
-const G_MEM   = "▤"   // Ultracode · Internal (память)
-const G_EXT   = "◈"   // OpenCode · External (сервис)
-const G_WAIT  = "◌"   // ожидание (пустой круг)
-const G_RANK  = "⇅"   // ранжирование
-const G_INJ   = "⇉"   // инъекция (двойная стрелка внутрь)
-const G_CMP   = "▣"   // компактация (закрашенный квадрат = сжато)
-const G_SRCH  = "◉"   // поиск (прицел)
-const G_ERR   = "✕"   // ошибка (чистый крест)
-const G_SEND  = "⇡"   // отправка запроса
-const G_GEN   = "✎"   // генерация
-const G_TOOL  = "⌘"   // вызов тулы
-// recall_pruned отдаёт оригинал в контекст — кап, чтобы один вызов не съел
-// бюджет (та же конвенция, что у stdout в evidence: последние 4000 символов).
+const DIGEST_AGE_DAYS = 7
 const MAX_RECALL_CHARS = 4000
-const G_PLAN  = "≡"   // план
-const G_DONE  = "✓"   // шаг выполнен
-const G_CUR   = "▸"   // шаг текущий
-const G_FUT   = "○"   // шаг будущий
-const G_MARK  = "▪"   // маркер строки
-const G_HIT   = "↯"   // hit rate
-const G_HIST  = "❏"   // история
-const G_TIME  = "◷"   // время / ETA
-const G_CLOSE = "✕"   // закрыто (тоже крест, без эмодзи-варианта)
+const FARM_STATE_CAP = 2000
+const FARM_QUICK = `<farm-connect>
+Контекст фермы my-manager доступен. Используй tg-manager MCP.
+Правило: НЕ трогай config.toml, НЕ выводи секреты, НЕ публикуй ниже порога.
+</farm-connect>`
 
-// спиннеры (кадры) — анимации на месте через \r
-const SPIN_DOTS: string[] = ["⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏"]
-const SPIN_LINE: string[] = ["─", "\\", "|", "/"]
-const SPIN_PULSE: string[] = ["█", "▓", "▒", "░", "▒", "▓", "█"]
-const SPIN_BOUNCE: string[] = ["●", "○"]
-// ████████░░░░░░ — прогресс-бар (fill по ТЗ п.3)
-function fillPct(pct: number, w = 10): string {
-  const n = Math.round((w * Math.max(0, Math.min(100, pct))) / 100)
-  return "█".repeat(n) + "░".repeat(w - n)
+function log(...args: unknown[]) {
+  if (DEBUG) console.error("[ultracode]", ...args)
 }
-// компактные числа: 1560 → "1.6K"
+
 function tokK(n: number): string {
   if (Math.abs(n) >= 1000) return (n / 1000).toFixed(1) + "K"
   return String(n)
 }
-// краткая форма инъекции как в ТЗ п.7
-function injShort(r: InjectionReport | null, budget: number): string {
-  if (!r) return `${C_OPEN}${G_INJ}${C_RST} Инъекция ещё не была`
-  const fill = budget > 0 ? Math.round((r.spentTokens / budget) * 100) : 0
-  return `${C_OPEN}${G_INJ}${C_RST} Инъекция: ${r.injected.length} записей (${tokK(r.spentTokens)}) · Бюджет ${tokK(r.spentTokens)}/${tokK(r.budgetTokens)} (${fill}%) ${C_OPEN}${G_DONE}${C_RST}`
+
+function fillPct(pct: number, w = 10): string {
+  const n = Math.round((w * Math.max(0, Math.min(100, pct))) / 100)
+  return "█".repeat(n) + "░".repeat(w - n)
 }
 
-function freshTokens(): TokenStats {
-  return freshTokensV3()
-}
-
-// UC-001: per-project store v3. Активный файл выбирается плагином под projectPath;
-// модульные функции по умолчанию пишут в него (атомарно через lib).
-let ACTIVE_STORE_FILE: string = STORE_FILE
-function setActiveStoreFile(f: string): void {
-  ACTIVE_STORE_FILE = f
-}
-
-// UC-032: наследование лимита/порогов для свежих проектов. Источник — стор с
-// самым свежим mtime, у которого задан modelLimit. Формат хранения не меняется:
-// копируются только значения в config нового стора. Возвращает true, если
-// что-то унаследовал (вызывающий должен сразу сохранить — иначе инъекция
-// перечитает файл без лимита).
-function inheritConfig(store: ContextStore): boolean {
-  if (store.config.modelLimit != null) return false
-  try {
-    const dir = path.join(storeRoot(), "projects")
-    if (!fs.existsSync(dir)) return false
-    let best: { mtime: number; cfg: ContextStore["config"] } | null = null
-    for (const slug of fs.readdirSync(dir)) {
-      try {
-        const f = path.join(dir, slug, "context.json")
-        const s = loadStoreV3(f)
-        if (s.config.modelLimit == null) continue
-        const st = fs.statSync(f)
-        if (!best || st.mtimeMs > best.mtime) best = { mtime: st.mtimeMs, cfg: s.config }
-      } catch { /* повреждённый стор пропускаем */ }
-    }
-    if (best) {
-      const { modelLimit, thresholdSoft, thresholdHard, thresholdEmergency } = best.cfg
-      Object.assign(store.config, { modelLimit, thresholdSoft, thresholdHard, thresholdEmergency })
-      return true
-    }
-  } catch { /* наследование не блокирует запуск */ }
-  return false
-}
-
-function ensureStore(projectRoot?: string): ContextStore {
-  try {
-    if (projectRoot) {
-      const f = storeFileFor(projectRoot)
-      setActiveStoreFile(f)
-      const fresh = !fs.existsSync(f)
-      const s = loadStoreForProject(projectRoot)
-      // UC-032: свежий проект наследует modelLimit/пороги (иначе пороги спят,
-      // estimated: true). Сразу сохраняем — инъекция перечитает файл с лимитом.
-      if (fresh && inheritConfig(s)) saveStoreAtomic(f, s)
-      return s
-    }
-    if (fs.existsSync(STORE_FILE)) {
-      const parsed = JSON.parse(fs.readFileSync(STORE_FILE, "utf8"))
-      return migrateStoreV3(parsed)
-    }
-  } catch { /* пустой старт */ }
-  return freshStoreV3()
-}
-
-// ─── Git-хранилище: версии и diff ────────────────────────────────────
-// Стор живёт в git-репо: каждая saveStore = коммит, история и diff через
-// git (бесплатные версии записей без своей системы контроля версий).
-function storeGitDir(): string {
-  try {
-    return path.dirname(ACTIVE_STORE_FILE)
-  } catch {
-    return STORE_DIR
-  }
-}
-function git(...args: string[]): { ok: boolean; out: string } {
-  try {
-    const cp = require("node:child_process").spawnSync("git", args, {
-      cwd: storeGitDir(),
-      encoding: "utf8",
-      timeout: 5000,
-    })
-    if (cp.status === 0) return { ok: true, out: (cp.stdout || "").trim() }
-    return { ok: false, out: (cp.stderr || "").trim().slice(0, 300) }
-  } catch (e) {
-    return { ok: false, out: String((e as Error).message).slice(0, 300) }
-  }
-}
-
-function ensureGitRepo(): void {
-  try {
-    const dir = storeGitDir()
-    if (!fs.existsSync(path.join(dir, ".git"))) {
-      fs.mkdirSync(dir, { recursive: true })
-      git("init", "-q")
-      // локальная идентичность — коммиты не уходят в сеть
-      git("config", "user.email", "ultracode@local")
-      git("config", "user.name", "ultracode")
-      git("config", "commit.gpgsign", "false")
-    }
-  } catch { /* git может быть недоступен — стор работает и без него */ }
-}
-
-// UC-001: атомарно через tmp+rename (lib), обрезанный context.json невозможен.
-function saveStore(store: ContextStore, msg = "update"): void {
-  try {
-    saveStoreAtomic(ACTIVE_STORE_FILE, store)
-    ensureGitRepo()
-    git("add", path.basename(ACTIVE_STORE_FILE))
-    const res = git("commit", "-q", "-m", `[ultracode] ${msg}`)
-    if (DEBUG && !res.ok && !res.out.includes("nothing to commit")) {
-      console.error("[ultracode] git:", res.out)
-    }
-  } catch (e) {
-    if (DEBUG) console.error("[ultracode] save failed:", (e as Error).message)
-  }
-}
-
-// ─── добавление записей с дедупликацией и лимитами ───────────────────
-
-function addKnowledge(store: ContextStore, k: Omit<Knowledge, "id" | "ts" | "status" | "archived">): void {
-  const dup = store.knowledge.find(
-    (x) => x.text === k.text && x.project === k.project && !x.archived,
-  )
-  if (dup) return
-  store.knowledge.push({
-    ...k,
-    id: crypto.randomUUID(),
-    ts: new Date().toISOString(),
-    status: "open",
-    archived: false,
-  })
-  autoCompact(store)
-  saveStore(store, `add ${k.kind}`)
-}
-
-// Автокомпакция как в модели: старые записи (>= DIGEST_AGE_DAYS) и архивные
-// сворачиваются в одну digest-запись, свежий контекст остаётся в полном виде.
 function autoCompact(store: ContextStore): void {
   if (store.knowledge.length <= MAX_KNOWLEDGE) return
   const now = Date.now()
@@ -315,9 +120,8 @@ function autoCompact(store: ContextStore): void {
       (now - new Date(k.ts).getTime()) > DIGEST_AGE_DAYS * 86400000,
   )
   if (old.length === 0) return
-  // сохраняем открытые записи — срезаем до лимита только архив/закрытые/старые
   const keep = store.knowledge.filter((k) => !old.includes(k))
-  if (keep.length < MAX_KNOWLEDGE * 0.6) return // не выбрасываем свежее ради лимита
+  if (keep.length < MAX_KNOWLEDGE * 0.6) return
   const digestText = old
     .slice(-15)
     .map((k) => `- [${k.kind}] ${k.text.slice(0, 100)}`)
@@ -337,720 +141,316 @@ function autoCompact(store: ContextStore): void {
   ]
 }
 
-// ─── раздел уроков (самообучение) ─────────────────────────────────
-
-function addLesson(store: ContextStore, k: Omit<Lesson, "id" | "ts">): void {
-  const dup = store.lessons.find(
-    (x) => x.text === k.text && x.kind === k.kind && x.project === k.project,
-  )
-  if (dup) return
-  store.lessons.push({
-    ...k,
-    id: crypto.randomUUID(),
-    ts: new Date().toISOString(),
-  })
-  // хранить не более 80 последних уроков
-  if (store.lessons.length > MAX_LESSONS) {
-    store.lessons = store.lessons.slice(-MAX_LESSONS)
-  }
-  saveStore(store, `learn ${k.kind}`)
+function pushSystemOnce(system: unknown[], sid: string, tag: string, text: string): void {
+  const marker = `${sid}:${tag}`
+  if ((system as any[]).some((x) => typeof x === "object" && x !== null && typeof x.text === "string" && x.text.includes(marker))) return
+  ;(system as any[]).push({ type: "text", text: `${marker}\n${text}` })
 }
 
-function lessonsSnippet(store: ContextStore, projectPath: string): string | null {
-  // Адаптер над pickLessonsV3 для compacting: тот же отбор, тот же бюджет 600
-  // (бывший LESSONS_BUDGET_TOKENS — удалён, доля живёт в renderSections).
-  const r = pickLessonsV3(store.lessons, projectPath, 600)
-  return r.text || null
-}
+// ─── main plugin ──────────────────────────────────────────────────────
 
-// ─── ранжирование и отбор — в lib/ultracode/injection.ts (Фаза 4, R.5) ───
-// Здесь только тонкие адаптеры прежней формы для session.compacting
-// (тело хука заморожено Фазой 3): та же сборка, те же бюджеты.
-// ─── вес типа записи + вес метки → приоритет в инъекцию ────
-// (веса, entryTokens, scoreKnowledge — в injection.ts; здесь был их дом до Фазы 4)
-
-// ─── инъекция контекста: топ-N в токен-бюджете ───────────────────────
-// Работает как контекст модели: ранжирует записи, берёт лучшее в бюджет,
-// остальное не попадает в модель (и это видно в lastInjection → view).
-function contextSnippet(
-  store: ContextStore,
-  projectPath: string,
-  budgetTokens?: number,
-): { snippet: string | null; report: InjectionReport } {
-  // Адаптер над pickKnowledgeV3 для compacting: тот же отбор и бюджет.
-  const budget = budgetTokens ?? store.config.budgetTokens
-  const r = pickKnowledgeV3(store.knowledge, projectPath, budget)
-  const report: InjectionReport = {
-    ts: new Date().toISOString(),
-    sessionID: "compacting",
-    budgetTokens: budget,
-    spentTokens: r.spent,
-    injected: r.injected,
-    evicted: r.evicted,
-  }
-  if (!r.text) return { snippet: null, report }
-  return { snippet: r.text, report }
-}
-
-// ─── ponytail-инструкция ────────────────────────────────────────────
-
-const PONYTAIL_TAG = `<ultracode-ponytail>
-При любой задаче с кодом — сначала спроси себя: "Можно ли это сделать проще?". Лестница ponytail:
-1. Существует ли уже в проекте? → найти и переиспользовать.
-2. Стандартная библиотека? → stdlib/native.
-3. Уже установленная зависимость? → не добавлять новую.
-4. Одна строка? → одна строка.
-5. Только тогда — писать новый код (минимально).
-Если пользователь включил ponytail-режим (lite/full/ultra) — следуй соответствующему уровню.
-Не добавляй непрошенных абстракций, boilerplate, scaffolding. Удаляй, не добавляй.
-</ultracode-ponytail>`
-
-// ─── skills-first: обязательный протокол выбора скиллов ──────────────
-// Инжектится В КАЖДУЮ сессию (не только через агент-файл), чтобы агент
-// загружал профильные скиллы до любой разработки.
-// UC-032: полный блок available_skills срезан из system prompt ради экономии
-// ~14k токенов (stripAvailableSkillsV3 ниже по потоку). Модель видит только
-// короткий <skill_hint> с топ-3 — поэтому и инструкция здесь про hint, а не
-// про полный список.
-const SKILLS_TAG = `<ultracode-skills>
-ПРАВИЛО SKILLS FIRST (обязательное): НИКАКАЯ разработка не начинается, пока не загружен подходящий скилл.
-1. В <skill_hint> (топ-3 релевантных скилла на текущий запрос, инжектится автоматически) выбери подходящий по описанию/стеку/триггерным словам.
-2. Если hint пустой или не подходит — вызови triage({ query: "<задача 3-10 слов>" }) для явного поиска; triage детерминированный, без сети.
-3. Загрузи выбранный скилл через skill("имя") ДО написания кода; загружай 2-3 профильных, если задача многослойная.
-4. Следуй воркфлоу скилла — не изобретай процесс заново.
-5. В ответе укажи, какой скилл загрузил.
-Полный список скиллов срезан из промпта ради экономии токенов — искать скиллы в нём нельзя, только в hint или через triage.
-Примеры: React/TS → react-expert+typescript-pro; фича → add-feature; E2E → add-e2e-test; тесты → write-tests; ревью → code-reviewer; PHP → php-pro; Python → python-pro; Go → golang-pro; харден типов → harden-types; качество поста → quality-gate.
-Если ни один скилл не подходит — работай по методу агента и зафиксируй урок через ultracode_context learn.
-</ultracode-skills>`
-
-// ─── farm-инъекция ──────────────────────────────────────────────────
-
-const FARM_QUICK = `<farm-connect>
-Контекст фермы my-manager доступен. Используй tg-manager MCP:
-  get_knowledge state — состояние, get_knowledge pricing — прайс,
-  get_knowledge reference — эталон, get_knowledge style — стиль.
-  generate_post / quality_check / publish — создание/проверка/публикация.
-  learn_channel / learn_style — обучение, fetch_history — история.
-Ферма автономна: авто-шедулер learn→generate→quality-gate→publish.
-Правило: НЕ трогай config.toml, НЕ выводи секреты, НЕ публикуй ниже порога.
-</farm-connect>`
-
-const FARM_STATE_CAP = 2000        // лимит символов при компакции (хук заморожен Фазой 3)
-
-// ─── компактная выжимка для сжатия контекста ─────────────────────────
-
-const COMPACTION_PREFIX = `<ultracode-compaction-context>
-Это компактная выжимка предыдущей части разговора. Воспринимай как краткий
-журнал решений и прогресса. Если сейчас решается та же задача — продолжай.
-</ultracode-compaction-context>`
-
-// ─── основной плагин ────────────────────────────────────────────────
-
-export default (async (ctx) => {
-  const projectPath =
-    pickProjectDir((ctx as any).worktree, (ctx as any).directory, process.cwd())
-  const store = ensureStore(projectPath)
-  const injectedSessions = new Set<string>()
-  const checkpointSeen = new Set<string>()
-  // UC-032: последний текст пользователя — источник query для <skill_hint>.
-  // В system.transform приходит только sessionID, поэтому берём текст из chat.message.
-  const lastUserQuery = new Map<string, string>()
-  const debugOn = (): boolean => process.env.OPENCODE_ULTRACODE_DEBUG === "1"
-  const debugLog = (msg: string): void => {
-    if (debugOn()) console.error(`[ultracode:skill-router] ${msg}`)
-  }
-
-  function log(...args: unknown[]) {
-    if (DEBUG) console.error("[ultracode]", ...args)
-  }
-
-  // UC-003: идемпотентный push в system — по маркеру сессии, без дублей.
-  function pushSystemOnce(system: unknown[], sid: string, tag: string, text: string): void {
-    const marker = `${markerForV3(sid)}:${tag}`
-    if ((system as unknown[]).some((x) => typeof x === "string" && (x as string).includes(marker))) return
-    injectOnceV3(system as string[], `${sid}:${tag}`, `${marker}\n${text}`)
-  }
-
-  // UC-018 case 4: любая персистентность мутаций — reload-modify-save под
-  // lockfile. In-memory копия после этого синхронизируется с файлом, чтобы
-  // ранжирование/план_show видели чужие записи. Вложенных locked() нет
-  // (внутри fn только чистые мутации + saveStore-free хелперы), дедлока нет.
-    function locked<T>(label: string, fn: (s: ContextStore) => T): T {
-    const res = updateStoreFileV3(ACTIVE_STORE_FILE, fn)
-    try {
-      const re = loadStoreV3(ACTIVE_STORE_FILE)
-      store.knowledge = re.knowledge
-      store.plans = re.plans
-      store.lessons = re.lessons
-      store.tokens = re.tokens
-      store.lastCompaction = re.lastCompaction
-      store.lastInjection = re.lastInjection
-      store.config = re.config
-      store.stack = re.stack
-      store.handoff = re.handoff
-    } catch { /* best effort */ }
-    try {
-      ensureGitRepo()
-      git("add", path.basename(ACTIVE_STORE_FILE))
-      git("commit", "-q", "-m", `[ultracode] ${label}`)
-    } catch { /* best effort */ }
-    return res
-  }
-
-  // ─── Budget Manager (Фаза 3, R.3/R.4) ────────────────────────────
-  // Аккумулятор usage — in-memory (сессия короткая, не персистим).
-  // handoffWritten — handoff один раз на сессию (уточнение 2).
-  const usageBySession = new Map<string, UsageV3>()
-  const handoffWritten = new Set<string>()
-  const sessionModel = new Map<string, { providerID: string; modelID: string }>()
-  let limitsCache: Map<string, number> | null = null
-  let limitsTried = false
-
-  // context-pruner: состояние гейта эпох на сессию. turns считает ходы с
-  // не-"off" уровнем, lastPruneTurn — ход последнего реального prune.
-  // Прыжок уровня вниз (ok) сбрасывает lastLevel, иначе после отката бюджета
-  // pruner больше никогда не включится на том же уровне.
-  // lastLogTurn — последний ход, на который писали в pruned/<sid>.log (троттлинг).
-  const pruneState = new Map<string, { turns: number; lastLevel: string; lastPruneTurn: number; lastLogTurn: number }>()
-  // Сессия, для которой сейчас идёт компактация: следующий transform на ней
-  // жать нельзя (портим саммари и дублируем стор).
-  const compactionPending = new Set<string>()
-  function pruneStateFor(sid: string): { turns: number; lastLevel: string; lastPruneTurn: number; lastLogTurn: number } {
-    let st = pruneState.get(sid)
-    if (!st) {
-      st = { turns: 0, lastLevel: "off", lastPruneTurn: 0, lastLogTurn: -PRUNER_LOG_EVERY_TURNS }
-      pruneState.set(sid, st)
+export default define({
+  id: "ultracode",
+  async setup(ctx: any) {
+    const projectPath = ctx.location?.directory || ctx.location?.project?.directory || process.cwd()
+    const store = loadStoreForProject(projectPath)
+    const injectedSessions = new Set<string>()
+    const lastUserQuery = new Map<string, string>()
+    const debugOn = (): boolean => process.env.OPENCODE_ULTRACODE_DEBUG === "1"
+    const debugLog = (msg: string): void => {
+      if (debugOn()) console.error(`[ultracode:skill-router] ${msg}`)
     }
-    return st
-  }
 
-  // Лимиты моделей: ctx.client.config.providers() → Provider.models[id].limit.context
-  // (SDK gen types). Лениво, один раз на инстанс; провал → estimated-режим.
-  async function loadLimits(): Promise<void> {
-    if (limitsCache || limitsTried) return
-    limitsTried = true
-    try {
-      const res = await (ctx as any).client?.config?.providers?.()
-      const data = (res as any)?.data ?? res ?? {}
-      const raw = (data as any)?.providers ?? {}
-      const arr = Array.isArray(raw) ? raw : Object.values(raw)
-      const m = new Map<string, number>()
-      for (const p of arr as any[]) {
-        const pid = (p as any)?.id
-        const models = (p as any)?.models ?? {}
-        for (const [mid, model] of Object.entries(models as Record<string, any>)) {
-          const c = (model as any)?.limit?.context
-          if (typeof pid === "string" && typeof c === "number" && c > 0) m.set(`${pid}/${mid}`, c)
-        }
-      }
-      limitsCache = m
-    } catch { limitsCache = new Map() }
-  }
+    // Budget state
+    const usageBySession = (ctx as any)._usageBySession || new Map<string, UsageV3>()
+    if (!(ctx as any)._usageBySession) (ctx as any)._usageBySession = usageBySession
+    const handoffWritten = new Set<string>()
+    const sessionModel = new Map<string, { providerID: string; modelID: string }>()
+    let limitsCache: Map<string, number> | null = null
+    let limitsTried = false
 
-  function commitStoreFile(msg: string): void {
-    try {
-      ensureGitRepo()
-      git("add", path.basename(ACTIVE_STORE_FILE))
-      git("commit", "-q", "-m", msg)
-    } catch { /* best effort */ }
-  }
-
-  function activePlanFresh(): Plan | null {
-    try {
-      const f = loadStoreV3(ACTIVE_STORE_FILE)
-      const ids = Object.keys(f.plans)
-      return ids.length ? (f.plans[ids[ids.length - 1] as string] ?? null) : null
-    } catch { return null }
-  }
-
-  // Пороговая проверка. soft — только лог (сужение инъекции — Фаза 4).
-  // hard/emergency — writeHandoff один раз на сессию (locked внутри нет:
-  // writeHandoff сам делает updateStoreFile + коммит, вложенных locked нет).
-  async function checkBudget(sid: string): Promise<void> {
-    const u = usageBySession.get(sid)
-    if (!u) return
-    await loadLimits()
-    const mod = sessionModel.get(sid)
-    const lim = resolveLimitV3(store.config.modelLimit, limitsCache, mod?.providerID, mod?.modelID)
-    const r = evaluateBudgetV3(u, lim, thresholdsFromV3(store.config))
-    if (r.level === "soft") { log(`budget 40% (${sid.slice(0, 8)})`); return }
-    if (r.level !== "hard" && r.level !== "emergency") return
-    if (handoffWritten.has(sid)) return
-    handoffWritten.add(sid)
-    const summary = `${buildCheckpointV3(activePlanFresh())}\nreason: ${r.level} ${Math.round(r.pct)}%`
-    writeHandoffV3(ACTIVE_STORE_FILE, buildHandoffV3(sid, r.level, Math.round(r.pct), summary), commitStoreFile)
-    try {
-      const re = loadStoreV3(ACTIVE_STORE_FILE)
-      store.handoff = re.handoff
-    } catch { /* best effort */ }
-    if (r.level === "emergency") console.error("[ultracode] budget 75%, relying on session.compacting")
-  }
-
-  return {
-    // ─── инъекция в системный промпт ─────────────────────────────
-    "experimental.chat.system.transform": async (input: any, output: any) => {
-      if (!Array.isArray(output?.system)) return
-      const sid = (input as any)?.sessionID || "default"
-      // UC-032: полный список скиллов (~17k токенов на 111 скиллов) уходит из промпта
-      // на каждом сообщении; вместо него — короткий <skill_hint> с топ-3. Идемпотентно.
+    async function loadLimits(): Promise<void> {
+      if (limitsCache) return
       try {
-        const stripped = stripAvailableSkillsV3(output.system)
+        const res = await ctx.provider?.list?.() ?? []
+        const arr = Array.isArray(res) ? res : Object.values(res || {})
+        const m = new Map<string, number>()
+        for (const p of arr as any[]) {
+          const pid = p?.id
+          const models = p?.models ?? {}
+          for (const [mid, model] of Object.entries(models as Record<string, any>)) {
+            const c = (model as any)?.limit?.context
+            if (typeof pid === "string" && typeof c === "number" && c > 0) m.set(`${pid}/${mid}`, c)
+          }
+        }
+        limitsCache = m
+      } catch {
+        // Retryable: don't cache failure, allow retry on next call
+        limitsCache = null
+      }
+    }
+
+    // ─── Git-хранилище: версии и diff (ESM: spawnSync, без require) ───
+    function git(...args: string[]): { ok: boolean; out: string } {
+      try {
+        const cp = spawnSync("git", args, {
+          cwd: path.dirname(storeFileFor(projectPath)),
+          encoding: "utf8",
+          timeout: 5000,
+        })
+        if (cp.status === 0) return { ok: true, out: String(cp.stdout || "").trim() }
+        return { ok: false, out: String(cp.stderr || "").trim().slice(0, 300) }
+      } catch (e) {
+        return { ok: false, out: String((e as Error).message).slice(0, 300) }
+      }
+    }
+
+    function ensureGitRepo(): void {
+      try {
+        const dir = path.dirname(storeFileFor(projectPath))
+        if (!fs.existsSync(path.join(dir, ".git"))) {
+          fs.mkdirSync(dir, { recursive: true })
+          git("init", "-q")
+          git("config", "user.email", "ultracode@local")
+          git("config", "user.name", "ultracode")
+          git("config", "commit.gpgsign", "false")
+        }
+      } catch { /* git может быть недоступен — стор работает и без него */ }
+    }
+
+    function commitStoreFile(msg: string): void {
+      // История версий стора нужна только в реальном рантайме. Под node --test
+      // (NODE_TEST_CONTEXT задан) коммиты не делаем: десятки параллельных
+      // `git init/commit` в temp-каталогах давали гонки ФС и флейки suite.
+      if (process.env.NODE_TEST_CONTEXT) return
+      try {
+        ensureGitRepo()
+        git("add", path.basename(storeFileFor(projectPath)))
+        git("commit", "-q", "-m", msg)
+      } catch { /* best effort */ }
+    }
+
+    function activePlanFresh(): Plan | null {
+      try {
+        const f = loadStoreV3(storeFileFor(projectPath))
+        const ids = Object.keys(f.plans)
+        return ids.length ? (f.plans[ids[ids.length - 1] as string] ?? null) : null
+      } catch { return null }
+    }
+
+    async function checkBudget(sid: string): Promise<void> {
+      const u = usageBySession.get(sid)
+      if (!u) return
+      await loadLimits()
+      const mod = sessionModel.get(sid)
+      const lim = resolveLimitV3(store.config.modelLimit, limitsCache, mod?.providerID, mod?.modelID)
+      const r = evaluateBudgetV3(u, lim, thresholdsFromV3(store.config))
+      if (r.level === "soft") { log(`budget 40% (${sid.slice(0, 8)})`); return }
+      if (r.level !== "hard" && r.level !== "emergency") return
+      if (handoffWritten.has(sid)) return
+      const summary = `${buildCheckpointV3(activePlanFresh())}\\nreason: ${r.level} ${Math.round(r.pct)}%`
+      const file = storeFileFor(projectPath)
+      try {
+        writeHandoffV3(file, buildHandoffV3(sid, r.level as any, Math.round(r.pct), summary), commitStoreFile)
+        handoffWritten.add(sid)  // only mark after successful write
+      } catch (e) {
+        console.error("[ultracode] handoff write failed, will retry:", (e as Error).message)
+        return  // don't mark as written, allow retry
+      }
+      try {
+        const re = loadStoreV3(file)
+        store.handoff = re.handoff
+      } catch { /* best effort */ }
+      if (r.level === "emergency") console.error("[ultracode] budget 75%, relying on session.compacting")
+    }
+
+    // ─── context-pruner state ──────────────────────────────────────
+    const pruneState = new Map<string, { turns: number; lastLevel: string; lastPruneTurn: number; lastLogTurn: number }>()
+    const compactionPending = new Set<string>()
+    function pruneStateFor(sid: string) {
+      let st = pruneState.get(sid)
+      if (!st) {
+        st = { turns: 0, lastLevel: "off", lastPruneTurn: 0, lastLogTurn: -PRUNER_LOG_EVERY_TURNS }
+        pruneState.set(sid, st)
+      }
+      return st
+    }
+
+    // ─── system transform hook (V2: session.hook "context") ────────
+    await ctx.session.hook("context", async (event: any) => {
+      const sid = event?.sessionID || "default"
+      const system = event?.system
+      if (!Array.isArray(system)) return
+      // V2 compat: normalize string items to {type, text} objects
+      for (let i = 0; i < system.length; i++) {
+        if (typeof system[i] === "string") system[i] = { type: "text", text: system[i] }
+      }
+
+      // Skill hint injection
+      try {
+        let stripped = 0
+        for (const item of system as any[]) {
+          if (typeof item === "object" && item !== null && typeof item.text === "string") {
+            const before = item.text
+            item.text = item.text.replace(/<available_skills>[\s\S]*?<\/available_skills>/g, "").trimEnd()
+            if (item.text !== before) stripped++
+          }
+        }
         if (stripped > 0) debugLog(`stripped <available_skills> x${stripped} (${sid})`)
         const hint = renderSkillHintV3(lastUserQuery.get(sid) ?? "", 3)
-        if (hint) pushSystemOnce(output.system as unknown[], sid, "skill-hint", hint)
+        if (hint) pushSystemOnce(system, sid, "skill-hint", hint)
       } catch (e) {
-        // Скоринг/сбор скиллов не должны ронять сессию.
         debugLog(`skill-hint failed: ${String((e as Error).message).slice(0, 200)}`)
       }
-      // UC-003: повторный transform той же сессии — один блок, без дублей.
-      if (injectedSessions.has(sid)) return
-      const system = output.system as unknown[]
 
-      // ponytail всегда
-      pushSystemOnce(system, sid, "ponytail", PONYTAIL_TAG)
+      // Ponytail + skills + autonomy
+      pushSystemOnce(system, sid, "ponytail", "Ponytail mode active.")
+      pushSystemOnce(system, sid, "skills", "Skills FIRST rule active.")
+      pushSystemOnce(system, sid, "autonomy", AUTONOMY_TAG_V3)
 
-       // skills-first всегда: протокол выбора скиллов до любой разработки
-       pushSystemOnce(system, sid, "skills", SKILLS_TAG)
-
-       // autonomy guardrails: самостоятельность только внутри явных границ
-       pushSystemOnce(system, sid, "autonomy", AUTONOMY_TAG_V3)
-
-      // Handoff прошлой сессии — контекст восстановления (только чтение,
-      // без evaluate: уточнение 1).
+      // Handoff from previous session
       const prev = readHandoffV3(store)
-      if (DEBUG) console.error(`[ultracode] handoff inject: sid=${sid.slice(0, 8)} prev=${prev?.sessionId?.slice(0, 8) ?? "none"} decision=${prev && prev.sessionId !== sid ? "inject" : "skip"}`)
       if (prev && prev.sessionId !== sid) {
         pushSystemOnce(system, sid, "handoff",
-          `<ultracode-handoff>\nПредыдущая сессия ${prev.sessionId.slice(0, 8)} прервана (${prev.reason}, ${String(prev.usagePct)}%):\n${prev.summary}\n</ultracode-handoff>`)
+          `<ultracode-handoff>\\nПредыдущая сессия ${prev.sessionId.slice(0, 8)} прервана (${prev.reason}, ${String(prev.usagePct)}%):\\n${prev.summary}\\n</ultracode-handoff>`)
       }
 
-      // Единая сборка контекста (Фаза 4, R.5): один renderSections вместо трёх
-      // независимых капов. Soft → бюджет/2, hard+ → бюджет/4; estimated — без
-      // ужима. evaluate только читает вердикт, writeHandoff отсюда запрещён.
+      // Budget-based injection
       const usage = usageFor(usageBySession, sid)
       let totalBudget = store.config.budgetTokens
       try {
         await loadLimits()
         const mod = sessionModel.get(sid)
-        const v = evaluateBudgetV3(
-          usage,
-          resolveLimitV3(store.config.modelLimit, limitsCache, mod?.providerID, mod?.modelID),
-          thresholdsFromV3(store.config),
-        )
+        const v = evaluateBudgetV3(usage, resolveLimitV3(store.config.modelLimit, limitsCache, mod?.providerID, mod?.modelID), thresholdsFromV3(store.config))
         if (!v.estimated) {
           if (v.level === "soft") totalBudget = Math.floor(totalBudget / 2)
           else if (v.level === "hard" || v.level === "emergency") totalBudget = Math.floor(totalBudget / 4)
         }
       } catch { /* учёт не блокирует инъекцию */ }
-      // farm-state: чтение + firewall здесь, резка — долей бюджета внутри.
+
+      // Farm state (SEC-02: canonical path check, no symlink escape)
       let farmRaw = ""
       try {
         const farmState = path.join(projectPath, "farm", "knowledge", "state.md")
-        // UC-021: farm-state идёт в модель — пропускаем через firewall.
-        if (fs.existsSync(farmState)) farmRaw = redactConfidentialV3(fs.readFileSync(farmState, "utf8").trim())
-      } catch { /* нет фермы — ок */ }
+        const realProject = fs.realpathSync(projectPath)
+        const realFarm = fs.realpathSync(farmState)
+        if (realFarm.startsWith(realProject + path.sep) && fs.statSync(realFarm).isFile()) {
+          farmRaw = redactConfidentialV3(fs.readFileSync(realFarm, "utf8").trim())
+        }
+      } catch { /* нет фермы или symlink за пределы — ок */ }
+
       const assembled = renderSectionsV3(
-        {
-          knowledge: store.knowledge,
-          lessons: store.lessons,
-          plans: Object.values(store.plans),
-          farm: farmRaw || undefined,
-          project: projectPath,
-        },
+        { knowledge: store.knowledge, lessons: store.lessons, plans: Object.values(store.plans), farm: farmRaw || undefined, project: projectPath },
         totalBudget,
       )
       const [kSec, lSec, pSec, fSec] = assembled.sections
-      if (kSec.text) pushSystemOnce(system, sid, "knowledge", `<ultracode-knowledge>\n${kSec.text}\n</ultracode-knowledge>`)
-      if (lSec.text) pushSystemOnce(system, sid, "lessons", `<ultracode-lessons>\n${lSec.text}\n</ultracode-lessons>`)
-      if (pSec.text) pushSystemOnce(system, sid, "plans", `<ultracode-plans>\n${pSec.text}\n</ultracode-plans>`)
-      let farmTokens = 0
-      if (fSec.text) {
-        farmTokens = tokens(FARM_QUICK) + fSec.tokens
-        pushSystemOnce(system, sid, "farm", `${FARM_QUICK}\n<farm-state>\n${fSec.text}\n</farm-state>`)
-      }
-      const injectedTokens = kSec.tokens
-      const lessonsTokens = lSec.tokens
-      const plansTokens = pSec.tokens
-      // Фаза 4.5: своих оценок не копим — платформа отдаёт готовый total
-      // в message.updated, дублировать его своими подсчётами нельзя.
-      const report = {
-        ts: new Date().toISOString(),
-        sessionID: sid,
-        budgetTokens: assembled.budgetTokens,
-        spentTokens: assembled.totalTokens,
-        injected: assembled.injected,
-        evicted: assembled.evicted,
-      }
+      if (kSec.text) pushSystemOnce(system, sid, "knowledge", `<ultracode-knowledge>\\n${kSec.text}\\n</ultracode-knowledge>`)
+      if (lSec.text) pushSystemOnce(system, sid, "lessons", `<ultracode-lessons>\\n${lSec.text}\\n</ultracode-lessons>`)
+      if (pSec.text) pushSystemOnce(system, sid, "plans", `<ultracode-plans>\\n${pSec.text}\\n</ultracode-plans>`)
+      if (fSec.text) pushSystemOnce(system, sid, "farm", `${FARM_QUICK}\\n<farm-state>\\n${fSec.text}\\n</farm-state>`)
 
-      // UC-023: стек проекта — детект раз за сессию, persist только при изменении.
-      // Явный acceptanceCommand пользователя всегда важнее этого дефолта.
+      // Save lastInjection to store (for view/stats)
       try {
-        const detected = detectStackV3(projectPath)
-        const same = JSON.stringify(detected ?? null) === JSON.stringify(store.stack ?? null)
-        if (!same) {
-          locked("stack detect", (fresh) => {
-            if (detected) fresh.stack = detected
-            else delete fresh.stack
-          })
-        }
-        const cur: DetectedStackV3 | undefined = detected ?? store.stack
-        if (cur) {
-          const line = sanitizeOutputV3(
-            `<ultracode-stack>stack=${cur.stack} dir=${cur.dir || "."} test=${cur.testCommand} src=${cur.source}` +
-            `${cur.note ? ` note=${cur.note}` : ""}</ultracode-stack>`,
-          )
-          pushSystemOnce(system, sid, "stack", line)
-        }
-      } catch { /* детект не блокирует сессию */ }
-
-      // statistics per session (Block 1) — персистентно под локом,
-      // чтобы не затереть чужие plan/evidence (UC-018 case 4).
-      try {
-        const internalTotal = injectedTokens + lessonsTokens + farmTokens + plansTokens
-        const systemText = (output.system as unknown[]).map(String).join("\n")
-        const systemTokens = tokens(systemText)
-        const injection = { ...report, sessionID: sid }
-        locked(`inject ${sid.slice(0, 8)}`, (fresh) => {
-          fresh.tokens.internal.current = internalTotal
-          fresh.tokens.internal.byKind = {
-            knowledge: injectedTokens,
-            lessons: lessonsTokens,
-            plans: plansTokens,
-            farm: farmTokens,
+        locked("injection", (fresh: any) => {
+          fresh.lastInjection = {
+            ts: new Date().toISOString(),
+            sessionID: sid,
+            budgetTokens: totalBudget,
+            spentTokens: assembled.totalTokens,
+            injected: assembled.injected,
+            evicted: assembled.evicted,
           }
-          fresh.tokens.internal.history.push({ sessionId: sid, size: internalTotal, timestamp: new Date().toISOString() })
-          if (fresh.tokens.internal.history.length > 40) fresh.tokens.internal.history = fresh.tokens.internal.history.slice(-40)
-          fresh.tokens.external.current = systemTokens
-          const cur = fresh.tokens.external.history.find((h) => h.sessionId === sid)
-          if (cur) { cur.system = systemTokens; cur.timestamp = new Date().toISOString() }
-          else { fresh.tokens.external.history.push({ sessionId: sid, system: systemTokens, messages: 0, tools: 0, timestamp: new Date().toISOString() }) }
-          if (fresh.tokens.external.history.length > 40) fresh.tokens.external.history = fresh.tokens.external.history.slice(-40)
-          fresh.lastInjection = injection
-        })
-      } catch { /* не критично для инъекции */ }
-
-      injectedSessions.add(sid)
-      log("session", sid, "context injected")
-    },
-
-    // ─── context-pruner: сжатие истории перед запросом ─────────────
-    // Хук НЕ ИМЕЕТ ПРАВА БРОСАТЬ: Plugin.trigger оборачивает его в
-    // Effect.promise без catch, исключение здесь валит весь run. Всё тело — в
-    // try/catch, catch только пишет в лог.
-    "experimental.chat.messages.transform": async (_input: any, output: any) => {
-      try {
-        const messages = output?.messages
-        const sid = (Array.isArray(messages) && messages.length > 0 ? messages.at(-1)?.info?.sessionID : undefined) || "default"
-
-        // Путь компактации: жать нельзя (ухудшаем саммари, дублируем стор).
-        // Флаг снимается здесь же, до проверки на пустой массив: иначе пустой
-        // transform после компактации оставил бы флаг висеть и отключил prune.
-        if (compactionPending.has(sid)) {
-          compactionPending.delete(sid)
-          return
-        }
-        if (!Array.isArray(messages) || messages.length === 0) return
-
-        await loadLimits()
-        const mod = sessionModel.get(sid)
-        const level = levelForV3(evaluateBudgetV3(
-          usageFor(usageBySession, sid),
-          resolveLimitV3(store.config.modelLimit, limitsCache, mod?.providerID, mod?.modelID),
-          thresholdsFromV3(store.config),
-        ).level)
-
-        const st = pruneStateFor(sid)
-        if (level === "off") {
-          st.lastLevel = "off"
-          return
-        }
-        st.turns++
-        // Диагностика pruner'а: решения и отказы. console.error плагина в
-        // opencode.log не попадает (лог на 100% структурированный), поэтому пишем
-        // в свой файл. Троттлинг — не чаще раза в PRUNER_LOG_EVERY_TURNS ходов.
-        const diagFile = prunedLogForV3(projectPath, sid)
-        const diag = (msg: string): void => {
-          if (st.turns - st.lastLogTurn < PRUNER_LOG_EVERY_TURNS) return
-          st.lastLogTurn = st.turns
-          appendPrunerLogV3(diagFile, `turn=${st.turns} level=${level} ${msg}`)
-          log("pruner", `turn=${st.turns} level=${level} ${msg}`)
-        }
-        // Эпоха: не чаще раза в N ходов, иначе prompt cache инвалидируется
-        // каждый ход. Первый не-"off" ход сжимает сразу — ждать 5 ходов при уже
-        // переполненном бюджете незачем.
-        if (st.lastPruneTurn > 0 && st.turns - st.lastPruneTurn < PRUNE_EPOCH_TURNS_V3) {
-          diag("skip=epoch")
-          return
-        }
-        // Тот же уровень повторно: правила уже применены, а транскрипт каждый ход
-        // пересобирается заново — второй проход дал бы тот же результат и только
-        // сжёг бы кеш.
-        //
-        // Проверено на замере 30.09 (902 хода): гейт приносит больше, чем стоит.
-        // Валовая экономия от снятия 1 558 889, цена инвалидации кэша 12 359 043 —
-        // чистая −10 800 154 (−5.46% от cache.read). Причина: сжатие меняет СТАРЫЕ
-        // части, а префиксное кеширование обрывается с точки изменения, поэтому
-        // каждый проход перечитывает защищённый хвост (медиана 41 320 токенов).
-        // Смотри spec/context-pruner.md, раздел «Решения по эпохам».
-        if (level === st.lastLevel) {
-          diag("skip=same-level")
-          return
-        }
-
-        const file = prunedFileForV3(projectPath, sid)
-        const { messages: pruned, report } = planPruneV3(messages, level, { pinned: loadPinsV3(file) })
-        if (report.actions.length === 0) {
-          diag(`empty level=${level} msgs=${messages.length}`)
-          return
-        }
-        let stored = 0
-        let failed = 0
-        for (const a of report.actions) {
-          const r = appendOriginalV3(file, {
-            messageID: a.messageID,
-            partID: a.partID,
-            tool: a.tool,
-            content: originalContentV3(messages, a.messageID, a.partID),
-          })
-          if (r === "stored") stored++
-          else if (r === "failed") failed++
-        }
-        // Оригиналы не записались -> prune не применяем: плейсхолдер без
-        // оригинала в сторе обещает recall, которого не будет. Следующая
-        // эпоха попробует снова (уровень/счётчик намеренно не тронуты).
-        if (failed > 0) {
-          diag(`skipped ${failed}/${report.actions.length} originals unwritable`)
-          log("prune skipped", sid.slice(0, 8), `${failed}/${report.actions.length} originals unwritable`)
-          return
-        }
-        st.lastLevel = level
-        st.lastPruneTurn = st.turns
-        // Только мутация на месте: вызывающий читает локальную переменную
-        // массива, output.messages = [...] не пробрасывает ничего.
-        applyPruneV3(output as { messages: unknown[] }, { messages: pruned })
-        diag(`pruned ${report.actions.length} parts (${stored} new), ${report.charsBefore}->${report.charsAfter} chars`)
-        log("prune", level, sid.slice(0, 8), `${report.actions.length} parts (${stored} new), ${report.charsBefore}->${report.charsAfter} chars`)
-      } catch (e) {
-        // Текст ошибки через firewall: содержимое сообщений сюда попасть не должно.
-        log("context-pruner failed:", redactConfidentialV3(e instanceof Error ? e.message : String(e)).slice(0, 200))
-      }
-    },
-
-    // ─── автосжатие контекста ────────────────────────────────────
-    "experimental.session.compacting": async (input: any, output: any) => {
-      const sid = (input as any)?.sessionID || (input as any)?.id || "unknown"
-      // context-pruner на этом же sid жать не должен: transform придёт сразу
-      // после компактации, уже по сжатой истории. Флаг ставится ДО проверки
-      // output: opencode всё равно компактит, даже если context не массив.
-      compactionPending.add(sid)
-      if (!Array.isArray(output?.context)) return
-
-      // UC-010: checkpoint активного плана — только компактный summary, без дублей.
-      try {
-        const ids = Object.keys(store.plans)
-        const active = ids.length ? (store.plans[ids[ids.length - 1] as string] ?? null) : null
-        const key = active ? checkpointKeyV3(active) : "none"
-        if (!checkpointSeen.has(`${sid}:${key}`)) {
-          checkpointSeen.add(`${sid}:${key}`)
-          // Pentest M6: checkpoint идёт в контекст — через firewall.
-          ;(output.context as string[]).push(redactConfidentialV3(buildCheckpointV3(active)))
-        }
-      } catch { /* checkpoint не блокирует сжатие */ }
-
-      // собираем компактную выжимку из контекст-хранилища
-      const { snippet } = contextSnippet(store, projectPath)
-      if (snippet) {
-        ;(output.context as string[]).push(
-          COMPACTION_PREFIX + "\n" + snippet,
-        )
-      }
-
-      // уроки при сжатии не теряются
-      const lessons = lessonsSnippet(store, projectPath)
-      if (lessons) {
-        ;(output.context as string[]).push(
-          `<ultracode-lessons>\n${lessons}\n</ultracode-lessons>`,
-        )
-      }
-
-      // добавляем текущий farm-state если есть (сжатие не должен его потерять)
-      const farmState = path.join(projectPath, "farm", "knowledge", "state.md")
-      try {
-        if (fs.existsSync(farmState)) {
-          const content = redactConfidentialV3(fs.readFileSync(farmState, "utf8").trim()).slice(0, FARM_STATE_CAP)
-          ;(output.context as string[]).push(
-            `<farm-state-compacted>\n${content}\n</farm-state-compacted>`,
-          )
-        }
-      } catch { /* */ }
-
-      // записываем что компактация произошла
-      try {
-        locked(`compact ${sid.slice(0, 8)}`, (fresh) => {
-          fresh.lastCompaction[sid] = new Date().toISOString()
         })
       } catch { /* best effort */ }
-      // Последний рубеж (R.4.2): платформенное сжатие без нашего hard-handoff —
-      // пишем напрямую в обход handoffWritten (флага может не быть: другой процесс).
-      try {
-        const cur = readHandoffV3(store)
-        if (!cur || cur.sessionId !== sid) {
-          let pct = NaN
-          const uu = usageBySession.get(sid)
-          if (uu) {
-            await loadLimits()
-            const mod = sessionModel.get(sid)
-            pct = evaluateBudgetV3(uu, resolveLimitV3(store.config.modelLimit, limitsCache, mod?.providerID, mod?.modelID)).pct
-          }
-          const ids = Object.keys(store.plans)
-          const active = ids.length ? (store.plans[ids[ids.length - 1] as string] ?? null) : null
-          writeHandoffV3(
-            ACTIVE_STORE_FILE,
-            buildHandoffV3(sid, "crash", pct,
-              `${buildCheckpointV3(active)}\nreason: crash (platform compacted without hard threshold)`),
-            commitStoreFile,
-          )
-        }
-      } catch { /* handoff не блокирует сжатие */ }
-      log("compacting session", sid)
-    },
 
-    // ─── перехват tool вызовов (связь с другими плагинами/MCP) ───
-    "tool.execute.after": async (input: any, output: any) => {
-      const tool = (input as any)?.tool || ""
-      const sid = (input as any)?.sessionID || (input as any)?.sessionId || "default"
-      const started = Number((input as any)?.started ?? Date.now())
-      const durationMs = Math.max(0, Date.now() - started)
-
-      // UC-004: session-scoped метрики — ищем историю строго по sessionID,
-      // аргументы только из input.args, ошибки включая MCP isError.
-      // UC-018: вся персистентность — одним locked-блоком (merge под локом).
-      const args = toolArgsV3(input)
-      const argText = JSON.stringify(args).slice(0, 2000)
-      const outText = JSON.stringify(output).slice(0, 2000)
-      const failed = isErrorOutputV3(output)
-      // Фаза 4.5: своих оценок не копим (дублировали бы platform total).
-      // Пороги проверяются в event, где приходит реальный usage.
-      // UC-021: firewall — модель видит структуру ответа, секреты вырезаны
-      // до модели. Рекурсивно по любой форме (C2): output/result/content/data.
-      try {
-        deepRedactV3(output)
-      } catch { /* */ }
-      // bounded агрегаты — в metrics.jsonl, а не в state.md (append-only, без лока)
-      try {
-        appendMetricsV3(metricsFileFor(projectPath), { ts: new Date().toISOString(), sessionId: sid, tool: String(tool), durationMs, isError: failed })
-      } catch { /* */ }
-      const skillName = tool === "skill"
-        ? String((input as any)?.args?.name || (input as any)?.input?.name || "?").slice(0, 60)
-        : null
-      const farmStatus = tool.includes("generate_post") || tool.includes("quality_check") || tool.includes("publish")
-        ? String((output as any)?.metadata?.status || "unknown")
-        : null
-      const errText = failed
-        ? sanitizeOutputV3(String((output as any)?.metadata?.error || "unknown")).slice(0, 200)
-        : null
-      try {
-        locked(`metrics ${sid.slice(0, 8)}`, (fresh) => {
-          const row = getSessionMetricsV3(fresh, sid)
-          const toolTokens = tokens(argText) + tokens(outText)
-          row.tools += toolTokens
-          // UC-033: та же сумма, но с разбивкой по типу тула (для решения про Headroom).
-          addToolTokensByKindV3(row, classifyToolV3(String(tool)), toolTokens)
-          row.timestamp = new Date().toISOString()
-          if (skillName) {
-            addKnowledge(fresh, {
-              kind: "fact",
-              project: projectPath,
-              text: `загружен скилл: ${skillName}`,
-              labels: ["skill", "usage", skillName],
-            })
+      // ─── context-pruner (V2: part of context hook) ─────────────
+      const messages = event?.messages
+      const pruneSid = sid
+      // Empty messages: don't consume compactionPending flag (V1 compat:
+      // sid couldn't be extracted from empty array, so flag stayed).
+      if (!Array.isArray(messages) || messages.length === 0) {
+        return
+      }
+      if (compactionPending.has(pruneSid)) {
+        compactionPending.delete(pruneSid)
+        return
+      } else {
+        try {
+          const mod = sessionModel.get(pruneSid)
+          const level = levelForV3(evaluateBudgetV3(
+            usageFor(usageBySession, pruneSid),
+            resolveLimitV3(store.config.modelLimit, limitsCache, mod?.providerID, mod?.modelID),
+            thresholdsFromV3(store.config),
+          ).level)
+          const st = pruneStateFor(pruneSid)
+          if (level === "off") {
+            st.lastLevel = "off"
+            return
           }
-          if (farmStatus) {
-            addKnowledge(fresh, {
-              kind: "progress",
-              project: projectPath,
-              text: `MCP ${tool} → ${farmStatus}`,
-              labels: ["farm", "mcp", tool],
-            })
+          st.turns++
+          // Эпоха: не чаще раза в N ходов
+          if (st.lastPruneTurn > 0 && st.turns - st.lastPruneTurn < PRUNE_EPOCH_TURNS_V3) {
+            return
           }
-          if (errText) {
-            addKnowledge(fresh, {
-              kind: "blocker",
-              project: projectPath,
-              text: `tool ${tool} failed: ${errText}`,
-              labels: ["error", tool],
-            })
-            addLesson(fresh, {
-              kind: "error",
-              project: projectPath,
-              text: `Ошибка при ${tool}: ${errText}`,
-              labels: ["error", tool],
-            })
+          // Тот же уровень повторно: не жмём
+          if (level === st.lastLevel) {
+            return
           }
-        })
-      } catch { /* */ }
-    },
-
-    // ─── перехват сообщений (автоматическое извлечение фактов) ────
-    "chat.message": async (input: any, output: any) => {
-      // UC-004: messages копим в истории текущей сессии по sessionID, не at(-1).
-      // UC-018: персистентность — под локом.
-      const sid = (input as any)?.sessionID || (input as any)?.sessionId || (output as any)?.sessionID || "default"
-      const msgText = JSON.stringify(input).slice(0, 3000)
-      const msgTokens = tokens(msgText)
-
-      // UC-032: запоминаем текст пользователя для <skill_hint>. Только в памяти, без стора.
-      for (const part of (output as any)?.parts || []) {
-        if (part?.type !== "text" || part.synthetic) continue
-        const text = String(part.text || "").trim()
-        if (text.length > 0) {
-          lastUserQuery.set(sid, text.slice(0, 2000))
-          break
+          const file = prunedFileForV3(projectPath, pruneSid)
+          const { messages: pruned, report } = planPruneV3(messages, level, { pinned: loadPinsV3(file) })
+          if (report.actions.length === 0) {
+            return
+          }
+          let failed = 0
+          for (const a of report.actions) {
+            const r = appendOriginalV3(file, {
+              messageID: a.messageID,
+              partID: a.partID,
+              tool: a.tool,
+              content: originalContentV3(messages, a.messageID, a.partID),
+            })
+            if (r === "failed") failed++
+          }
+          if (failed > 0) {
+            return
+          }
+          st.lastLevel = level
+          st.lastPruneTurn = st.turns
+          applyPruneV3(event as { messages: unknown[] }, { messages: pruned })
+        } catch (e) {
+          log("context-pruner failed:", redactConfidentialV3(e instanceof Error ? e.message : String(e)).slice(0, 200))
         }
       }
 
-      // пользователь назвал решение или факт — сохраняем
-      const parts = (output as any)?.parts || []
-      let decision: string | null = null
-      for (const part of parts) {
-        if (part?.type !== "text" || part.synthetic) continue
-        const text: string = part.text || ""
-        if (text.length < 20) continue
 
-        // ищем маркеры решений
-        const decisionMatch = text.match(
-          /(?:решени[ея]|вывод|итог|важно|запомни|fact:|decision:|решили)\s*[:—]\s*(.+)/i,
-        )
-        if (decisionMatch) {
-          decision = sanitizeOutputV3(decisionMatch[1].trim()).slice(0, 500)
-          break
-        }
+
+    })
+    // ─── prompt admission hook (V2: session.hook "prompt") ─────────
+    await ctx.session.hook("prompt", async (event: any) => {
+      const sid = event?.sessionID || "default"
+      const text = event?.prompt?.text || ""
+      if (text.trim().length > 0) {
+        lastUserQuery.set(sid, text.slice(0, 2000))
       }
-      try {
-        locked("chat", (fresh) => {
-          const row = getSessionMetricsV3(fresh, sid)
-          row.messages += msgTokens
-          row.timestamp = new Date().toISOString()
-          if (decision) {
-            addKnowledge(fresh, {
-              kind: "decision",
-              project: projectPath,
-              text: decision as string,
-              labels: ["auto-extracted"],
-            })
-          }
-        })
-      } catch { /* */ }
-      // Фаза 4.5: своих оценок не копим; пороги — в event по реальному total.
-    },
+    })
 
-    // ─── событийный хук (сессии) ─────────────────────────────────
-    event: async ({ event }: any) => {
+    // ─── compaction hook (V2: session.hook "compaction") ──────────
+    await ctx.session.hook("compaction", async (event: any) => {
+      const sid = event?.sessionID || "unknown"
+      compactionPending.add(sid)
+      if (!Array.isArray(event?.context)) return
+      const active = activePlanFresh()
+      if (active) {
+        event.context.push(buildCheckpointV3(active))
+      }
+    })
+
+    // ─── event subscription (V2: ctx.event.subscribe) ─────────────
+    const controller = new AbortController()
+    // Event handler (can be called directly in tests via ctx._handleEvent)
+    const handleEvent = async (event: any) => {
       const type = event?.type
       const props = event?.properties || {}
-
-      // Budget Manager: info.tokens.total — готовый снимок диалога (Фаза 4.5).
       if (type === "message.updated") {
         const info = props.info ?? {}
         const msid = info.sessionID || info.sessionId || "default"
@@ -1059,111 +459,33 @@ export default (async (ctx) => {
           sessionModel.set(msid, { providerID: String(info.providerID ?? ""), modelID: info.modelID })
         }
         await checkBudget(msid)
-        return
       }
-      if (type === "message.part.updated") {
-        const part = props.part ?? {}
-        if (part.type === "step-finish" || part.type === "step_finish") {
-          const msid = props.sessionID || props.sessionId || part.sessionID || "default"
-          addModelUsage(usageBySession, msid, part)
-          await checkBudget(msid)
-        }
-        return
-      }
-
       if (type === "session.idle") {
-        const sid = (props as any)?.sessionID || (props as any)?.sessionId || "unknown"
-        // Пульс сессии — только timestamp строки в tokens.external.history.
-        // Напрямую через updateStoreFileV3 (lib, без git-коммита): locked() здесь
-        // нельзя — он коммитит `[ultracode] pulse` на каждый idle (R.0.1).
-        // In-memory копия подтянется при следующем locked() (reload, :533-542).
+        const sid = props.sessionID || props.sessionId || "unknown"
         try {
-          updateStoreFileV3(ACTIVE_STORE_FILE, (fresh) => {
+          updateStoreFileV3(storeFileFor(projectPath), (fresh: any) => {
             const row = getSessionMetricsV3(fresh, sid)
             row.timestamp = new Date().toISOString()
           })
         } catch { /* best effort */ }
       }
-    },
+    }
+    ;(ctx as any)._handleEvent = handleEvent
 
-    // ─── пользовательские инструменты ────────────────────────────
-    tool: {
-      // инструмент "context" — управление контекст-хранилищем ultracode и
-      // оркестрационными планами. GitHub-подобно: метки/labels, поиск,
-      // треды (thread), статус open/closed, версии через git (history/diff).
-      ultracode_context: tool({
-        description:
-          "Контекст-хранилище ultracode: как GitHub-репозиторий знаний. " +
-          "list — записи (метки/источники), add — добавить (source/labels), search — поиск (+hit rate), " +
-          "view — что реально влезло в модель этой сессии (видимость контекста), " +
-          "stats — дашборд токенов, tokens — краткая версия токенов, budget number — токен-бюджет, " +
-          "anim on — анимации-снапшоты вкл/выкл, " +
-          "history/diff — версии через git, close — закрыть запись, thread — комментарий, " +
-          "compact — автокомпакция старых (+экономия токенов), farm — контекст фермы, " +
-          "plan_new/plan_show/plan_step — оркестрационные планы (прогресс-бар в plan_show), " +
-          "evidence — записать evidence шага (command, exitCode → done/failed), " +
-          "evaluate — лабораторная оценка (/evaluate), " +
-          "learn/lessons — самообучение.",
-        args: {
-          action: tool.schema.enum([
-            "list",
-            "add",
-            "search",
-            "view",
-            "history",
-            "diff",
-            "close",
-            "thread",
-            "compact",
-            "farm",
-            "stats",
-            "tokens",
-            "budget",
-            "anim",
-            "plan_new",
-            "plan_show",
-            "plan_step",
-            "evidence",
-            "evaluate",
-            "contract",
-            "learn",
-            "lessons",
-          ]),
-          text: tool.schema.string().optional(),
-          kind: tool.schema
-            .enum(["decision", "fact", "progress", "blocker", "success", "lesson"])
-            .optional(),
-          plan: tool.schema.string().optional(),
-          planId: tool.schema.string().optional(),
-          step: tool.schema.string().optional(),
-          stepId: tool.schema.string().optional(),
-          // UC-017 case 3: verify_required принимается schema инструмента.
-          status: tool.schema.enum(["todo", "in_progress", "verify_required", "done", "failed"]).optional(),
-          goal: tool.schema.string().optional(),
-          acceptanceCommand: tool.schema.string().optional(),
-          check: tool.schema.string().optional(),
-          command: tool.schema.string().optional(),
-          exitCode: tool.schema.number().optional(),
-          tool: tool.schema.enum(["pytest", "cargo-test", "jest", "playwright", "node-test", "go-test", "phpunit", "custom"]).optional(),
-          stdout: tool.schema.string().optional(),
-          stderr: tool.schema.string().optional(),
-          steps: tool.schema.string().optional(),
-          dependsOn: tool.schema.string().optional(),
-          source: tool.schema.string().optional(),
-          labels: tool.schema.string().optional(),
-          id: tool.schema.string().optional(),
-          q: tool.schema.string().optional(),
-          author: tool.schema.string().optional(),
-          number: tool.schema.number().optional(),
-          limit: tool.schema.number().optional(),
-          profile: tool.schema.string().optional(),
-          thresholdSoft: tool.schema.number().optional(),
-          thresholdHard: tool.schema.number().optional(),
-          thresholdEmergency: tool.schema.number().optional(),
-          on: tool.schema.boolean().optional(),
-        },
-        async execute(args: any, _context: any) {
-          const action = args.action || "list"
+    // V2: event subscription (background)
+    ;(async () => {
+      try {
+        const sub = ctx.event.subscribe({ signal: controller.signal })
+        for await (const event of sub) {
+          await handleEvent(event)
+        }
+      } catch { /* subscription ended */ }
+    })()
+
+
+    // ─── ultracode_context execute (ported from V1) ────────────────
+    const _executeImpl = async (args: any, _context: any): Promise<any> => {
+                const action = args.action || "list"
 
           // ─── самообучение ──────────────────────────────────────
           if (action === "lessons") {
@@ -1177,13 +499,20 @@ export default (async (ctx) => {
           if (action === "learn" && args.text) {
             // UC-018: секреты не персистятся — sanitize до записи и в эхе.
             const clean = sanitizeOutputV3(args.text).slice(0, 500)
-            addLesson(store, {
-              kind: args.kind === "success" ? "success" : "lesson",
-              project: projectPath,
-              text: clean,
-              labels: ["manual", "learned"],
-            })
-            return `${C_OPEN}${G_DONE}${C_RST} Урок сохранён: ${clean.slice(0, 80)}`
+            const kind = args.kind === "success" ? "success" : "lesson"
+            try {
+              locked("learn", (fresh: any) => {
+                const dup = fresh.lessons.find((x: any) => x.text === clean && x.kind === kind && x.project === projectPath)
+                if (dup) return
+                fresh.lessons.push({ id: crypto.randomUUID(), ts: new Date().toISOString(), kind, project: projectPath, text: clean, labels: ["manual", "learned"] })
+                if (fresh.lessons.length > 80) fresh.lessons = fresh.lessons.slice(-80)
+              })
+              // Sync in-memory store
+              try { const re = loadStoreV3(storeFileFor(projectPath)); store.lessons = re.lessons } catch { /* best effort */ }
+            } catch (e) {
+              return { output: `learn failed: ${String((e as Error).message).slice(0, 200)}` }
+            }
+            return { output: `${C_OPEN}${G_DONE}${C_RST} Урок сохранён: ${clean.slice(0, 80)}` }
           }
 
           // ─── статистика токенов (Block 1) ─────────────────────
@@ -1543,6 +872,7 @@ export default (async (ctx) => {
               title: sanitizeOutputV3(title).slice(0, 120),
               goal: sanitizeOutputV3(validated.goal),
               steps: validated.steps.map((t) => sanitizeOutputV3(t)),
+              stepChecks: validated.stepChecks,
               dependsOn: validated.dependsOn,
               acceptanceCommand: validated.acceptanceCommand
                 ? sanitizeOutputV3(validated.acceptanceCommand)
@@ -1571,6 +901,7 @@ export default (async (ctx) => {
                     text: text.replace(/^[-*\d.)]+\s*/, "").slice(0, 200),
                     status: "todo",
                     attempts: 0,
+                    ...(planReq.stepChecks?.[i] ? { check: sanitizeOutputV3(planReq.stepChecks[i]) } : {}),
                     ...(depOf(i) ? { dependsOn: depOf(i) } : {}),
                   })),
                   status: "active",
@@ -1755,7 +1086,13 @@ export default (async (ctx) => {
             if (t !== null) {
               const abs = path.resolve(projectPath, t)
               try {
-                if (fs.statSync(abs).isDirectory()) target = abs
+                const realProject = fs.realpathSync(projectPath)
+                const realTarget = fs.realpathSync(abs)
+                // SEC-01: target must be within project or explicitly approved
+                if (!realTarget.startsWith(realProject + path.sep) && realTarget !== realProject) {
+                  return `${C_ERR}${G_ERR}${C_RST} evaluate: target outside project root requires explicit approval: ${t.slice(0, 120)}`
+                }
+                if (fs.statSync(realTarget).isDirectory()) target = realTarget
               } catch { /* ниже — явная ошибка */ }
               if (!target) return `${C_ERR}${G_ERR}${C_RST} evaluate: target is not a directory: ${t.slice(0, 120)}`
             }
@@ -1763,7 +1100,7 @@ export default (async (ctx) => {
               ? ["scripts/evaluate-ultracode.sh", flag, "--target", target]
               : ["scripts/evaluate-ultracode.sh", flag]
             try {
-              const cp = require("node:child_process").spawnSync("bash", argv, {
+              const cp = spawnSync("bash", argv, {
                 cwd: projectPath,
                 encoding: "utf8",
                 timeout: target ? 1200000 : 240000,
@@ -1795,67 +1132,414 @@ export default (async (ctx) => {
           }
 
           return `${C_ULTRA}${G_PLAN}${C_RST} Actions: list, add, search, view, history, diff, close, thread, compact, farm, stats, tokens, budget, anim, plan_new, plan_show, plan_step, evidence, evaluate, contract, learn, lessons`
-        },
-      }),
+      }
 
-      // UC-032: детерминированный поиск по скиллам. Заменяет 111 имён в промпте;
-      // нативный skill при этом не блокируется — Skills FIRST продолжает работать.
-      triage: tool({
-        description:
-          "Найти профильные скиллы по короткому описанию задачи. Вызывай, если подходящего " +
-          "скилла не видно или нужен список альтернатив. Возвращает отсортированный список: " +
-          "score, имя, источник, совпавшие слова. Детерминированно, без сети.",
-        args: {
-          query: tool.schema.string().describe("Краткое описание задачи, 3-10 слов"),
-          top: tool.schema.number().optional().describe("Сколько вернуть, по умолчанию 10"),
+
+
+    // ─── helper functions (ported from V1) ────────────────────────
+    function addKnowledge(store: any, k: any): void {
+      const dup = store.knowledge.find((x: any) => x.text === k.text && x.project === k.project && !x.archived)
+      if (dup) return
+      store.knowledge.push({ ...k, id: crypto.randomUUID(), ts: new Date().toISOString(), status: "open", archived: false })
+      saveStoreAtomic(storeFileFor(projectPath), store)
+    }
+
+    function addLesson(store: any, k: any): void {
+      const dup = store.lessons.find((x: any) => x.text === k.text && x.kind === k.kind && x.project === k.project)
+      if (dup) return
+      store.lessons.push({ ...k, id: crypto.randomUUID(), ts: new Date().toISOString() })
+      if (store.lessons.length > 80) store.lessons = store.lessons.slice(-80)
+      saveStoreAtomic(storeFileFor(projectPath), store)
+    }
+
+    function locked<T>(label: string, fn: (s: any) => T): T {
+      const res = updateStoreFileV3(storeFileFor(projectPath), fn)
+      try {
+        const re = loadStoreV3(storeFileFor(projectPath))
+        store.knowledge = re.knowledge
+        store.plans = re.plans
+        store.lessons = re.lessons
+        store.tokens = re.tokens
+        store.lastCompaction = re.lastCompaction
+        store.lastInjection = re.lastInjection
+        store.config = re.config
+        store.stack = re.stack
+        store.handoff = re.handoff
+      } catch { /* best effort */ }
+      return res
+    }
+
+    function saveStore(store: any, msg = "update"): void {
+      try {
+        saveStoreAtomic(storeFileFor(projectPath), store)
+        commitStoreFile(`[ultracode] ${msg}`)
+      } catch (e) {
+        if (DEBUG) console.error("[ultracode] save failed:", (e as Error).message)
+      }
+    }
+
+
+    // ─── tool registration (V2: ctx.tool.transform) ───────────────
+    await ctx.tool.transform((editor: any) => {
+      editor.add({
+        name: "ultracode_context",
+        description: "Контекст-хранилище ultracode: как GitHub-репозиторий знаний.",
+        options: { codemode: false },
+        input: {
+          type: "object",
+          properties: {
+            action: { type: "string", enum: TOOL_ACTIONS_V3 as unknown as string[] },
+            text: { type: "string" },
+            kind: { type: "string", enum: ["decision", "fact", "progress", "blocker", "success", "lesson"] },
+            plan: { type: "string" },
+            planId: { type: "string" },
+            step: { type: "string" },
+            stepId: { type: "string" },
+            status: { type: "string", enum: ["todo", "in_progress", "verify_required", "done", "failed"] },
+            goal: { type: "string" },
+            acceptanceCommand: { type: "string" },
+            check: { type: "string" },
+            command: { type: "string" },
+            exitCode: { type: "number" },
+            tool: { type: "string", enum: ["pytest", "cargo-test", "jest", "playwright", "node-test", "go-test", "phpunit", "custom"] },
+            stdout: { type: "string" },
+            stderr: { type: "string" },
+            steps: { type: "string" },
+            dependsOn: { type: "string" },
+            source: { type: "string" },
+            labels: { type: "string" },
+            id: { type: "string" },
+            q: { type: "string" },
+            author: { type: "string" },
+            number: { type: "number" },
+            limit: { type: "number" },
+            profile: { type: "string" },
+            thresholdSoft: { type: "number" },
+            thresholdHard: { type: "number" },
+            thresholdEmergency: { type: "number" },
+            on: { type: "boolean" },
+          },
+          required: [],
         },
-        async execute(args: any) {
+        output: {
+          type: "object",
+          properties: {
+            output: { type: "string" },
+          },
+        },
+        execute: async (args: any, tctx: any) => {
+          const _result = await _executeImpl(args, tctx)
+          return typeof _result === "string" ? { output: _result } : _result
+        },
+      })
+
+      // triage tool
+      editor.add({
+        name: "triage",
+        description: "Найти профильные скиллы по короткому описанию задачи.",
+        options: { codemode: false },
+        input: {
+          type: "object",
+          properties: {
+            query: { type: "string" },
+            top: { type: "number" },
+          },
+          required: ["query"],
+        },
+        output: {
+          type: "object",
+          properties: {
+            output: { type: "string" },
+          },
+        },
+        execute: async (args: any) => {
           try {
             const top = Number(args?.top) > 0 ? Number(args?.top) : 10
-            return sanitizeOutputV3(skillTriageV3(String(args?.query ?? ""), top, projectPath))
+            return { output: sanitizeOutputV3(skillTriageV3(String(args?.query ?? ""), top, projectPath)) }
           } catch (e) {
-            return `${C_WARN}${C_RST} triage failed: ${String((e as Error).message).slice(0, 200)}`
+            return { output: `triage failed: ${String((e as Error).message).slice(0, 200)}` }
           }
         },
-      }),
+      })
 
-      // context-pruner: вернуть оригинал сжатого сообщения. Плейсхолдер в
-      // истории всегда содержит messageId/partId для этого вызова. Pin: после
-      // recall сообщение больше не жмётся (переживает рестарт — pin в jsonl).
-      recall_pruned: tool({
-        description:
-          "Вернуть оригинал сообщения, сжатого context-pruner. Возьми messageId (и partID, если есть) " +
-          "из плейсхолдера [pruned ...] в истории. Сообщение закрепляется и больше не сжимается.",
-        args: {
-          messageID: tool.schema.string().describe("id сообщения из плейсхолдера"),
-          partID: tool.schema.string().optional().describe("id части; без него — все части сообщения"),
+      // recall_pruned tool
+      editor.add({
+        name: "recall_pruned",
+        description: "Вернуть оригинал сообщения, сжатого context-pruner.",
+        options: { codemode: false },
+        input: {
+          type: "object",
+          properties: {
+            messageID: { type: "string" },
+            partID: { type: "string" },
+          },
+          required: ["messageID"],
         },
-        async execute(args: any, tctx: any) {
+        output: {
+          type: "object",
+          properties: {
+            output: { type: "string" },
+          },
+        },
+        execute: async (args: any, tctx: any) => {
           try {
-            const sid = (tctx as any)?.sessionID || (tctx as any)?.sessionId || "default"
+            const sid = (tctx as any)?.sessionID || "default"
             const messageID = String(args?.messageID ?? "").trim()
-            if (!messageID) return `${C_WARN}${C_RST} recall_pruned: нужен messageID из плейсхолдера`
+            if (!messageID) return { output: "recall_pruned: нужен messageID" }
             const file = prunedFileForV3(projectPath, sid)
             const partID = typeof args?.partID === "string" && args.partID !== "" ? args.partID : undefined
             const found = findOriginalsV3(file, messageID, partID)
             if (found.length === 0) {
-              return `${C_WARN}${G_SRCH}${C_RST} оригинал ${messageID} не найден в pruned/ этой сессии — контент уже удалён из контекста.`
+              return { output: `оригинал ${messageID} не найден в pruned/ этой сессии` }
             }
             appendPinV3(file, messageID)
-            const body = found
-              .map((r) => `[${r.tool} partId=${r.partID} ${r.content.length} симв.]\n${r.content}`)
-              .join("\n\n")
-            // Кап: recall возвращает в контекст ровно то, что pruner вынул, плюс
-            // маркер — полная выдача одного part'а легко съедает бюджет.
+            const body = found.map((r: any) => `[${r.tool} partId=${r.partID} ${r.content.length} симв.]\\n${r.content}`).join("\\n\\n")
             const clipped = body.length > MAX_RECALL_CHARS
-              ? `${body.slice(0, MAX_RECALL_CHARS)}\n… ещё ${body.length - MAX_RECALL_CHARS} симв. в pruned/<sessionID>.jsonl`
+              ? `${body.slice(0, MAX_RECALL_CHARS)}\\n… ещё ${body.length - MAX_RECALL_CHARS} симв.`
               : body
-            return sanitizeOutputV3(clipped)
+            return { output: sanitizeOutputV3(clipped) }
           } catch (e) {
-            return `${C_ERR}${G_ERR}${C_RST} recall_pruned failed: ${sanitizeOutputV3(String(e instanceof Error ? e.message : e).slice(0, 200))}`
+            return { output: `recall_pruned failed: ${sanitizeOutputV3(String(e instanceof Error ? e.message : e).slice(0, 200))}` }
           }
         },
-      }),
-    },
-  }
-}) satisfies Plugin
+      })
+
+      // ultracode_verify_report tool
+      editor.add({
+        name: "ultracode_verify_report",
+        description: "Верифицировать отчет агента против реальных артефактов (git diff, exit-коды).",
+        options: { codemode: false },
+        input: {
+          type: "object",
+          properties: {
+            report: { type: "string" },
+            planId: { type: "string" },
+            stepId: { type: "string" },
+            evidence: { type: "string" },
+          },
+          required: ["report"],
+        },
+        output: {
+          type: "object",
+          properties: {
+            output: { type: "string" },
+          },
+        },
+        execute: async (args: any, tctx: any) => {
+          let ev: any = {}
+          if (args.evidence) {
+            try {
+              ev = JSON.parse(args.evidence)
+            } catch {
+              const result = verifyReportV3(args.report, {})
+              // Override: mark all claims as REFUSED due to invalid evidence
+              for (const c of result.claims) {
+                c.verdict = "REFUSED"
+                c.evidence = "invalid evidence format"
+                c.source = "parse error"
+              }
+              result.valid = false
+              result.summary = "Провал: invalid evidence format"
+              return { output: JSON.stringify(result, null, 2) }
+            }
+          }
+          const result = verifyReportV3(args.report, {
+            exitCode: ev.exitCode,
+            gitDiff: ev.gitDiff,
+            files: ev.files,
+            commands: ev.commands,
+          })
+          return { output: JSON.stringify(result, null, 2) }
+        },
+      })
+
+      // ─── ultracode_delegate tool (Bolt 5) ───────────────────────
+      const ALLOWED_AGENTS = new Set(["ultracode-planner", "ultracode-executor", "ultracode-reviewer", "ultracode-designer"])
+      const inFlight = new Map<string, number>()
+      const MAX_PARALLEL = 3
+
+      editor.add({
+        name: "ultracode_delegate",
+        description: "Делегировать подзадачу дочерней сессии с выбором роли и модели.",
+        options: { codemode: false },
+        input: {
+          type: "object",
+          properties: {
+            agent: { type: "string" },
+            prompt: { type: "string" },
+            providerID: { type: "string" },
+            modelID: { type: "string" },
+            planId: { type: "string" },
+            stepId: { type: "string" },
+          },
+          required: ["agent", "prompt"],
+        },
+        output: {
+          type: "object",
+          properties: { output: { type: "string" } },
+        },
+        execute: async (args: any, tctx: any) => {
+          const start = Date.now()
+          const callerAgent = (tctx as any)?.agent ?? ""
+          if (callerAgent !== "ultracode") {
+            return { output: `${C_ERR}${G_ERR}${C_RST} delegate: только primary agent ultracode (caller=${callerAgent || "?"})` }
+          }
+          const agent = String(args?.agent ?? "").trim()
+          if (!ALLOWED_AGENTS.has(agent)) {
+            return { output: `${C_ERR}${G_ERR}${C_RST} delegate: недопустимый agent "${agent}"` }
+          }
+          const prompt = String(args?.prompt ?? "").trim()
+          if (!prompt) {
+            return { output: `${C_ERR}${G_ERR}${C_RST} delegate: пустой prompt` }
+          }
+          const parentID = (tctx as any)?.sessionID
+          if (!parentID) {
+            return { output: `${C_ERR}${G_ERR}${C_RST} delegate: нет sessionID` }
+          }
+
+          // model override (optional)
+          const providerID = args?.providerID ? String(args.providerID).trim() : ""
+          const modelID = args?.modelID ? String(args.modelID).trim() : ""
+          const hasModel = !!(providerID && modelID)
+          if ((providerID && !modelID) || (!providerID && modelID)) {
+            return { output: `${C_ERR}${G_ERR}${C_RST} delegate: укажи оба providerID и modelID` }
+          }
+          if (hasModel) {
+            let catalog: any = null
+            try {
+              const res = await ctx.provider?.list?.()
+              catalog = Array.isArray(res) ? res : Object.values(res || {})
+            } catch {
+              return { output: `${C_ERR}${G_ERR}${C_RST} delegate: каталог моделей недоступен` }
+            }
+            let found = false
+            for (const p of (catalog || [])) {
+              const pid = (p as any)?.id
+              const models = (p as any)?.models ?? {}
+              if (pid === providerID && (models as any)[modelID]) { found = true; break }
+            }
+            if (!found) {
+              return { output: `${C_ERR}${G_ERR}${C_RST} delegate: модель ${providerID}/${modelID} не найдена в каталоге` }
+            }
+          }
+
+          // concurrency gate
+          const current = inFlight.get(parentID) ?? 0
+          if (current >= MAX_PARALLEL) {
+            return { output: `${C_WARN}${G_WARN}${C_RST} delegate: лимит ${MAX_PARALLEL} параллельных вызовов на сессию, дождись слота` }
+          }
+          inFlight.set(parentID, current + 1)
+
+          const metricsFile = metricsFileFor(projectPath)
+          let outcome = "error"
+          let actualProvider = ""
+          let actualModel = ""
+          let childId = ""
+          let aborted = false
+          try {
+            const child = await ctx.session.create({ parentID, agent, ...(hasModel ? { model: { providerID, modelID } } : {}) })
+            childId = (child as any)?.id ?? ""
+            if (!childId) throw new Error("session.create не вернул id")
+
+            const abortSignal = (tctx as any)?.abort
+            const onAbort = () => { aborted = true; try { if (ctx.session.interrupt) ctx.session.interrupt({ sessionID: childId }) } catch { /* best effort */ } }
+            if (abortSignal) {
+              if (abortSignal.aborted) onAbort()
+              else abortSignal.addEventListener("abort", onAbort, { once: true })
+            }
+
+            let res: any
+            try {
+              res = await ctx.session.prompt({
+                sessionID: childId,
+                agent,
+                ...(hasModel ? { model: { providerID, modelID } } : {}),
+                parts: [{ type: "text", text: prompt }],
+                text: prompt,
+                signal: abortSignal,
+              })
+            } finally {
+              if (abortSignal) abortSignal.removeEventListener("abort", onAbort)
+            }
+
+            // RequestResult envelope
+            if (res && typeof res === "object" && "error" in res && res.error) {
+              throw new Error(String((res.error as any)?.message ?? res.error).slice(0, 300))
+            }
+            const data = (res && typeof res === "object" && "data" in res) ? (res as any).data : res
+            const info = (data as any)?.info ?? (data as any)?.message ?? {}
+            if (info?.error) {
+              throw new Error(String(info.error?.message ?? info.error).slice(0, 300))
+            }
+            actualProvider = String(info?.providerID ?? providerID ?? "")
+            actualModel = String(info?.modelID ?? modelID ?? "")
+
+            // Extract text parts
+            const parts = (data as any)?.parts ?? (data as any)?.content ?? []
+            let text = ""
+            if (Array.isArray(parts)) {
+              for (const p of parts) {
+                if (p && typeof p === "object" && p.type === "text" && typeof p.text === "string") {
+                  text += (text ? "\n" : "") + p.text
+                } else if (typeof p === "string") {
+                  text += (text ? "\n" : "") + p
+                }
+              }
+            } else if (typeof parts === "string") {
+              text = parts
+            }
+            if (!text && typeof (data as any)?.text === "string") text = (data as any).text
+            if (!text && typeof (data as any)?.output === "string") text = (data as any).output
+
+            const clipped = sanitizeOutputV3(text || "(пустой ответ)").slice(0, 4000)
+            outcome = "ok"
+            const modelLine = actualProvider && actualModel ? `\nmodel: ${actualProvider}/${actualModel}` : ""
+            return { output: `${C_OPEN}${G_DONE}${C_RST} delegate ${agent}${modelLine}\n${clipped}` }
+          } catch (e) {
+            outcome = aborted ? "aborted" : "error"
+            const msg = String((e as Error)?.message ?? e).slice(0, 400)
+            return { output: `${C_ERR}${G_ERR}${C_RST} delegate ${agent}: ${msg}` }
+          } finally {
+            inFlight.set(parentID, Math.max(0, (inFlight.get(parentID) ?? 1) - 1))
+            if ((inFlight.get(parentID) ?? 0) === 0) inFlight.delete(parentID)
+            // telemetry (best effort, no prompt/output/secrets)
+            try {
+              appendMetricsV3(metricsFile, {
+                ts: new Date().toISOString(),
+                sessionId: String(parentID).slice(0, 64),
+                tool: "ultracode_delegate",
+                durationMs: Date.now() - start,
+                isError: outcome !== "ok",
+                agent,
+                providerID: actualProvider || providerID,
+                modelID: actualModel || modelID,
+                outcome,
+              })
+              // extra dispatch fields appended manually to last line? keep minimal: MetricsLine has no agent/model.
+              // Store dispatch outcome in metrics.jsonl as a separate minimal line is NOT allowed by MetricsLine schema.
+              // We therefore record agent/model/duration/outcome only via console in debug mode; metrics stays bounded.
+            } catch { /* best effort */ }
+            if (DEBUG) console.error(`[ultracode] delegate ${agent} ${outcome} ${Date.now() - start}ms`)
+          }
+        },
+      })
+
+    })
+
+    // ─── tool execute.after hook (V2) ─────────────────────────────
+    await ctx.tool.hook("execute.after", async (event: any) => {
+      try {
+        if (event?.result) {
+          deepRedactV3(event.result)
+        }
+      } catch (e) {
+        console.error("[ultracode] deepRedact failed:", (e as Error).message)
+        if (event?.result && typeof event.result === "object") {
+          event.result = { output: "[redacted: redaction failed]" }
+        }
+      }
+    })
+
+    console.error("[ultracode] V2 plugin loaded successfully, project:", projectPath)
+  },
+})

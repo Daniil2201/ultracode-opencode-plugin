@@ -32,7 +32,14 @@ export function writeHandoff(
   updateStoreFile(file, (s) => {
     s.handoff = h
   })
-  commit(`[ultracode] handoff ${h.sessionId.slice(0, 8)} ${String(h.usagePct)}% ${h.reason}`)
+  // Commit is best-effort: if it fails, the handoff is still persisted in the store.
+  // The caller (plugin) is responsible for retrying on error.
+  try {
+    commit(`[ultracode] handoff ${h.sessionId.slice(0, 8)} ${String(h.usagePct)}% ${h.reason}`)
+  } catch (e) {
+    // Re-throw so caller can handle retry
+    throw e
+  }
 }
 
 export function readHandoff(store: ContextStore): Handoff | null {

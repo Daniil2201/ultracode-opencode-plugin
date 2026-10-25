@@ -25,7 +25,7 @@ test("evidence для закрытого шага отклоняется", () =>
 test("команда не совпадает с acceptance — evidence не принимается", () => {
   const p = createPlan("goal", ["a"], "node --test")
   transitionStep(p, "s1", "in_progress")
-  assert.throws(() => applyEvidence(p, "s1", createEvidence("rm -rf /", 0, "ok")), /does not match plan acceptance/)
+  assert.throws(() => applyEvidence(p, "s1", createEvidence("rm -rf /", 0, "ok")), /does not match acceptance/)
   assert.equal(p.steps[0]?.status, "in_progress")
   assert.equal((p.steps[0]?.evidence ?? []).length, 0)
 })
