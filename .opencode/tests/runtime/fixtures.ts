@@ -144,6 +144,12 @@ export async function makeRuntime(opts?: { config?: Record<string, unknown> }): 
   const dir = fs.mkdtempSync(path.join(os.tmpdir(), "uc-lab-"))
   const project = path.join(dir, "proj")
   fs.mkdirSync(project, { recursive: true })
+  // Runtime fixtures model a complete Ultracode installation. The real sync
+  // script installs bundled skills globally; copying them into the isolated
+  // project keeps the test hermetic and exercises the same discovery format.
+  fs.cpSync(path.resolve(import.meta.dirname, "..", "..", "skills"), path.join(project, ".opencode", "skills"), {
+    recursive: true,
+  })
   process.env.XDG_DATA_HOME = path.join(dir, "xdg")
   const budgetMod = await import("../../lib/ultracode/budget.ts")
   if (opts?.config) {

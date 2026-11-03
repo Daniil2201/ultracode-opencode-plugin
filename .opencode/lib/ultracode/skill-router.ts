@@ -25,7 +25,10 @@ export type ScoredSkill = {
 
 const NAME_WEIGHT = 3
 const DESC_WEIGHT = 1
-const ALIAS_BOOST = 2
+const STACK_ALIAS_BOOST = 2
+// Явное намерение пользователя (документация, security audit, commit) надёжнее
+// общего совпадения слов в description и должно выигрывать у случайного шума.
+const INTENT_ALIAS_BOOST = 5
 // Стек проекта — независимый сигнал, он должен перебивать одиночное совпадение
 // в имени (NAME_WEIGHT=3), иначе «review the diff and commit» в php-проекте
 // уводит в commit-скиллы. Не подгоняем: projectDir в бенче не участвует.
@@ -43,31 +46,33 @@ const MAX_SCAN_FILES = 4000
 // ponytail: правила вручную и по домену. Апгрейд — TF-IDF по name+description,
 // если словарь перестанет покрывать роустер.
 const STACK_ALIASES: Record<string, string[]> = {
-  "php-pro": ["phpunit", "composer", "doctrine", "symfony", "laravel", "artisan", "blade", "миграц"],
+  "php-pro": ["phpunit", "composer", "doctrine", "symfony", "laravel", "artisan", "blade", "миграц*"],
   "php-testing": ["phpunit", "phpstan", "psalm", "infection", "покрытие php"],
-  "php-modernization": ["устаревш", "legacy php", "рефакторинг php"],
+  "php-modernization": ["устаревш*", "legacy php", "рефакторинг php"],
   "typescript-pro": ["vitest", "tsconfig", "ts-node", "jest", "eslint", "prettier", "zod", "tsup"],
-  "rust-engineer": ["cargo", "clippy", "rustfmt", "tokio", "actix", "rustc", "подождитель"],
+  "rust-engineer": ["cargo", "clippy", "rustfmt", "tokio", "actix", "rustc"],
   "python-pro": ["pytest", "poetry", "pydantic", "django", "fastapi", "uvicorn", "ruff", "mypy"],
   "flutter-expert": ["flutter", "dart", "pubspec"],
   "golang-pro": ["gofmt", "goroutine", "grpc", "go.mod"],
   "kotlin-specialist": ["gradle", "jetpack", "kotlin"],
   "java-architect": ["maven", "spring boot", "gradle"],
   "csharp-developer": ["dotnet", "nuget", "csproj"],
-  "sql-pro": ["postgres", "postgresql", "mysql", "vacuum", "explain analyze", "репликац"],
+  "sql-pro": ["postgres", "postgresql", "mysql", "vacuum", "explain analyze", "репликац*"],
   "devops-engineer": ["kubernetes", "k8s", "terraform", "helm", "ci/cd"],
-  "docker-engineer": ["dockerfile", "docker compose", "docker-compose", "контейнер"],
-  "code-documenter": ["readme", "changelog", "jsdoc", "документац", "докстринг"],
-  "api-designer": ["openapi", "swagger", "эндпоинт", "endpoint"],
-  "code-reviewer": ["ревью", "code review", "обзор кода"],
-  "debugging-wizard": ["stacktrace", "segfault", "воспроизвести", "воспроизведи"],
-  "add-feature": ["добавь фичу", "implement feature", "feature flag"],
+  "docker-engineer": ["dockerfile", "docker compose", "docker-compose", "контейнер*"],
   "init-project": ["инициализир", "scaffold", "обкатать"],
-  "commit-and-push": ["закоммить", "коммить", "git push"],
-  "add-observability": ["логирован", "observability", "мониторинг", "трейс"],
-  "security-reviewer": ["xss", "sql injection", "уязвимост", "аудит безопасн"],
   "simplify": ["упростить", "рефактор", "cleanup"],
   "test-master": ["тест-план", "покрытие тест", "qa"],
+}
+const INTENT_ALIASES: Record<string, string[]> = {
+  "code-documenter": ["readme", "changelog", "jsdoc", "документац*", "докстринг*", "опиши api"],
+  "api-designer": ["openapi", "swagger", "эндпоинт*", "endpoint*", "спроектируй api"],
+  "code-reviewer": ["ревью", "code review", "обзор кода", "проведи аудит кода"],
+  "debugging-wizard": ["stacktrace", "segfault", "воспроизвести", "воспроизведи", "отладить"],
+  "add-feature": ["добавь фичу", "implement feature", "feature flag"],
+  "commit-and-push": ["закоммить", "коммить", "git push", "создай коммит"],
+  "add-observability": ["логирован*", "observability", "мониторинг", "трейс*"],
+  "security-reviewer": ["xss", "sql injection", "уязвимост*", "аудит безопасн", "security audit"],
 }
 // Стек проекта известен надёжнее слов: каталог сессии — сильный бесплатный приор.
 const PROJECT_STACKS: Array<{ re: RegExp; skills: string[] }> = [
@@ -88,7 +93,9 @@ const STOP = new Set([
   "проверь", "исправьте", "должен", "должна", "должно", "чтобы", "если", "этот", "который",
 ])
 
-let cache: SkillEntry[] | null = null
+// Skill sets differ per project. A process-wide single array leaked the first
+// scanned project's skills into every later session (or cached an empty list).
+const cache = new Map<string, SkillEntry[]>()
 
 // Токены: lowercase, пунктуация → пробел, стоп-слова и короткие — вон.
 export function tokenize(text: string): string[] {
@@ -148,7 +155,9 @@ function walkSkills(root: string, source: "local" | "global", out: SkillEntry[])
 // Глобальные + проектные. Порядок: local первыми (они перекрывают global по имени),
 // потом global — чтобы collectSkills не зависел от переданного projectDir.
 export function collectSkills(projectDir?: string, refresh = false): SkillEntry[] {
-  if (cache && !refresh) return cache
+  const key = projectDir ? path.resolve(projectDir) : "<global>"
+  const cached = cache.get(key)
+  if (cached && !refresh) return cached
   const out: SkillEntry[] = []
   const home = os.homedir()
   if (projectDir) walkSkills(path.join(projectDir, ".opencode", "skills"), "local", out)
@@ -159,7 +168,7 @@ export function collectSkills(projectDir?: string, refresh = false): SkillEntry[
   ]) {
     walkSkills(dir, "global", out)
   }
-  cache = out
+  cache.set(key, out)
   return out
 }
 
@@ -170,7 +179,10 @@ function esc(s: string): string {
 // Совпадение алиаса: одно слово — по границам слова (чтобы "pip" не ловил
 // "pipeline"), многословное — подстрокой.
 function aliasHit(alias: string, lower: string): boolean {
-  return /\s/.test(alias) ? lower.includes(alias) : new RegExp(`\\b${esc(alias)}\\b`, "i").test(lower)
+  if (alias.endsWith("*")) return lower.includes(alias.slice(0, -1))
+  if (/\s/.test(alias)) return lower.includes(alias)
+  // JS \b знает только ASCII и не распознаёт границы русских слов.
+  return new RegExp(`(?:^|[^a-z0-9а-яё_])${esc(alias)}(?=$|[^a-z0-9а-яё_])`, "i").test(lower)
 }
 
 export function aliasBoosts(query: string): Record<string, number> {
@@ -178,7 +190,12 @@ export function aliasBoosts(query: string): Record<string, number> {
   const out: Record<string, number> = {}
   if (lower.trim().length === 0) return out
   for (const [skill, aliases] of Object.entries(STACK_ALIASES)) {
-    if (aliases.some((a) => aliasHit(a, lower))) out[skill] = ALIAS_BOOST
+    if (aliases.some((a) => aliasHit(a, lower))) out[skill] = STACK_ALIAS_BOOST
+  }
+  for (const [skill, aliases] of Object.entries(INTENT_ALIASES)) {
+    if (aliases.some((a) => aliasHit(a, lower))) {
+      out[skill] = Math.max(out[skill] ?? 0, INTENT_ALIAS_BOOST)
+    }
   }
   return out
 }
@@ -230,7 +247,7 @@ export function scoreSkills(
 export function renderSkillHint(query: string, top = DEFAULT_TOP_HINT, projectDir?: string): string {
   // Вставка/лог/инструкция агенту — не запрос. Hint по нему только шумит.
   if (String(query ?? "").length > MAX_HINT_QUERY) return ""
-  const scored = scoreSkills(query, collectSkills(), top, projectBoosts(projectDir))
+  const scored = scoreSkills(query, collectSkills(projectDir), top, projectBoosts(projectDir))
   if (scored.length === 0) return ""
   const rows = scored.map((s) => `- ${s.name} (score ${s.score}, ${s.reason})`).join("\n")
   return `<skill_hint>\nMost relevant skills for the current request. Load one with the skill tool, or search more with triage({ query }).\n${rows}\n</skill_hint>`

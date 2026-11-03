@@ -421,10 +421,11 @@ export function applyEvidence(plan: Plan, stepId: string, evidence: Evidence): v
       `evidence rejected for ${stepId}: step is ${step.status}, start it first (plan_step -> in_progress)`,
     )
   }
-  const acc = plan.acceptance?.command?.trim()
+  // Per-step check has priority over plan-wide acceptance (PLAN-01)
+  const acc = (step.check?.trim() || plan.acceptance?.command?.trim())
   const cmd = evidence.command.trim()
   if (acc && cmd && cmd !== acc && !acc.startsWith(cmd)) {
-    throw new Error(`evidence rejected for ${stepId}: command does not match plan acceptance: ${acc}`)
+    throw new Error(`evidence rejected for ${stepId}: command does not match acceptance: ${acc}`)
   }
   step.evidence ??= []
   // Штампуем текущую попытку: старые успехи не закрывают новые попытки.

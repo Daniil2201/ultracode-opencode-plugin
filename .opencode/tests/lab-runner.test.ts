@@ -25,7 +25,9 @@ test("timeout does not hang the runner", () => {
 })
 
 test("output is clipped and secrets redacted", () => {
-  const e = runLabCommand("node -e \"console.log('x'.repeat(20000)); console.error('api_hash=SECRET9')\"", CWD, 10_000)
+  // Не запускаем вложенный node: в некоторых managed runtimes его stdout
+  // перенаправляется рантаймом. POSIX-команды проверяют сам runner напрямую.
+  const e = runLabCommand("yes x | head -c 20000; printf 'api_hash=SECRET9' >&2", CWD, 10_000)
   assert.ok(((e.stdout ?? "").length) <= 4000)
   assert.ok(!(e.stderr ?? "").includes("SECRET9"))
   assert.equal(e.truncated, true)

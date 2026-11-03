@@ -175,7 +175,7 @@ Check each custom LSP command exists in PATH and report version.
 
 For each plugin entry:
 - If string starts with `./` or `file://` → local file relative to config dir, resolve path and check exists
-- Example: if config is at `~/.config/opencode/opencode.jsonc` and plugin is `./plugin/guardrails.ts`, resolve to `~/.config/opencode/plugin/guardrails.ts`
+- Example: OpenCode v2 auto-discovers `~/.config/opencode/plugins/guardrails.ts`; configured local entries must point to a directory through `plugins`, not to a single file.
 - If npm package (e.g. `opencode-gemini-auth`) → check `npm view <pkg> version` vs installed
 - If tuple `[name, opts]` → check name as npm package
 - Report status: **OK** / **MISSING** / **OUTDATED**
@@ -201,8 +201,7 @@ LSP Servers:
   ✅ vscode-json-languageserver  v3.0.0 (ok)
 
 Plugins:
-  ✅ guardrails.ts              (~/.config/opencode/plugin/guardrails.ts, exists)
-  ✅ agentmemory-capture.ts     (~/.config/opencode/plugin/agentmemory-capture.ts, exists)
+  ✅ ultracode.ts               (~/.config/opencode/plugins/ultracode.ts, exists)
 
 Summary: opencode v1.17.7, 3 MCPs, 2 LSPs, 2 plugins — all healthy
 ```

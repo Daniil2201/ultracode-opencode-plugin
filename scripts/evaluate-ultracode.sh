@@ -95,18 +95,22 @@ pass_count() {
 
 cd "$ROOT"
 run_gate "compile" node --check .opencode/plugin/ultracode.ts
-run_gate "unit" node --test .opencode/tests/*.test.ts
+run_gate "unit" node --test --test-concurrency=1 .opencode/tests/*.test.ts
 run_gate "runtime" node --test .opencode/tests/runtime/*.test.ts
 run_gate "security" node --test .opencode/tests/adversarial/autonomy.test.ts .opencode/tests/adversarial/secrets.test.ts
 run_gate "concurrency" node --test .opencode/tests/adversarial/concurrency.test.ts
-run_gate "mcp-test" bash -c 'cd farm && cargo test -p mcp'
-run_gate "mcp-clippy" bash -c 'cd farm && cargo clippy -p mcp --all-targets -- -D warnings'
-run_gate "mcp-fmt" bash -c 'cd farm && cargo fmt -p mcp -- --check'
+if [[ -f farm/Cargo.toml ]]; then
+  run_gate "mcp-test" bash -c 'cd farm && cargo test -p mcp'
+  run_gate "mcp-clippy" bash -c 'cd farm && cargo clippy -p mcp --all-targets -- -D warnings'
+  run_gate "mcp-fmt" bash -c 'cd farm && cargo fmt -p mcp -- --check'
+fi
 
 if [[ "$MODE" == "--all" ]]; then
-  run_gate "mcp-release" bash -c 'cd farm && cargo build --release -p mcp'
-  run_gate "farm-health" ./scripts/farm-health.sh
-  run_gate "install-status" ./scripts/install-farm.sh --status
+  if [[ -f farm/Cargo.toml ]]; then
+    run_gate "mcp-release" bash -c 'cd farm && cargo build --release -p mcp'
+  fi
+  [[ -x scripts/farm-health.sh ]] && run_gate "farm-health" ./scripts/farm-health.sh
+  [[ -x scripts/install-farm.sh ]] && run_gate "install-status" ./scripts/install-farm.sh --status
   run_gate "install-smoke" ./.opencode/tests/install-smoke.sh
   # Reproducibility: второй прогон TS-гейтов, сравниваем pass-counts.
   UNIT1="$(pass_count unit)"; RUN1="$(pass_count runtime)"; SEC1="$(pass_count security)"; CON1="$(pass_count concurrency)"

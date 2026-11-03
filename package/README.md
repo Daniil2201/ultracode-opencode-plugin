@@ -1,11 +1,7 @@
 # ultracode-plugin
 
-Плагин оркестратора для [opencode](https://opencode.ai). Ставится локально,
-автоматически подхватывается из `~/.config/opencode/plugin/`.
-
-```
-"plugin": ["./plugin/ultracode.ts", "./plugin/farm.ts", …]
-```
+Плагин оркестратора для [OpenCode v2](https://opencode.ai/v2/docs). Локальные
+плагины автоматически подхватываются из `~/.config/opencode/plugins/`.
 
 ## Что делает
 
@@ -27,9 +23,11 @@
 
 ## Установка
 
+Из корня клонированного репозитория:
+
 ```bash
-cd ~/.config/opencode
-bash ~/Desktop/Project/Ultracode/scripts/sync-ultracode.sh
+npm ci
+bash scripts/sync-ultracode.sh
 ```
 
 Скрипт копирует `plugin/`, `lib/`, `agents/`, `commands/`, `skills/`,
@@ -38,8 +36,8 @@ bash ~/Desktop/Project/Ultracode/scripts/sync-ultracode.sh
 Проверка:
 
 ```bash
-bash ~/Desktop/Project/Ultracode/scripts/sync-ultracode.sh --status
-# identical=N  diff=0
+bash scripts/sync-ultracode.sh --status
+# identical=N  diff=0  missing_in_dst=0
 ```
 
 **После правок нужен рестарт opencode** — плагин грузится один раз при старте.
@@ -47,18 +45,15 @@ bash ~/Desktop/Project/Ultracode/scripts/sync-ultracode.sh --status
 ## Проверка
 
 ```bash
-cd ~/Desktop/Project/Ultracode
-node --test .opencode/tests/*.test.ts .opencode/tests/runtime/*.test.ts \
-             .opencode/tests/adversarial/*.test.ts
-# 349 tests / 346 pass / 0 fail / 3 skipped
+npm test
+npm run check:install
 
-bash .opencode/tests/install-smoke.sh   # 53 OK / 0 MISS
 bash scripts/skill-router-bench.sh      # качество роутинга
 ```
 
 ## Зависимости
 
-- `@opencode-ai/plugin` — SDK хуков (пин, не `^`)
+- `@opencode/plugin` — SDK OpenCode v2 (пин, не `^`)
 - `js-tiktoken` — реальный токенайзер, с fallback-эвристикой при сбое
 
 ## Почему не npm-пакет
@@ -82,10 +77,10 @@ opencode ставит npm-плагины **из реестра**: кладёт �
 
 <!-- AUTO:facts -->
 
-CI (2026-10-01): **346 pass / 0 fail / 3 skip**
-всего тестов: 349 · `install-smoke.sh`: 53 OK / 0 MISS
+CI (2026-11-03): **394 pass / 0 fail / 0 skip**
+всего тестов: 394 · `install-smoke.sh`: 53 OK / 0 MISS
 
-Плагин: `plugin/ultracode.ts` · SDK `@opencode-ai/plugin`.
+Плагин: `plugin/ultracode.ts` · SDK `@opencode/plugin`.
 Сгенерировано `scripts/build-docs.sh` — правь руками не числа, а код.
 
 <!-- /AUTO:facts -->

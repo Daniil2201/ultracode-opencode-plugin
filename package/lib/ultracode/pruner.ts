@@ -229,7 +229,7 @@ export function planPrune(
     if (mi >= cutoff) return
     const mid = typeof m?.info?.id === "string" ? m.info.id : ""
     if (pinned.has(mid)) return
-    const parts = Array.isArray(m?.parts) ? m.parts : []
+    const parts: PrunablePart[] = Array.isArray(m?.parts) ? m.parts : []
     parts.forEach((p, pi) => {
       if (isToolPart(p) && !isProtectedTool(toolOf(p))) cands.push({ mi, pi, part: p })
     })
@@ -351,7 +351,7 @@ export function planPrune(
       result.push(m)
       return
     }
-    const parts = Array.isArray(m?.parts) ? m.parts.slice() : []
+    const parts: PrunablePart[] = Array.isArray(m?.parts) ? m.parts.slice() : []
     parts.forEach((p, pi) => {
       const e = perMessage.get(pi)
       if (!e) return

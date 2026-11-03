@@ -18,10 +18,9 @@ import {
 const REPO = path.resolve(import.meta.dirname, "..", "..")
 const skills = collectSkills(REPO, true)
 
-test("collectSkills находит роустер целиком (local + global, local перекрывает global)", () => {
-  assert.ok(skills.length >= 100, `найдено ${skills.length}`)
+test("collectSkills находит встроенный роустер без зависимости от глобальных skills", () => {
+  assert.ok(skills.length >= 50, `найдено ${skills.length}`)
   assert.ok(skills.some((s) => s.source === "local"), "нет локальных скиллов")
-  assert.ok(skills.some((s) => s.source === "global"), "нет глобальных скиллов")
   const names = new Set(skills.map((s) => s.name))
   assert.equal(names.size, skills.length, "дубликаты имён не схлопнуты")
 })
@@ -84,7 +83,7 @@ test("renderSkillHint: пустой запрос и отсутствие сов�
 })
 
 test("renderSkillHint: непустой → блок с именами и обоснованием", () => {
-  const hint = renderSkillHint("php функция с тестом")
+  const hint = renderSkillHint("php функция с тестом", 3, REPO)
   assert.ok(hint.startsWith("<skill_hint>"), hint.slice(0, 40))
   assert.ok(hint.trimEnd().endsWith("</skill_hint>"))
   assert.match(hint, /php/i)
@@ -134,7 +133,7 @@ test(" Scoring детерминирован: два вызова дают оди
   assert.deepEqual(a, b)
 })
 
-test("UC-035: алиас даёт +2 целевому скиллу и выводит его в топ", () => {
+test("UC-035: стековый алиас даёт +2 целевому скиллу и выводит его в топ", () => {
   assert.equal(aliasBoosts("почини composer.lock")["php-pro"], 2)
   // ponytail: потолок — алиас даёт +2 и не выигрывает у сильного шума
   // (2 совпадения по имени дают 6-7). Апгрейд: TF-IDF/эмбеддинги, если шум
@@ -145,6 +144,12 @@ test("UC-035: алиас даёт +2 целевому скиллу и вывод
   assert.deepEqual(aliasBoosts("   "), {})
   // подстрока не ложное срабатывание: "pipeline" ≠ "pip"
   assert.equal(aliasBoosts("build pipeline broken")["python-pro"], undefined)
+})
+
+test("UC-035: явное намерение сильнее случайного совпадения description", () => {
+  assert.equal(aliasBoosts("напиши полную документацию API")["code-documenter"], 5)
+  assert.equal(aliasBoosts("проведи security audit")["security-reviewer"], 5)
+  assert.equal(aliasBoosts("создай коммит")["commit-and-push"], 5)
 })
 
 test("UC-035: приоритет стека проекта (php/destroyers/sandbox → php-скиллы)", () => {
@@ -161,7 +166,7 @@ test("UC-035: приоритет стека проекта (php/destroyers/sandb
 })
 
 test("UC-035: запрос длиннее 500 символов не получает skill_hint", () => {
-  assert.equal(renderSkillHint("x".repeat(MAX_HINT_QUERY + 1)), "")
-  assert.equal(renderSkillHint("x".repeat(MAX_HINT_QUERY)), "")
-  assert.ok(renderSkillHint("почини cargo").includes("<skill_hint>"))
+  assert.equal(renderSkillHint("x".repeat(MAX_HINT_QUERY + 1), 3, REPO), "")
+  assert.equal(renderSkillHint("x".repeat(MAX_HINT_QUERY), 3, REPO), "")
+  assert.ok(renderSkillHint("почини cargo", 3, REPO).includes("<skill_hint>"))
 })

@@ -5,7 +5,7 @@
 //
 // Ponytail: тонкий плагин-оркестратор. Тяжёлая логика — в ../lib/ultracode/*.
 
-import { define } from "@opencode-ai/plugin/v2/promise"
+import { Plugin } from "@opencode/plugin"
 import * as fs from "node:fs"
 import * as path from "node:path"
 import * as os from "node:os"
@@ -155,10 +155,10 @@ function isFreeModel(modelId: string): boolean {
 
 // ─── main plugin ──────────────────────────────────────────────────────
 
-export default define({
+export default Plugin.define({
   id: "ultracode",
   async setup(ctx: any) {
-    const projectPath = ctx.location?.directory || ctx.location?.project?.directory || process.cwd()
+    const projectPath = ctx.location?.project?.canonical || ctx.location?.project?.directory || ctx.location?.directory || process.cwd()
     const store = loadStoreForProject(projectPath)
     const injectedSessions = new Set<string>()
     const lastUserQuery = new Map<string, string>()
@@ -303,7 +303,7 @@ export default define({
           }
         }
         if (stripped > 0) debugLog(`stripped <available_skills> x${stripped} (${sid})`)
-        const hint = renderSkillHintV3(lastUserQuery.get(sid) ?? "", 3)
+        const hint = renderSkillHintV3(lastUserQuery.get(sid) ?? "", 3, projectPath)
         if (hint) pushSystemOnce(system, sid, "skill-hint", hint)
       } catch (e) {
         debugLog(`skill-hint failed: ${String((e as Error).message).slice(0, 200)}`)
@@ -437,6 +437,7 @@ export default define({
       const text = event?.prompt?.text || ""
       if (text.trim().length > 0) {
         lastUserQuery.set(sid, text.slice(0, 2000))
+        debugLog(`captured prompt (${sid}, ${text.length} chars)`)
       }
     })
 
@@ -1165,7 +1166,7 @@ export default define({
       saveStoreAtomic(storeFileFor(projectPath), store)
     }
 
-    function locked<T>(label: string, fn: (s: any) => T): T {
+    function locked<T>(label: string, fn: (s: StoreV3) => T): T {
       const res = updateStoreFileV3(storeFileFor(projectPath), fn)
       try {
         const re = loadStoreV3(storeFileFor(projectPath))

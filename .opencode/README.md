@@ -23,37 +23,38 @@
 ```text
 .opencode/
   plugin/
-    agentmemory-capture.ts    [250 строк]
-    guardrails.ts             [107 строк]
-    ultracode.ts             # ядро: хуки, инъекция, инструмент ultracode_context  [1861 строк]
+    agentmemory-capture.ts    [233 строк]
+    guardrails.ts             [45 строк]
+    ultracode.ts             # ядро: хуки, инъекция, инструмент ultracode_context  [1580 строк]
   lib/ultracode/   # чистая логика (stdlib only, покрыта тестами)
     autonomy.ts              32 строк  UC-013 — policy автономности. ЕДИНСТВЕННЫЙ источник текста, кото
     budget.ts                99 строк  Budget Manager: снимок usage на сессию + пороги. Чистые функции,
     checkpoint.ts            28 строк  UC-010 — checkpoint при compaction: только компактный summary, б
     classifier.ts            98 строк  UC-005 — классификатор сложности. Чистый hint, без сайд-эффектов
-    confidential.ts         156 строк  UC-021 — confidential-data firewall: модель видит вёрстку/структ
+    confidential.ts         166 строк  UC-021 — confidential-data firewall: модель видит вёрстку/структ
     debug.ts                109 строк  UC-022 — debugger workflow: reproduce → isolate → hypothesize → 
     design.ts                42 строк  UC-009 — явный Open Design workflow. Никакого авто-запуска по сл
-    handoff.ts               43 строк  Handoff сброса контекста: писатель/читатель. Запись — через upda
+    handoff.ts               50 строк  Handoff сброса контекста: писатель/читатель. Запись — через upda
     injection.ts            262 строк  UC-003 — идемпотентная инъекция + раздельные бюджеты.
-    metrics.ts              141 строк  UC-004 — session-scoped метрики + корректные ошибки + bounded me
+    metrics.ts              150 строк  UC-004 — session-scoped метрики + корректные ошибки + bounded me
     orchestrator.ts          69 строк  UC-006 + UC-014 — оркестрация: готовые шаги, батчи, ретраи.
     plan.ts                 189 строк  UC-002 — модель плана и безопасные переходы статусов.
     prune-store.ts          202 строк  Стор оригиналов context-pruner. Отдельный append-only jsonl рядо
     pruner.ts               396 строк  context-pruner: сжатие истории сообщений перед отправкой в LLM.
-    runtime-contract.ts     151 строк  UC-017 — runtime-контракт tool `ultracode_context`: единый источ
-    schema.ts               345 строк  Ultracode v3 — схема хранилища. Только типы + чистая миграция, б
+    report-verify.ts        117 строк  UC-report-verify — детерминированная верификация отчетов агента.
+    runtime-contract.ts     168 строк  UC-017 — runtime-контракт tool `ultracode_context`: единый источ
+    schema.ts               352 строк  Ultracode v3 — схема хранилища. Только типы + чистая миграция, б
     sentinel.ts             221 строк  UC-029 — Sentinel: дешёвые advisory-проверки шага плана перед фи
-    skill-router.ts         267 строк  UC-032 — skill-router: дешёвый детерминированный роутер по скилл
+    skill-router.ts         271 строк  UC-032 — skill-router: дешёвый детерминированный роутер по скилл
     stack-contract.ts       221 строк  UC-025 — единый контракт «работающий проект»: один интерфейс,
     stack-detect.ts         218 строк  UC-023 — автоопределение стека проекта для acceptance по умолчан
     store.ts                146 строк  UC-001 — надёжное хранилище v3: per-project файлы + atomic save 
     tokens.ts               105 строк  Токены: реальный cl100k_base (js-tiktoken, CJS) + fallback-эврис
-    verification.ts         446 строк  UC-007 — evidence-gated verification. Шаг закрывается только evi
+    verification.ts         447 строк  UC-007 — evidence-gated verification. Шаг закрывается только evi
     evaluation/            7 модулей
   agents/          # 5: ultracode, ultracode-designer, ultracode-executor, ultracode-planner, ultracode-reviewer
   commands/        # 13: bolt, checkpoint, debug, design, evaluate, goal, spec, status, tz-check, tz-init, tz-refine, ultracode-help, verify
-  skills/          # 44 скиллов
+  skills/          # 55 скиллов
 ```
 
 <!-- /AUTO:inventory -->
@@ -277,10 +278,10 @@ top-3 35.6% на 345 исторических запросах (45 меток) �
 
 <!-- AUTO:facts -->
 
-CI (2026-10-01): **346 pass / 0 fail / 3 skip**
-всего тестов: 349 · `install-smoke.sh`: 53 OK / 0 MISS
+CI (2026-11-03): **394 pass / 0 fail / 0 skip**
+всего тестов: 394 · `install-smoke.sh`: 53 OK / 0 MISS
 
-Плагин: `plugin/ultracode.ts` · SDK `@opencode-ai/plugin`.
+Плагин: `plugin/ultracode.ts` · SDK `@opencode/plugin`.
 Сгенерировано `scripts/build-docs.sh` — правь руками не числа, а код.
 
 <!-- /AUTO:facts -->

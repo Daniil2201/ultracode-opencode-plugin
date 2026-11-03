@@ -1,0 +1,25 @@
+{
+  "name": "ultracode-opencode-plugin-workspace",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node --test .opencode/tests/*.test.ts .opencode/tests/runtime/*.test.ts .opencode/tests/adversarial/*.test.ts",
+    "test:unit": "node --test .opencode/tests/*.test.ts",
+    "test:runtime": "node --test .opencode/tests/runtime/*.test.ts",
+    "test:adversarial": "node --test .opencode/tests/adversarial/*.test.ts",
+    "build:package": "bash scripts/build-package.sh",
+    "check:install": "bash .opencode/tests/install-smoke.sh"
+  },
+  "dependencies": {
+    "@opencode/plugin": "2.2.5",
+    "js-tiktoken": "^1.0.21"
+  },
+  "devDependencies": {
+    "@types/node": "^24.10.0",
+    "typescript": "^5.9.3"
+  },
+  "engines": {
+    "node": ">=22.18"
+  }
+}

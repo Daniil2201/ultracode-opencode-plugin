@@ -6,7 +6,7 @@ set -euo pipefail
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 SRC="$ROOT/.opencode"
 OUT="$ROOT/package"
-VERSION="$(python3 -c "import json;print(json.load(open('$SRC/package.json'))['version'])")"
+VERSION="$(python3 -c "import json;print(json.load(open('$ROOT/package.json'))['version'])")"
 
 rm -rf "$OUT/plugin" "$OUT/lib"
 mkdir -p "$OUT"

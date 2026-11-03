@@ -111,7 +111,7 @@ def facts(tests: dict) -> str:
         f"CI ({today}): **{tests['pass']} pass / {tests['fail']} fail / {tests['skipped']} skip**",
         f"всего тестов: {tests['tests']} · `install-smoke.sh`: 53 OK / 0 MISS",
         "",
-        "Плагин: `plugin/ultracode.ts` · SDK `@opencode-ai/plugin`.",
+        "Плагин: `plugin/ultracode.ts` · SDK `@opencode/plugin`.",
         "Сгенерировано `scripts/build-docs.sh` — правь руками не числа, а код.",
         "",
         "<!-- /AUTO:facts -->",

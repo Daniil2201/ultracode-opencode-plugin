@@ -14,14 +14,14 @@ SRC="$ROOT/.opencode"
 DEST="${OPENCODE_DIR:-$HOME/.config/opencode}"
 MODE="${1:-install}"
 
-# Плагины: ultracode обязателен, остальные — если есть в проекте.
+# Все три плагина используют OpenCode v2 Plugin.define/ctx.* API.
 PLUGINS=(ultracode guardrails agentmemory-capture)
 
 # Печатает пары "SRC<TAB>DST" для всех файлов, которые должны синхронизироваться.
 pairs() {
   local f rel
   for p in "${PLUGINS[@]}"; do
-    [[ -f "$SRC/plugin/$p.ts" ]] && printf '%s\t%s\n' "$SRC/plugin/$p.ts" "$DEST/plugin/$p.ts"
+    [[ -f "$SRC/plugin/$p.ts" ]] && printf '%s\t%s\n' "$SRC/plugin/$p.ts" "$DEST/plugins/$p.ts"
   done
   for f in "$SRC"/lib/ultracode/*.ts "$SRC"/lib/ultracode/evaluation/*.ts; do
     [[ -f "$f" ]] || continue
@@ -69,7 +69,7 @@ if [[ "$MODE" == "--status" || "$MODE" == "status" ]]; then
   report_missing_sources
   echo
   echo "identical=$same  diff=$diff  missing_in_dst=$miss"
-  echo "opencode.json: НЕ ТРОГАЕТСЯ этим скриптом (mcp.* и plugin[] остаются как есть)"
+  echo "opencode.json: НЕ ТРОГАЕТСЯ этим скриптом (mcp.* и plugins[] остаются как есть)"
   exit 0
 fi
 

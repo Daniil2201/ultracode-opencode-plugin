@@ -394,7 +394,7 @@ export function evaluatePortable(root: string, exec: PortableExec = defaultExec,
     return {
       mode: "portable",
       target: abs,
-      stack: { stack: contract.stack, dir: contract.dir, source: contract.source, commands: table },
+      stack: { stack: contract.stack, dir: contract.dir, source: contract.source, commands: { ...table } },
       preflight,
       gates,
       score: s.score,

@@ -42,6 +42,27 @@ export function prunedFileFor(projectRoot: string, sessionID: string, root?: str
   return path.join(prunedDirFor(projectRoot, root), `${sid}.jsonl`)
 }
 
+// Диагностический лог pruner'а: решения И отказы. Стор оригиналов (jsonl) пишет
+// только успехи — по нему нельзя понять, почему проход не состоялся (замер
+// 30.09: 65 частей подходили под collapse-bash, в стор попало 0 — и по чему,
+// ретроспективно не установить).
+//
+// Почему файл, а не console.error: opencode.log на 100% состоит из
+// структурированных строк opencode (проверено: 0 неструктурированных на 47 МБ),
+// поэтому console.error из плагина туда не попадает. Свой файл рядом со стором —
+// единственный канал, который переживает завершение процесса.
+// I/O best-effort, как и у appendOriginal: лог не имеет права ронять хук.
+export function prunedLogFor(projectRoot: string, sessionID: string, root?: string): string {
+  return prunedFileFor(projectRoot, sessionID, root).replace(/\.jsonl$/, ".log")
+}
+
+export function appendPrunerLog(file: string, line: string): void {
+  try {
+    fs.mkdirSync(path.dirname(file), { recursive: true })
+    fs.appendFileSync(file, `${new Date().toISOString()} ${line}\n`, "utf8")
+  } catch { /* best effort: диагностика не роняет хук */ }
+}
+
 // Ключи уже записанных (messageID, partID) и пины живут в памяти процесса:
 // файл на сессию не перечитывается на каждом ходу. Источник истины — сам jsonl
 // (после рестарта процесса кэш пуст и читается заново).
